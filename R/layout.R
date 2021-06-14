@@ -48,7 +48,7 @@ spiral_initialize = function(start = 360, end = 360*5, xlim = c(0, 1),
 	polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "grey", lty = 3), 
 	padding = unit(5, "mm"), newpage = TRUE) {
 
-	spiral_clear()
+	spiral_clear(check_vp = FALSE)
 
 	scale_by = match.arg(scale_by)[1]
 	flip = match.arg(flip)[1]
@@ -96,13 +96,30 @@ spiral_initialize = function(start = 360, end = 360*5, xlim = c(0, 1),
 # == title
 # Clear the spiral curve
 #
+# == param
+# -check_vp Whether to check the viewport.
+#
 # == details
 # It basically sets the internally spiral object to NULL, and reset all global options.
-spiral_clear = function() {
+spiral_clear = function(check_vp = TRUE) {
 	spiral_env$spiral = NULL
 	track_env$track_data = empty_track_data
 	track_env$current_track = 0
 	spiral_opt(RESET = TRUE)
+
+	if(check_vp) {
+		vp = current_spiral_vp()
+		while(1) {
+			if(current.viewport()$name == vp) {
+				popViewport()
+				break
+			}
+			if(current.viewport()$name == "ROOT") {
+				break
+			}
+			popViewport()
+		}
+	}
 }
 
 # == title

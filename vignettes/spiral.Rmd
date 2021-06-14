@@ -19,8 +19,72 @@ knitr::opts_chunk$set(
     tidy  = FALSE,
     message = FALSE,
     warning = FALSE,
+    fig.width = 6,
+    fig.height = 6,
     fig.align = "center",
     dev = "jpeg"
 )
 options(width = 100)
+library(spiral)
 ```
+
+
+
+$$ r = b\theta $$
+
+```{r}
+theta = seq(0, 360*4, by = 1)/180*pi
+b = 1/2/pi
+r = theta*b
+
+df = spiral:::polar_to_cartesian(theta, r)
+
+abs_max_x = max(abs(df$x))
+abs_max_y = max(abs(df$y))
+
+grid.newpage()
+  
+padding = unit(c(5, 5), "mm")
+pushViewport(viewport(
+    width = unit(1, "snpc") - padding[1], 
+    height = unit(1, "snpc") - padding[2],
+    xscale = c(-abs_max_x, abs_max_x), 
+    yscale = c(-abs_max_y, abs_max_y)))
+
+d = seq(0, 360, by = 30)
+if(d[length(d)] == 360) d = d[-length(d)]
+dm = matrix(nrow = length(d), ncol = 4)
+for(i in seq_along(d)) {
+  r0 = max(r + b*2*pi)*1.1
+  dm[i, ] = c(0, 0, cos(d[i]/180*pi)*r0, sin(d[i]/180*pi)*r0)
+}
+grid.segments(dm[, 1], dm[, 2], dm[, 3], dm[, 4], default.units = "native", 
+    gp = gpar(col = "grey", lty = 3))
+
+grid.lines(df$x, df$y, default.units = "native")
+
+grid.segments(2, 0, 3, 0, arrow = arrow(angle = 20, length = unit(2, "mm"), ends = "both"), default.units = "native")
+grid.text("d", unit(2.5, "native"), unit(0, "native") + unit(1, "mm"), just = "bottom")
+popViewport()
+```
+
+
+```{r, fig.width = 12, fig.height = 6, echo = FALSE}
+grid.newpage()
+pushViewport(viewport(x = 0.25, width = 0.5))
+spiral_initialize(start = 360, end = 360*3, newpage = FALSE)
+spiral_track(height = 0.45)
+spiral_text(1/8, 0.5, "track 1")
+spiral_clear()
+popViewport()
+
+pushViewport(viewport(x = 0.75, width = 0.5))
+spiral_initialize(start = 360, end = 360*3, newpage = FALSE)
+spiral_track(height = 0.45)
+spiral_text(1/8, 0.5, "track 1")
+spiral_track(height = 0.45)
+spiral_text(1/8, 0.5, "track 2")
+spiral_clear()
+popViewport()
+```
+
