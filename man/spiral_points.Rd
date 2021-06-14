@@ -1,0 +1,27 @@
+\name{spiral_points}
+\alias{spiral_points}
+\title{
+Add points to a track
+}
+\description{
+Add points to a track
+}
+\usage{
+spiral_points(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
+    track_index = current_track_index())
+}
+\arguments{
+
+  \item{x}{X coordinates of the data points.}
+  \item{y}{Y coordinates of the data points.}
+  \item{pch}{Point type.}
+  \item{size}{Size of the points. Value should be a \code{\link[grid]{unit}} object.}
+  \item{gp}{Graphical parameters.}
+  \item{track_index}{Index of the track. }
+
+}
+\examples{
+spiral_initialize()
+spiral_track()
+spiral_points(x = runif(1000), y = runif(1000))
+}

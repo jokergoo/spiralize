@@ -1,0 +1,26 @@
+---
+title: "Spiral Curve Visualization"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+    css: main.css
+vignette: >
+  %\VignetteIndexEntry{Spiral Curve Visualization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.align = "center",
+    dev = "jpeg"
+)
+options(width = 100)
+```

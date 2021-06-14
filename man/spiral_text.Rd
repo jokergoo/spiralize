@@ -1,0 +1,53 @@
+\name{spiral_text}
+\alias{spiral_text}
+\title{
+Add lines to a track
+}
+\description{
+Add lines to a track
+}
+\usage{
+spiral_text(x, y, text, offset = NULL, gp = gpar(),
+    facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
+    nice_facing = TRUE, just = "centre", hjust = NULL, vjust = NULL,
+    track_index = current_track_index(), ...)
+}
+\arguments{
+
+  \item{x}{X coordinates of the texts.}
+  \item{y}{Y coordinates of the texts.}
+  \item{offset}{Radical offset of the text. The value should be a \code{\link[grid]{unit}} object.}
+  \item{text}{A vector of texts.}
+  \item{gp}{Graphical parameters.}
+  \item{facing}{Facing of the text.}
+  \item{nice_facing}{If it is true, the facing will be automatically adjusted for texts which locate at different positions of the curve.}
+  \item{just}{The justification of the text relative to (x, y).}
+  \item{hjust}{Horizontal justification. Value should be numeric. 0 means the left of the text and 1 means the right of the text.}
+  \item{vjust}{Vertical justification. Value should be numeric. 0 means the bottom of the text and 1 means the top of the text.}
+  \item{track_index}{Index of the track. }
+  \item{...}{Pass to \code{\link[grid]{grid.text}}.}
+
+}
+\details{
+For the curved text, it only supports one-line text.
+}
+\examples{
+x = seq(0.1, 0.9, length = 26)
+text = strrep(letters, 6)
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text)
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "inside")
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "outside")
+
+x = seq(0.1, 0.9, length = 10)
+text = strrep(letters[1:10], 20)
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_inside")
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_outside")
+}

@@ -1,0 +1,29 @@
+Package: spiral
+Type: Package
+Title: Visualization via Spiral Curve
+Version: 0.99.0
+Date: 2021-06-09
+Author: Zuguang Gu
+Maintainer: Zuguang Gu <z.gu@dkfz.de>
+Depends: R (>= 3.6.0), grid
+Imports: GlobalOptions (>= 0.1.1), 
+         GetoptLong (>= 0.1.8), 
+         circlize,
+         stats,
+         methods,
+         grDevices,
+         ComplexHeatmap
+Suggests: knitr, 
+          rmarkdown,
+          grImport,
+          grImport2,
+          jpeg,
+          png,
+          tiff,
+          ape,
+          cranlogs
+Description: Spiral visualization
+VignetteBuilder: knitr
+URL: https://github.com/jokergoo/spiral
+License: MIT + file LICENSE
+NeedsCompilation: no

@@ -1,0 +1,15 @@
+^\..*
+README.*
+lib/
+test/
+to-do.txt
+index.html
+make_index.pl
+.travis.yml
+^revdep$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+build_pkg_site.R
+^.*\.Rproj$
+^\.Rproj\.user$

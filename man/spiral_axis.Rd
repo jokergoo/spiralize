@@ -1,0 +1,48 @@
+\name{spiral_axis}
+\alias{spiral_axis}
+\title{
+Draw axis along the spiral curve
+}
+\description{
+Draw axis along the spiral curve
+}
+\usage{
+spiral_axis(h = "top",
+    at = NULL,
+    major_at = at,
+    labels = TRUE,
+    minor_ticks = 4,
+    major_ticks_length = unit(4, "bigpts"),
+    minor_ticks_length = unit(2, "bigpts"),
+    ticks_gp = gpar(),
+    labels_gp = gpar(fontsize = 6),
+    track_index = current_track_index())
+}
+\arguments{
+
+  \item{h}{Position of the axis. The value can be a character of "top" or "bottom", or a numeric value which represents the y location.}
+  \item{at}{Breaks points on axis.}
+  \item{major_at}{Breaks points on axis. It is the same as \code{at}.}
+  \item{labels}{The corresponding labels for the break points.}
+  \item{minor_ticks}{Number of minor ticks.}
+  \item{major_ticks_length}{Length of the major ticks. The value should be a \code{\link[grid]{unit}} object.}
+  \item{minor_ticks_length}{Length of the minor ticks. The value should be a \code{\link[grid]{unit}} object.}
+  \item{ticks_gp}{Graphics parameters for the ticks.}
+  \item{labels_gp}{Graphics parameters for the labels.}
+  \item{track_index}{Index of the track. }
+
+}
+\examples{
+spiral_initialize(); spiral_track()
+spiral_axis()
+
+# if the spiral is intepolated by the curve length
+spiral_initialize(scale_by = "curve_length"); spiral_track()
+spiral_axis()
+
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5); spiral_track()
+spiral_axis(major_at = seq(0, 360*4, by = 30))
+
+spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5); spiral_track()
+spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
+}
