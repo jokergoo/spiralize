@@ -26,6 +26,7 @@ knitr::opts_chunk$set(
 )
 options(width = 100)
 library(spiral)
+library(cowplot)
 ```
 
 
@@ -86,5 +87,250 @@ spiral_track(height = 0.45)
 spiral_text(1/8, 0.5, "track 2")
 spiral_clear()
 popViewport()
+```
+
+```{r, fig.width = 12, fig.height = 6, echo = FALSE}
+grid.newpage()
+pushViewport(viewport(x = 0.25, width = 0.5))
+
+spiral_initialize(start = 90, end = 360, newpage = FALSE)
+spiral_track()
+spiral_clear()
+popViewport()
+
+pushViewport(viewport(x = 0.75, width = 0.5))
+
+spiral_initialize(start = 180, end = 360*5, newpage = FALSE)
+spiral_track()
+spiral_clear()
+popViewport()
+```
+
+```{r, fig.width = 12, fig.height = 12, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_axis()
+})
+p2 = grid.grabExpr({
+    spiral_initialize(flip = "horizontal")
+    spiral_track()
+    spiral_axis()
+})
+p3 = grid.grabExpr({
+    spiral_initialize(flip = "vertical")
+    spiral_track()
+    spiral_axis()
+})
+p4 = grid.grabExpr({
+    spiral_initialize(flip = "both")
+    spiral_track()
+    spiral_axis()
+})
+plot_grid(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r, fig.width = 12, fig.height = 6, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize(scale_by = "angle")
+    spiral_track()
+    spiral_axis()
+})
+p2 = grid.grabExpr({
+    spiral_initialize(scale_by = "curve_length")
+    spiral_track()
+    spiral_axis()
+})
+plot_grid(p1, p2)
+```
+
+
+```{r, fig.width = 12, fig.height = 6, echo = FALSE}
+make_plot = function(scale_by) {
+    n = 100
+    require(circlize)
+    col = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+    spiral_initialize(xlim = c(0, n), scale_by = scale_by)
+    spiral_track(height = 0.9)
+
+    x = runif(n)
+    spiral_rect(1:n - 1, 0, 1:n, 1, gp = gpar(fill = col(x), col = NA))
+}
+p1 = grid.grabExpr(make_plot("angle"))
+p2 = grid.grabExpr(make_plot("curve_length"))
+plot_grid(p1, p2)
+```
+
+```{r, fig.width = 12, fig.height = 6, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize(reverse = FALSE)
+    spiral_track()
+    spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+    spiral_axis()
+})
+p2 = grid.grabExpr({
+    spiral_initialize(reverse = TRUE)
+    spiral_track()
+    spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+    spiral_axis()
+})
+plot_grid(p1, p2)
+```
+
+## Graphics functions
+
+
+```{r}
+spiral_initialize()
+spiral_track()
+spiral_points(x = runif(1000), y = runif(1000))
+```
+
+```{r}
+x = sort(runif(1000))
+y = runif(1000)
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y)
+
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y, type = "h")
+
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y, area = TRUE, gp = gpar(fill = "red", col = NA))
+```
+
+```{r}
+n = 1000
+x0 = runif(n)
+y0 = runif(n)
+x1 = x0 + runif(n, min = -0.01, max = 0.01)
+y1 = 1 - y0
+
+spiral_initialize(xlim = range(c(x0, x1)))
+spiral_track()
+spiral_segments(x0, y0, x1, y1, gp = gpar(col = circlize::rand_color(n)))
+```
+
+```{r}
+n = 1000
+require(circlize)
+col = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+spiral_initialize(xlim = c(0, n))
+spiral_track(height = 0.9)
+
+x1 = runif(n)
+spiral_rect(1:n - 1, 0, 1:n, 0.5, gp = gpar(fill = col(x1), col = NA))
+x2 = runif(n)
+spiral_rect(1:n - 1, 0.5, 1:n, 1, gp = gpar(fill = col(x2), col = NA))
+```
+
+```{r}
+x = seq(1, 1000, by = 1) - 0.5
+y = runif(1000)
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.8)
+spiral_barplot(x, y)
+
+y = matrix(runif(3*1000), ncol = 3)
+y = y/rowSums(y)
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.8)
+spiral_barplot(x, y, gp = gpar(fill = 2:4, col = NA))
+```
+
+```{r}
+x = seq(0.1, 0.9, length = 26)
+text = strrep(letters, 6)
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text)
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "inside")
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "outside")
+
+x = seq(0.1, 0.9, length = 10)
+text = strrep(letters[1:10], 20)
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_inside")
+
+spiral_initialize(); spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_outside")
+
+```
+
+```{r}
+spiral_initialize(); spiral_track()
+spiral_axis()
+
+# if the spiral is intepolated by the curve length
+spiral_initialize(scale_by = "curve_length"); spiral_track()
+spiral_axis()
+
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5); spiral_track()
+spiral_axis(major_at = seq(0, 360*4, by = 30))
+
+spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5); spiral_track()
+spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
+```
+
+
+```{r}
+spiral_initialize(); spiral_track(height = 0.8)
+spiral_yaxis("start")
+spiral_yaxis("end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
+```
+
+
+```{r}
+df = cranlogs::cran_downloads("ggplot2", from="2014-01-01", to = "2020-12-31")
+day_diff = as.numeric(df$date[nrow(df)] - df$date[1])
+v = df$count
+v[v > quantile(v, 0.95)] = quantile(v, 0.95)
+spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364)) # a circle 52 weeks
+spiral_track(height = 0.9)
+spiral_horizon(1:nrow(df), v)
+
+spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364))
+spiral_track(height = 0.9)
+spiral_horizon(1:nrow(df), v, use_bars = TRUE)
+```
+
+
+```{r}
+image = system.file("extdata", "Rlogo.png", package = "circlize")
+x = seq(0.1, 0.9, length = 10)
+
+spiral_initialize()
+spiral_track()
+spiral_raster(x, 0.5, image)
+
+spiral_initialize()
+spiral_track()
+spiral_raster(x, 0.5, image, facing = "inside")
+
+```
+
+```{r}
+spiral_initialize()
+spiral_track()
+spiral_arrow(0.3, 0.6, gp = gpar(fill = "red"))
+spiral_arrow(0.8, 0.9, gp = gpar(fill = "blue"), tail = "point", arrow_position = "start")
+```
+
+```{r}
+spiral_initialize(); spiral_track()
+spiral_highlight(0.4, 0.6)
+spiral_highlight(0.1, 0.2, type = "line", gp = gpar(col = "blue"))
+spiral_highlight(0.7, 0.8, type = "line", line_side = "outside")
+```
+
+```{r}
+spiral_initialize(); spiral_track()
+spiral_highlight_by_theta(30, 60)
 ```
 

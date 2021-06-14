@@ -21,7 +21,8 @@ Suggests: knitr,
           png,
           tiff,
           ape,
-          cranlogs
+          cranlogs,
+          cowplot
 Description: Spiral visualization
 VignetteBuilder: knitr
 URL: https://github.com/jokergoo/spiral

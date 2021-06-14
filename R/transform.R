@@ -54,7 +54,7 @@ xy_to_polar = function(x, y, track_index = current_track_index()) {
 	}
 
 	if(spiral$reverse) {
-		theta = spiral$theta_lim[2] - theta
+		theta = spiral$theta_lim[2] - (theta - spiral$theta_lim[1])
 	}
 
 	ymin = get_track_data("ymin", track_index)
