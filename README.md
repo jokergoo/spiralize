@@ -6,7 +6,7 @@
 
 ## Features
 
-The package **spiralize** visualizes data along an [Archimedean spiral]((https://en.wikipedia.org/wiki/Archimedean_spiral)).
+The package **spiralize** visualizes data along an [Archimedean spiral](https://en.wikipedia.org/wiki/Archimedean_spiral).
 It has two major advantages for visualization:
 
 1. to visualize data with very long axis,
