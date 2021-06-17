@@ -1,12 +1,13 @@
 
 
 
+
 # == title
 # Add points to a track
 #
 # == param
-# -x X coordinates of the data points.
-# -y Y coordinates of the data points.
+# -x X-locations of the data points.
+# -y Y-locations of the data points.
 # -pch Point type.
 # -size Size of the points. Value should be a `grid::unit` object.
 # -gp Graphical parameters.
@@ -19,6 +20,9 @@
 spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(), 
 	track_index = current_track_index()) {
 
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
+
 	df = xy_to_cartesian(x, y, track_index = track_index)
 	x = unit(df$x, "native")
 	y = unit(df$y, "native")
@@ -30,12 +34,12 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 # Add lines to a track
 #
 # == param
-# -x X coordinates of the data points.
-# -y Y coordinates of the data points.
-# -type Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines relative to the baseline will be drawn.
+# -x X-locations of the data points.
+# -y Y-locations of the data points.
+# -type Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines (or radical lines if you consider the polar coordinates) relative to the baseline will be drawn.
 # -gp Graphical parameters.
 # -baseline Baseline used when ``type`` is ``"l"`` or ``area`` is ``TRUE``.
-# -area Whether to draw the area under the lines? Note ``gpar(fill)`` controls the filled of the areas.
+# -area Whether to draw the area under the lines? Note ``gpar(fill = ...)`` controls the filled of the areas.
 # -track_index Index of the track. 
 #
 # == example
@@ -55,6 +59,9 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 spiral_lines = function(x, y, type = "l", gp = gpar(),
 	baseline = "bottom", area = FALSE, track_index = current_track_index()) {
 
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
+
 	if(baseline == "bottom") {
 		baseline = get_track_data("ymin", track_index)
 	} else if(baseline == "top") {
@@ -63,6 +70,9 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 
 	if(type == "l") {
 		if(area) {
+			if(!"fill" %in% names(gp)) {
+				gp$fill = 2
+			}
 			n = length(x)
 			x = c(x, x[n], x[1])
 			y = c(y, baseline, baseline)
@@ -87,13 +97,19 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 # Add segments to a track
 #
 # == param
-# -x0 X coordinates of the start points of the segments.
-# -y0 Y coordinates of the start points of the segments.
-# -x1 X coordinates of the end points of the segments.
-# -y1 Y coordinates of the end points of the segments.
+# -x0 X-locations of the start points of the segments.
+# -y0 Y-locations of the start points of the segments.
+# -x1 X-locations of the end points of the segments.
+# -y1 Y-locations of the end points of the segments.
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 # -buffer Number of segments to buffer.
+#
+# == details
+# The segments on spiral are not straight lines while are more like curves. This means a spiral segment is formed by a list of real straight segments.
+# If there are n1 spiral segments, then there will be n2 straight segments where n2 is normally much larger than n1. To speed up drawing the spiral segments,
+# the locations of the "real" segments are filled to a temporary data frame with ``buffer`` rows, when the number of rows exceeds ``buffer``, `grid::grid.segments`
+# is called to draw all the buffered segments.
 #
 # == example
 # n = 1000
@@ -108,6 +124,10 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 #
 spiral_segments = function(x0, y0, x1, y1, gp = gpar(), 
 	track_index = current_track_index(), buffer = 10000) {
+
+	spiral = spiral_env$spiral
+	x0 = spiral$get_numeric_x(x0)
+	x1 = spiral$get_numeric_x(x1)
 	
 	n = length(x0)
 	
@@ -190,10 +210,10 @@ spiral_radical_segments = function(x, y, offset, gp = gpar(), track_index = curr
 # Add rectangles to a track
 #
 # == param
-# -xleft X coordinates of the left bottom angle of the rectangles.
-# -ybottom Y coordinates of the left bottom angle of the rectangles.
-# -xright X coordinates of the right top angle of the rectangles.
-# -ytop Y coordinates of the right top angle of the rectangles.
+# -xleft X-locations of the left bottom of the rectangles.
+# -ybottom Y-locations of the left bottom of the rectangles.
+# -xright X-locations of the right top of the rectangles.
+# -ytop Y-locations of the right top of the rectangles.
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 #
@@ -213,6 +233,10 @@ spiral_radical_segments = function(x, y, offset, gp = gpar(), track_index = curr
 spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(), 
 	track_index = current_track_index()) {
 	
+	spiral = spiral_env$spiral
+	xleft = spiral$get_numeric_x(xleft)
+	xright = spiral$get_numeric_x(xright)
+
 	n1 = length(xleft)
     n2 = length(ybottom)
     n3 = length(xright)
@@ -238,13 +262,13 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 }
 
 # == title
-# Add rectangles to a track
+# Add bars to a track
 #
 # == param
-# -pos X coordinates of the left bottom angle of the rectangles.
-# -value Y coordinates of the left bottom angle of the rectangles.
+# -pos X-locations of the center of bars.
+# -value Height of bars. The value can be a simple numeric vector, or a matrix.
 # -baseline Baseline of the bars. Note it only works when ``value`` is a simple vector.
-# -bar_width X coordinates of the right top angle of the rectangles.
+# -bar_width Width of bars.
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 #
@@ -253,16 +277,20 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 # y = runif(1000)
 # spiral_initialize(xlim = c(0, 1000))
 # spiral_track(height = 0.8)
-# spiral_barplot(x, y)
+# spiral_bars(x, y)
 #
+# # a three-column matrix
 # y = matrix(runif(3*1000), ncol = 3)
 # y = y/rowSums(y)
 # spiral_initialize(xlim = c(0, 1000))
 # spiral_track(height = 0.8)
-# spiral_barplot(x, y, gp = gpar(fill = 2:4, col = NA))
+# spiral_bars(x, y, gp = gpar(fill = 2:4, col = NA))
 #
-spiral_barplot = function(pos, value, baseline = get_track_data("ymin", track_index),
+spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index),
 	bar_width = min(diff(pos)), gp = gpar(), track_index = current_track_index()) {
+
+	spiral = spiral_env$spiral
+	pos = spiral$get_numeric_x(pos)
 
 	ymin = get_track_data("ymin", track_index)
 	ymax = get_track_data("ymax", track_index)
@@ -278,22 +306,22 @@ spiral_barplot = function(pos, value, baseline = get_track_data("ymin", track_in
             }
         }
     } else if(is.atomic(value)) {
-       spiral_rect(pos - bar_width/2, baseline, pos + bar_width/2, value - baseline, gp = gp, track_index = track_index)
+       spiral_rect(pos - bar_width/2, baseline, pos + bar_width/2, value, gp = gp, track_index = track_index)
 	}
 }
 
 # == title
-# Add lines to a track
+# Add texts to a track
 #
 # == param
-# -x X coordinates of the texts.
-# -y Y coordinates of the texts.
-# -offset Radical offset of the text. The value should be a `grid::unit` object.
+# -x X-locations of the texts.
+# -y Y-locations of the texts.
 # -text A vector of texts.
+# -offset Radical offset of the text. The value should be a `grid::unit` object.
 # -gp Graphical parameters.
 # -facing Facing of the text.
-# -nice_facing If it is true, the facing will be automatically adjusted for texts which locate at different positions of the curve.
-# -just The justification of the text relative to (x, y).
+# -nice_facing If it is true, the facing will be automatically adjusted for texts which locate at different positions of the spiral. Note ``hjust`` and ``vjust`` will also be adjusted.
+# -just The justification of the text relative to (x, y). The same setting as in `grid::grid.text`.
 # -hjust Horizontal justification. Value should be numeric. 0 means the left of the text and 1 means the right of the text.
 # -vjust Vertical justification. Value should be numeric. 0 means the bottom of the text and 1 means the top of the text.
 # -track_index Index of the track. 
@@ -324,8 +352,11 @@ spiral_barplot = function(pos, value, baseline = get_track_data("ymin", track_in
 #
 spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
-	nice_facing = TRUE, just = "centre", hjust = NULL, vjust = NULL,
+	nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
 	track_index = current_track_index(), ...) {
+
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
 
 	n1 = length(x)
 	n2 = length(y)
@@ -342,71 +373,81 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	}
 
 	just = grid::valid.just(just)
-	if(!is.null(hjust)) hjust = just[1]
-	if(!is.null(vjust)) vjust = just[2]
+	if(is.null(hjust)) hjust = just[1]
+	if(is.null(vjust)) vjust = just[2]
 
 	facing = match.arg(facing)[1]
 	if(facing == "downward") {
 		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, ...)
 	} else if(facing == "inside") {
 		df2 = xy_to_polar(x, y, track_index = track_index)
-		degree = as.degree(df2$theta) - 90
+		degree = as.degree(atan(spiral$tangent_slope(df2$theta)))
+		degree = (as.degree(df2$theta) - 90) %% 360
 		if(nice_facing) {
-			degree[df$y < 0] = degree[df$y < 0] + 180
+			l = df$y < 0
+			if(any(l)) {
+				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
+					hjust = 1 - hjust, vjust = vjust, rot = degree[l] + 180, ...)
+			}
+			if(any(!l)) {
+				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
+					hjust = hjust, vjust = vjust, rot = degree[!l], ...)
+			}
+		} else {
+			grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, 
+				hjust = hjust, vjust = vjust, rot = degree, ...)
 		}
-		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, rot = degree, ...)
+		
 	} else if(facing == "outside") {
 		df2 = xy_to_polar(x, y, track_index = track_index)
-		degree = as.degree(df2$theta) + 90
+		degree = (as.degree(df2$theta) + 90) %% 360
 		if(nice_facing) {
-			degree[df$y > 0] = degree[df$y > 0] + 180
+			l = df$y > 0
+			if(any(l)) {
+				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
+					hjust = 1 - hjust, vjust = vjust, rot = degree[l] + 180, ...)
+			}
+			if(any(!l)) {
+				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
+					hjust = hjust, vjust = vjust, rot = degree[!l], ...)
+			}
+		} else {
+			grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, rot = degree, ...)
 		}
-		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, rot = degree, ...)
 	} else if(facing %in% c("curved_inside", "curved_outside")) {
 		df2 = xy_to_polar(x, y, track_index = track_index)
 		for(i in seq_len(n)) {
-			curved_text(x[i], y[i], text[i], df2$theta[i], gp = subset_gp(gp, i), track_index = track_index, facing = facing, nice_facing = nice_facing)
+			curved_text(x[i], y[i], text[i], gp = subset_gp(gp, i), track_index = track_index, 
+				facing = gsub("curved_", "", facing), nice_facing = nice_facing, vjust = vjust, hjust = hjust)
 		}
 	}
 }
 
-curved_text = function(x, y, text, theta, gp = gpar(), track_index = current_track_index(), facing = "curved_inside", nice_facing = FALSE) {
+curved_text = function(x, y, text, gp = gpar(), track_index = current_track_index(), 
+	facing = "inside", nice_facing = FALSE, vjust = 0.5, hjust = 0.5, letter_spacing = 0) {
+
+	spiral = spiral_env$spiral
 
 	letters = strsplit(text, "")[[1]]
 	n = length(letters)
 	letters_len = sapply(1:n, function(i) convertWidth(grobWidth(textGrob(letters[i], gp = gp)), "native", valueOnly = TRUE))
-	
-	df = data.frame(x = numeric(n), y = numeric(n))
+	letters_len = letters_len*(1 + letter_spacing)
+
+	x0 = numeric(n)
 	for(i in seq_along(letters)) {
-		offset = sum(letters_len[1:i]) - sum(letters_len)/2
-		df2 = circular_extend(x, y, offset, track_index = track_index)
-		df[i, 1] = df2[1, 1]	
-		df[i, 2] = df2[1, 2]	
+		offset = sum(letters_len[1:i]) - letters_len[i]*0.5 - sum(letters_len)*(1-hjust)
+		x0[i] = circular_extend_on_x(x, y, offset, track_index, "xy")
 	}
-	rot = as.degree(atan(df$y/df$x)) + ifelse(facing == "curved_inside", -1, 1)*90
-	rot = rot %% 360
-	rot[df$x < 0] = rot[df$x < 0] + 180
-	if(nice_facing) {
-		if(facing == "curved_inside") {
-			if(sum(df$y < 0)/nrow(df) > 0.5) {
-				rot = rot + 180
-			}
-		} else {
-			if(sum(df$y > 0)/nrow(df) > 0.5) {
-				rot = rot + 180
-			}
-		}
-	}
-	grid.text(letters, df$x, df$y, default.units = "native", gp = gp, rot = rot)
+	spiral_text(x0, y, letters, gp = gp, track_index = track_index, facing = facing, nice_facing = nice_facing, vjust = vjust)
 }
 
 
 # == title
-# Add lines to a track
+# Add polygons to a track
 #
 # == param
-# -x X coordinates of the data points.
-# -y Y coordinates of the data points.
+# -x X-locations of the data points.
+# -y Y-locations of the data points.
 # -id A numeric vector used to separate locations in x and y into multiple polygons.
 # -gp Graphical parameters.
 # -track_index Index of the track. 
@@ -414,6 +455,9 @@ curved_text = function(x, y, text, theta, gp = gpar(), track_index = current_tra
 # == details
 # Note the polygon must be closed, which means, the last data point should overlap to the first one.
 spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_track_index()) {
+
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
 
 	n = length(x)
 	if(is.null(id)) {
@@ -430,14 +474,14 @@ spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_tr
 }
 
 # == title
-# Draw axis along the spiral curve
+# Draw axis along the spiral
 #
 # == param
-# -h Position of the axis. The value can be a character of "top" or "bottom", or a numeric value which represents
-#     the y location.
+# -h Position of the axis. The value can be a character of "top" or "bottom".
 # -at Breaks points on axis.
 # -major_at Breaks points on axis. It is the same as ``at``.
 # -labels The corresponding labels for the break points.
+# -curved_labels Whether are the labels are curved?
 # -minor_ticks Number of minor ticks.
 # -major_ticks_length Length of the major ticks. The value should be a `grid::unit` object.
 # -minor_ticks_length Length of the minor ticks. The value should be a `grid::unit` object.
@@ -459,20 +503,18 @@ spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_tr
 # spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5); spiral_track()
 # spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
 #
-spiral_axis = function(h = "top",
-	at = NULL,
-	major_at = at,
-	labels = TRUE,
-	minor_ticks = 4,
-	major_ticks_length = unit(4, "bigpts"),
-	minor_ticks_length = unit(2, "bigpts"),
-	ticks_gp = gpar(),
-	labels_gp = gpar(fontsize = 6), 
+spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
+	labels = TRUE, curved_labels = FALSE, minor_ticks = 4, 
+	major_ticks_length = unit(4, "bigpts"), minor_ticks_length = unit(2, "bigpts"),
+	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
 
+	h = match.arg(h)[1]
 	if(h == "top") {
+		axis_on_top = TRUE
 		h = get_track_data("ymax", track_index)
-	} else if(h == "botton") {
+	} else if(h == "bottom") {
+		axis_on_top = FALSE
 		h = get_track_data("ymin", track_index)
 	}
 
@@ -484,7 +526,10 @@ spiral_axis = function(h = "top",
 		major_by = round(major_by, digits = -1*digits)
 		major_at = seq(floor(spiral$xlim[1]/major_by)*major_by, spiral$xlim[2], by = major_by)
 		major_at = c(major_at, major_at[length(major_at)] + major_by)
+
+		labels = spiral$get_original_x(major_at)
 	} else {
+		major_at = spiral$get_numeric_x(major_at)
 		if(!(identical(labels, NULL) | identical(labels, TRUE) | identical(labels, FALSE))) {
 			if(length(labels) != length(major_at)) {
 				stop_wrap("Length of `labels` should be the same as the length of `major_at`.")
@@ -498,8 +543,7 @@ spiral_axis = function(h = "top",
 		labels = labels[l]
 		labels_gp = subset_gp(labels_gp, l)
 	}
-		
-	spiral_radical_segments(major_at, h, offset = major_ticks_length, track_index = track_index, gp = ticks_gp)
+	spiral_radical_segments(major_at, h, offset = ifelse(axis_on_top, 1, -1)*major_ticks_length, track_index = track_index, gp = ticks_gp)
 
 	minor_at = NULL
 	if(minor_ticks != 0) {
@@ -508,7 +552,7 @@ spiral_axis = function(h = "top",
 			k = seq_len(minor_ticks) / (minor_ticks + 1)
 			minor_at = c(minor_at, k * (major_at[i] - major_at[i - 1]) + major_at[i - 1])
 		}
-		spiral_radical_segments(minor_at, h, offset = minor_ticks_length, track_index = track_index, gp = ticks_gp)
+		spiral_radical_segments(minor_at, h, offset = ifelse(axis_on_top, 1, -1)*minor_ticks_length, track_index = track_index, gp = ticks_gp)
 	}
 	
 	### labels
@@ -517,18 +561,37 @@ spiral_axis = function(h = "top",
 		if(identical(labels, TRUE)) {
 			labels = major_at
 		}
+
+		if(axis_on_top) {
+			h = h + convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"))
+		} else {
+			h = h - convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"))
+		}
 		df = xy_to_polar(major_at, h, track_index = track_index)
 		degree = as.degree(df$theta)
 		rot = ifelse(degree >= 0 & degree <= 180, degree - 90, degree + 90)
 		vjust = ifelse(degree >= 0 & degree <= 180, 0, 1)
 
-		spiral_text(major_at, h, labels, offset = major_ticks_length + minor_ticks_length + unit(1, "bigpts"), 
-			rot = rot, vjust = vjust, gp = labels_gp, track_index = track_index)
+		if(!axis_on_top) vjust = ifelse(vjust == 0, 1, 0)
+
+		if(missing(curved_labels)) {
+			if(spiral$xclass == "Date") {
+				curved_labels = TRUE
+			}
+		}
+
+		if(curved_labels) {
+			spiral_text(major_at, h, labels,
+				facing = "curved_inside", gp = labels_gp, track_index = track_index, nice_facing = TRUE)
+		} else {
+			spiral_text(major_at, h, labels,
+				rot = rot, vjust = vjust, gp = labels_gp, track_index = track_index)
+		}
 	}
 }
 
 # == title
-# Draw axis along the spiral curve
+# Draw axis along the spiral
 #
 # == param
 # -... All pass to `spiral_axis`.
@@ -541,7 +604,7 @@ spiral_xaxis = function(...) {
 # Draw y-axis
 #
 # == param
-# -side On which side of the spiral the axis is drawn?
+# -side On which side of the spiral the y-axis is drawn? "start" means the inside of the spiral and "end" means the outside of the spiral.
 # -at Break points.
 # -labels Corresponding labels for the break points.
 # -ticks_length Length of the tick. Value should be a `grid::unit` object.
@@ -553,10 +616,20 @@ spiral_xaxis = function(...) {
 # spiral_initialize(); spiral_track(height = 0.8)
 # spiral_yaxis("start")
 # spiral_yaxis("end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
-spiral_yaxis = function(side = "start", at = NULL, labels = TRUE, ticks_length = unit(2, "bigpts"), 
+spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(4, "bigpts"), 
 	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
-	
+		
+	side = match.arg(side)[1]
+
+	if(side == "both") {
+		spiral_yaxis(side = "start", at = at, labels = labels, ticks_length = ticks_length, 
+			ticks_gp = ticks_gp, labels_gp = labels_gp, track_index = track_index)
+		spiral_yaxis(side = "end", at = at, labels = labels, ticks_length = ticks_length, 
+			ticks_gp = ticks_gp, labels_gp = labels_gp, track_index = track_index)
+		return(invisible(NULL))
+	}
+
 	spiral = spiral_env$spiral
 
 	if(side == "start") {
@@ -577,56 +650,24 @@ spiral_yaxis = function(side = "start", at = NULL, labels = TRUE, ticks_length =
 		}
 	}
 
-	df1 = xy_to_cartesian(rep(v, length(at)), at, track_index = track_index)
-	if(side == "start") {
-		df2 = circular_extend(rep(v, length(at)), at, offset = -ticks_length, track_index = track_index, interval_extend = 1)
-	} else {
-		df2 = circular_extend(rep(v, length(at)), at, offset = ticks_length, track_index = track_index, interval_extend = 1)
-	}
-	
-	grid.segments(df1$x, df1$y, df2$x, df2$y, default.units = "native", gp = ticks_gp)
+	x1 = rep(v, length(at))
+	x2 = circular_extend_on_x(x1, at, offset = ifelse(side == "start", -1, 1)*ticks_length, track_index = track_index, coordinate = "xy")
+	spiral_segments(x1, at, x2, at, gp = ticks_gp)
 
 	if(!identical(labels, FALSE)) {
-		if(side == "start") {
-			df2 = circular_extend(rep(v, length(at)), at, offset = -ticks_length - unit(1, "bigpts"), track_index = track_index, interval_extend = 1)
-			just = "left"
-			d = as.degree(atan(df2$y/df2$x))[1]
-			if(df2$x[1] < 0) {
-				d = d - 180
-			}
-			rot = d - 90
-			if(d >= 0 & d < 180) {
-				just = "left"
-			} else {
-				rot = rot + 180
-				just = "right"
-			}
-		} else {
-			df2 = circular_extend(rep(v, length(at)), at, offset = ticks_length + unit(1, "bigpts"), track_index = track_index, interval_extend = 1)
-			d = as.degree(atan(df2$y/df2$x))[1]
-			if(df2$x[1] < 0) {
-				d = d - 180
-			}
-			rot = d + 90
-			if(d >= 0 & d < 180) {
-				rot = rot + 180
-				just = "right"
-			} else {
-				just = "left"
-			}
-		}
-		grid.text(labels, df2$x, df2$y, default.units = "native", gp = labels_gp, just = just, rot = rot)
+		x2 = circular_extend_on_x(x1, at, offset = ifelse(side == "start", -1, 1)*(ticks_length + unit(1, "bigpts")), track_index = track_index, coordinate = "xy")
+		spiral_text(x2, at, labels, just = ifelse(side == "start", "left", "right"), gp = labels_gp, facing = "inside", nice_facing = TRUE)
 	}
 }
 
 # == title
-# Draw horizon chart
+# Draw horizon chart along the spiral
 #
 # == param
-# -x X coordinates of the data points.
-# -y Y coordinates of the data points.
+# -x X-locations of the data points.
+# -y Y-locations of the data points.
 # -n_slices Number of slices.
-# -slice_size Size of the slices. The final number of sizes is ``ceiling(max(abs(y)/slice_size)``.
+# -slice_size Size of the slices. The final number of sizes is ``ceiling(max(abs(y))/slice_size)``.
 # -pos_fill Colors for positive values. 
 # -neg_fill Colors for negative values.
 # -use_bars Whether to use bars?
@@ -639,11 +680,18 @@ spiral_yaxis = function(side = "start", at = NULL, labels = TRUE, ticks_length =
 # distribution-like graphics.
 #
 # == value
-# A list of two color mapping functions, one for positive colors and one for negative colors, mainly for generating legends.
+# A list of three objects:
+# 
+# - a color mapping function for positive colors.
+# - a color mapping function for negative colors.
+# - a vector of intervals that split the data.
 #
 # == example
 # \donttest{
-# df = cranlogs::cran_downloads("ggplot2", from="2014-01-01", to = "2020-12-31")
+# # df = cranlogs::cran_downloads("ggplot2", from="2014-01-01")
+# # the data frame `df` is already downloaded
+# df = readRDS(system.file("extdata", "ggplot2_download.rds", package = "spiralize"))
+# df = df[df$date < as.Date("2021-01-01"), ]
 # day_diff = as.numeric(df$date[nrow(df)] - df$date[1])
 # v = df$count
 # v[v > quantile(v, 0.95)] = quantile(v, 0.95)
@@ -663,6 +711,9 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		stop_wrap("The horizon track must have 'ylim = c(0, 1)'.")
 	}
 
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
+
 	if(missing(slice_size)) {
 		slice_size = max(abs(y))/n_slices
 	}
@@ -672,6 +723,14 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		return(invisible(NULL))
 	}
 
+	l = is.na(x)
+	x = x[!l]
+	y = y[!l]
+
+	l = is.na(y)
+	y[l] = 0
+
+	interval = 0:n_slices*slice_size
 	pos_col_fun = colorRamp2(c(0, n_slices), c("white", pos_fill))
 	neg_col_fun = colorRamp2(c(0, n_slices), c("white", neg_fill))
 	for(i in seq_len(n_slices)) {
@@ -718,7 +777,7 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		}
 	}
 
-	invisible(list(pos_col_fun = pos_col_fun, neg_col_fun = neg_col_fun))
+	invisible(list(pos_col_fun = pos_col_fun, neg_col_fun = neg_col_fun, interval = interval))
 }
 
 add_horizon_polygons = function(x, y, slice_size = NULL, from_top = FALSE, ...) {
@@ -747,9 +806,9 @@ add_horizon_bars = function(x, y, bar_width, slice_size = NULL, from_top = FALSE
 		x0 = ltx[[i]]
 		y0 = lty[[i]]
 		if(from_top) {
-			spiral_barplot(x0, y0/slice_size, bar_width = bar_width, baseline = 1, ...)
+			spiral_bars(x0, y0/slice_size, bar_width = bar_width, baseline = 1, ...)
 		} else {
-			spiral_barplot(x0, y0/slice_size, bar_width = bar_width, ...)
+			spiral_bars(x0, y0/slice_size, bar_width = bar_width, ...)
 		}
 	}
 }
@@ -765,14 +824,15 @@ split_vec_by_NA = function(x) {
 # Add image to a track
 #
 # == param
-# -x X coordinates of the center of the image.
-# -y Y coordinates of the center of the image.
+# -x X-locations of the center of the image.
+# -y Y-locations of the center of the image.
 # -image A vector of file paths of images. The format of the image is inferred from the suffix name of the image file.
-#       NA values or empty strings in the vector means no image to drawn. Supported formats are png/svg/pdf/eps/jpeg/jpg/tiff.
+#       NA value or empty string means no image to drawn. Supported formats are png/svg/pdf/eps/jpeg/jpg/tiff.
 # -width Width of the image. The value should be a `grid::unit` object.
 # -height Height of the image. The value should be a `grid::unit` object. It is suggested to only set one of ``width`` and ``height``, the
-#       other dimension will be automatically calcualted from the aspect ratio of the image.
+#       other dimension will be automatically calculated from the aspect ratio of the image.
 # -facing Facing of the image.
+# -nice_facing Whether to adjust the facing.
 # -track_index Index of the track. 
 #
 # == example
@@ -788,8 +848,11 @@ split_vec_by_NA = function(x) {
 # spiral_raster(x, 0.5, image, facing = "inside")
 #
 spiral_raster = function(x, y, image, width = NULL, height = NULL, 
-	facing = c("downward", "inside", "outside"),
+	facing = c("downward", "inside", "outside"), nice_facing = FALSE,
 	track_index = current_track_index()) {
+
+	spiral = spiral_env$spiral
+	x = spiral$get_numeric_x(x)
 
 	facing = match.arg(facing)[1]
 	
@@ -819,7 +882,8 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 
 		for(i in seq_len(n)) {
 			if(identical(image[[i]], NA)) next
-			spiral_raster(x[i], y[i], image[[i]], width = width[i], height = height[i], facing = facing, track_index = track_index)
+			spiral_raster(x[i], y[i], image[[i]], width = width[i], height = height[i], 
+				facing = facing, nice_facing = nice_facing, track_index = track_index)
 		}
 		return(invisible(NULL))
 	}
@@ -849,8 +913,18 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 		rot = 0
 	} else if(facing == "inside") {
 		rot = theta - 90 
+		if(nice_facing) {
+			if(df2$y < 0) {
+				rot = rot + 180
+			}
+		}
 	} else if(facing == "outside") {
 		rot = theta + 90 
+		if(nice_facing) {
+			if(df2$y > 0) {
+				rot = rot + 180
+			}
+		}
 	}
 
 	image_class = attr(image, "image_class")
@@ -862,29 +936,29 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 		grid.raster(image)
 	} else if(image_class == "grImport::Picture") {
 		grid.picture = getFromNamespace("grid.picture", ns = "grImport")
-		grid.picture(image, x = (i-0.5)/n, width = width, height = height)
+		grid.picture(image)
 	} else if(image_class == "grImport2::Picture") {
 		grid.picture = getFromNamespace("grid.picture", ns = "grImport2")
-		grid.picture(image, x = (i-0.5)/n, width = width, height = height)
+		grid.picture(image)
 	}
 	popViewport()
 }
 
 # == title
-# Draw circular arrows
+# Draw arrows
 #
 # == param
 # -x1 Start of the arrow.
 # -x2 End of the arrow.
-# -y Position of the arrow on y location.
-# -width Width of the arrow.
-# -track_index Index of the track. 
+# -y Y-location of the arrow.
+# -width Width of the arrow. The value can be the one measured in the data coordinates or a `grid::unit` object.
 # -arrow_head_length Length of the arrow head.
 # -arrow_head_width Width of the arrow head.
 # -arrow_position Position of the arrow. If the value is ``"end"``, then the arrow head is drawn at ``x = x2``. If the value
 #    is ``"start"``, then the arrow head is drawn at ``x = x1``. 
 # -tail The shape of the arrow tail.
 # -gp Graphics parameters.
+# -track_index Index of the track. 
 #
 # == example
 # spiral_initialize()
@@ -895,12 +969,16 @@ spiral_arrow = function(
 	x1, x2, 
 	y = get_track_data("ycenter", track_index), 
 	width = get_track_data("yrange", track_index)/3, 
-	track_index = current_track_index(),
 	arrow_head_length = unit(4, "mm"),
 	arrow_head_width = width*2, 
 	arrow_position = c("end", "start"),
 	tail = c("normal", "point"), 
-	gp = gpar()) {
+	gp = gpar(),
+	track_index = current_track_index()) {
+
+	spiral = spiral_env$spiral
+	x1 = spiral$get_numeric_x(x1)
+	x2 = spiral$get_numeric_x(x2)
 
 	arrow_position = match.arg(arrow_position)[1]
 	tail = match.arg(tail)[1]
@@ -913,6 +991,10 @@ spiral_arrow = function(
 	}
 	
 	spiral = spiral_env$spiral
+
+	if(is.unit(width)) {
+		width = convert_to_y(width)
+	}
 
 	if(is.unit(arrow_head_length)) {
 		arrow_head_length = convertWidth(arrow_head_length, "native", valueOnly = TRUE)
@@ -969,13 +1051,16 @@ spiral_arrow = function(
 
 
 # == title
-# Highlight segments in the curve
+# Highlight a section of the spiral
 #
 # == param
-# -x1 Start of the segments.
-# -x2 End of the segments.
+# -x1 Start location of the highlighted section.
+# -x2 End location of the highlighted section.
 # -type Type of the highlighting. "rect" means drawing transparent rectangles covering the whole track.
 #      "line" means drawing annotation lines on top of the track or at the bottom of it.
+# -padding When the highlight type is "rect", it controls the padding of the highlighted region. The value should be a `grid::unit` object
+#     or a numeric value which is the fraction of the length of the highlighted section. The length can be one or two.
+#      Note it only extends in the radical direction.
 # -line_side If the highlight type is "line", it controls which side of the track to draw the lines.
 # -line_width Width of the annotation line. Value should be a `grid::unit` object.
 # -gp Graphics parameters.
@@ -986,27 +1071,68 @@ spiral_arrow = function(
 # spiral_highlight(0.4, 0.6)
 # spiral_highlight(0.1, 0.2, type = "line", gp = gpar(col = "blue"))
 # spiral_highlight(0.7, 0.8, type = "line", line_side = "outside")
-spiral_highlight = function(x1, x2, type = c("rect", "line"), 
-	line_side = c("inside", "outside"), line_width = unit(1, "bigpts"),
+spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, "mm"),
+	line_side = c("inside", "outside"), line_width = unit(1, "pt"),
 	gp = gpar(fill = "red"), track_index = current_track_index()) {
 
-	ymin = get_track_data("ymin", track_index)
-	ymax = get_track_data("ymax", track_index)
+	spiral = spiral_env$spiral
+	x1 = spiral$get_numeric_x(x1)
+	x2 = spiral$get_numeric_x(x2)
+
+	if(x1 > x2) {
+		foo = x1
+		x1 = x2
+		x2 = foo
+	}
 
 	type = match.arg(type)[1]
 	if(type == "rect") {
+		track_index = sort(track_index)
+		if(length(track_index) > 1) {
+			if(any(diff(track_index)) > 1) {
+				stop_wrap("If `track_index` is set with multiple tracks, the value should be incremental by 1, or you can consider to use `spiral_highlight()` multiple times.")
+			}
+		}
 		if("fill" %in% names(gp)) {
 			gp$fill = add_transparency(gp$fill, 0.75)
 		}
 		if(!"col" %in% names(gp)) {
 			gp$col = NA
 		}
-	
-		spiral_rect(x1, get_track_data("ymin", track_index),
-			        x2, get_track_data("ymax", track_index),
-			        gp = gp, track_index =  track_index)
+		
+		if(length(padding) == 1) {
+			padding = rep(padding, 2)
+		}
+		if(is.unit(padding)) {
+			offset = convert_to_y(padding)
+		} else {
+			offset = get_track_data("yrange", track_index)*padding
+		}
+		if(length(track_index) == 1) {
+			spiral_rect(x1, get_track_data("ymin", track_index) - offset[1],
+				        x2, get_track_data("ymax", track_index) + offset[2],
+				        gp = gp, track_index =  track_index)
+		} else {
+			y1 = get_track_data("ymin", track_index[1])
+			h = sum(sapply(track_index, function(i) {
+				get_track_data("rel_height", i)
+			}))
+			y2 = h/get_track_data("rel_height", track_index[1])*get_track_data("yrange", track_index[1]) + get_track_data("ymin", track_index[1])
+			spiral_rect(x1, y1 - offset[1],
+				        x2, y2 + offset[2],
+				        gp = gp, track_index =  track_index[1])
+		}
 	} else {
 		line_side = match.arg(line_side)[1]
+
+		if(line_side == "inside") {
+			track_index = min(track_index)
+		} else {
+			track_index = max(track_index)
+		}
+		ymin = get_track_data("ymin", track_index)
+		ymax = get_track_data("ymax", track_index)
+
 		if(!"col" %in% names(gp)) {
 			gp$col = gp$fill
 		}
@@ -1023,30 +1149,103 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"),
 }
 
 # == title
-# Highlight a sector in the curve
+# Highlight a sector
 #
 # == param
-# -theta1 Start of the sector in the circle. Values are measured in degrees.
-# -theta2 End of the sector in the circle. Values are measured in degrees.
+# -x1 Start location which determines the start of the sector.
+# -x2 End location which determines the end of the sector. Note x2 should be larger than x1 and the angular difference between x1 and x2 should be smaller than a circle.
+# -x3 Start location which determines the start of the sector on the upper border.
+# -x4 End location which determines the end of the sector on the upper border.
+# -padding It controls the radical extension of the sector. The value should be a `grid::unit` object with length one or two.
 # -gp Graphics parameters.
 #
+# == details
+# x1 and x2 determine the position of the highlighted sector. If x3 and x4 are not set, the sector extends until the most outside loop.
+# If x3 and x4 are set, they determine the outer border of the sector. In this case, if x3 and x4 are set, x3 should be larger than x2.
+#
 # == example
-# spiral_initialize(); spiral_track()
-# spiral_highlight_by_theta(30, 60)
-spiral_highlight_by_theta = function(theta1, theta2, gp = gpar(fill = "red")) {
-	theta1 = theta1 %% 360
-	theta2 = theta2 %% 360
+# spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
+# spiral_track()
+# spiral_axis()
+# spiral_highlight_by_sector(36, 72)
+# spiral_highlight_by_sector(648, 684)
+# spiral_highlight_by_sector(216, 252, 936, 972, gp = gpar(fill = "blue"))
+spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = unit(1, "mm"),
+	gp = gpar(fill = "red")) {
 
-	if(theta1 > theta2) {
-		theta2 = theta2 + 360
+	# just to make sure x1/x2 is always smaller than x3/x4
+	if(x1 > x2) {
+		foo = x1
+		x1 = x2
+		x2 = foo
+	}
+	spiral = spiral_env$spiral
+	x1 = spiral$get_numeric_x(x1)
+	x2 = spiral$get_numeric_x(x2)
+
+	upper_defined = !is.null(x3) && !is.null(x4)
+
+	if(upper_defined) {
+		if(x3 > x4) {
+			foo = x3
+			x3 = x4
+			x4 = foo
+		}
+
+		if(x2 > x3) {
+			stop_wrap("x3/x4 should be larger than x1/x2.")
+		}
+
+		spiral = spiral_env$spiral
+		x3 = spiral$get_numeric_x(x3)
+		x4 = spiral$get_numeric_x(x4)
+	}
+
+	if(diff(get_theta_from_x(c(x1, x2))) > 2*pi) {
+		stop_wrap("Angular difference between x1 and x2 should not be larger than a circle.")
+	}
+	if(upper_defined) {
+		if(diff(get_theta_from_x(c(x3, x4))) > 2*pi) {
+			stop_wrap("Angular difference between x3 and x4 should not be larger than a circle.")
+		}
 	}
 
 	spiral = spiral_env$spiral
-	max_r = spiral$max_radius + spiral$dist
 
-	theta = seq(theta1, theta2, by = 0.5)/180*pi
-	r = rep(max_r, length(theta))
-	df = polar_to_cartesian(theta, r)
+	# inner curve
+	df1 = xy_to_polar(c(x1, x2), rep(get_track_data("ymin", 1), 2), track_index = 1)
+	theta1 = seq(df1[1, 1], df1[2, 1], by = 0.5/180*pi)
+	
+	if(upper_defined) {
+		df2 = xy_to_polar(c(x3, x4), rep(get_track_data("ymin", n_tracks()), 2), track_index = n_tracks())
+		theta2 = seq(df2[1, 1], df2[2, 1], by = 0.5/180*pi)
+	} else {
+		theta2 = get_theta_from_x(c(x1, x2))
+		while(1) {
+			if(theta2[1] + 2*pi > spiral$theta_lim[2]) {
+				break
+			}
+			theta2 = theta2 + 2*pi
+		}
+		theta2 = seq(theta2[1], theta2[2], by = 0.5/180*pi)
+	}
+	theta = c(theta1, rev(theta2))
+
+	r1 = spiral$curve(theta1)
+	r2 = spiral$curve(theta2) + sum(sapply(1:n_tracks(), function(i) get_track_data("rmax", i) - get_track_data("rmin", i)))
+	
+	if(!is.unit(padding)) {
+		stop_wrap("`padding` can only be a unit object.")
+	}
+	if(length(padding) == 1) {
+		padding = rep(padding, 2)
+	}
+	offset = convertWidth(padding, "native", valueOnly = TRUE)
+	r1 = r1 - offset[1]
+	r2 = r2 + offset[2]
+
+	r = c(r1, rev(r2))
+	df = polar_to_cartesian(c(theta, theta[1]), c(r, r[1]))
 
 	if("fill" %in% names(gp)) {
 		gp$fill = add_transparency(gp$fill, 0.75)

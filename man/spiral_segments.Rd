@@ -12,14 +12,20 @@ spiral_segments(x0, y0, x1, y1, gp = gpar(),
 }
 \arguments{
 
-  \item{x0}{X coordinates of the start points of the segments.}
-  \item{y0}{Y coordinates of the start points of the segments.}
-  \item{x1}{X coordinates of the end points of the segments.}
-  \item{y1}{Y coordinates of the end points of the segments.}
+  \item{x0}{X-locations of the start points of the segments.}
+  \item{y0}{Y-locations of the start points of the segments.}
+  \item{x1}{X-locations of the end points of the segments.}
+  \item{y1}{Y-locations of the end points of the segments.}
   \item{gp}{Graphical parameters.}
   \item{track_index}{Index of the track. }
   \item{buffer}{Number of segments to buffer.}
 
+}
+\details{
+The segments on spiral are not straight lines while are more like curves. This means a spiral segment is formed by a list of real straight segments.
+If there are n1 spiral segments, then there will be n2 straight segments where n2 is normally much larger than n1. To speed up drawing the spiral segments,
+the locations of the "real" segments are filled to a temporary data frame with \code{buffer} rows, when the number of rows exceeds \code{buffer}, \code{\link[grid]{grid.segments}}
+is called to draw all the buffered segments.
 }
 \examples{
 n = 1000

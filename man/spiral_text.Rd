@@ -1,27 +1,27 @@
 \name{spiral_text}
 \alias{spiral_text}
 \title{
-Add lines to a track
+Add texts to a track
 }
 \description{
-Add lines to a track
+Add texts to a track
 }
 \usage{
 spiral_text(x, y, text, offset = NULL, gp = gpar(),
     facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
-    nice_facing = TRUE, just = "centre", hjust = NULL, vjust = NULL,
+    nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
     track_index = current_track_index(), ...)
 }
 \arguments{
 
-  \item{x}{X coordinates of the texts.}
-  \item{y}{Y coordinates of the texts.}
-  \item{offset}{Radical offset of the text. The value should be a \code{\link[grid]{unit}} object.}
+  \item{x}{X-locations of the texts.}
+  \item{y}{Y-locations of the texts.}
   \item{text}{A vector of texts.}
+  \item{offset}{Radical offset of the text. The value should be a \code{\link[grid]{unit}} object.}
   \item{gp}{Graphical parameters.}
   \item{facing}{Facing of the text.}
-  \item{nice_facing}{If it is true, the facing will be automatically adjusted for texts which locate at different positions of the curve.}
-  \item{just}{The justification of the text relative to (x, y).}
+  \item{nice_facing}{If it is true, the facing will be automatically adjusted for texts which locate at different positions of the spiral. Note \code{hjust} and \code{vjust} will also be adjusted.}
+  \item{just}{The justification of the text relative to (x, y). The same setting as in \code{\link[grid]{grid.text}}.}
   \item{hjust}{Horizontal justification. Value should be numeric. 0 means the left of the text and 1 means the right of the text.}
   \item{vjust}{Vertical justification. Value should be numeric. 0 means the bottom of the text and 1 means the top of the text.}
   \item{track_index}{Index of the track. }

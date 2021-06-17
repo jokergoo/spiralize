@@ -119,11 +119,17 @@ construct_dend_segments = function(dend, gp = gpar()) {
 # -track_index Index of the track. 
 #
 # == details
-# Note the dendrogram can be rendered with the dendextend package.
+# Note the dendrogram edges can be rendered with the `dendextend::dendextend` package.
 #
 # == example
 # k = 500
 # dend = as.dendrogram(hclust(dist(runif(k))))
+# spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
+# spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
+# spiral_dendrogram(dend, facing = "inside")
+#
+# require(dendextend)
+# dend = color_branches(dend, k = 4)
 # spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
 # spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
 # spiral_dendrogram(dend, facing = "inside")
@@ -222,7 +228,7 @@ construct_phylo_segments = function(obj) {
 #
 # == param
 # -obj A ``phylo`` object.
-# -facing Facing of the tree
+# -facing Facing of the tree.
 # -gp Graphics parameters of the tree edges.
 # -log Whether the height of the tree should be log-transformed?
 # -reverse Whether the tree should be reversed?
@@ -231,7 +237,7 @@ construct_phylo_segments = function(obj) {
 # == example
 # require(ape)
 # data(bird.families)
-# n =  length(bird.families$tip.label)
+# n = length(bird.families$tip.label)
 # spiral_initialize(xlim = c(0, n), start = 360, end = 360*3)
 # spiral_track(height = 0.8)
 # spiral_phylo(bird.families)
@@ -286,17 +292,17 @@ spiral_phylo = function(obj, facing = c("inside", "outside"), gp = gpar(),
 # there are more than two children branches. Available tools that do the conversion only support binary trees.
 #
 # The returned ``dendrogram`` object is not in its standard format which means it can not be properly
-# drawn by the ``plot.dendrogram`` function. However, you can apply `dendextend::cutree` to the returned
+# drawn by the ``plot.dendrogram`` function. However, you can still apply `dendextend::cutree` to the returned
 # ``dendrogram`` object with no problem and the dendrogram can be properly drawn with the ComplexHeatmap package.
 #
 # == example
 # require(ape)
 # data(bird.families)
-# d = phylo_to_dendrogame(bird.families)
+# d = phylo_to_dendrogram(bird.families)
 #
 # require(ComplexHeatmap)
 # grid.dendrogram(d, test = TRUE)
-phylo_to_dendrogame = function(obj, log = FALSE) {
+phylo_to_dendrogram = function(obj, log = FALSE) {
     if(!inherits(obj, "phylo")) {
         stop_wrap("The input should be a 'phylo' object.")
     }

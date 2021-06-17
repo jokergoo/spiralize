@@ -1,29 +1,25 @@
 \name{spiral_axis}
 \alias{spiral_axis}
 \title{
-Draw axis along the spiral curve
+Draw axis along the spiral
 }
 \description{
-Draw axis along the spiral curve
+Draw axis along the spiral
 }
 \usage{
-spiral_axis(h = "top",
-    at = NULL,
-    major_at = at,
-    labels = TRUE,
-    minor_ticks = 4,
-    major_ticks_length = unit(4, "bigpts"),
-    minor_ticks_length = unit(2, "bigpts"),
-    ticks_gp = gpar(),
-    labels_gp = gpar(fontsize = 6),
+spiral_axis(h = c("top", "bottom"), at = NULL, major_at = at,
+    labels = TRUE, curved_labels = FALSE, minor_ticks = 4,
+    major_ticks_length = unit(4, "bigpts"), minor_ticks_length = unit(2, "bigpts"),
+    ticks_gp = gpar(), labels_gp = gpar(fontsize = 6),
     track_index = current_track_index())
 }
 \arguments{
 
-  \item{h}{Position of the axis. The value can be a character of "top" or "bottom", or a numeric value which represents the y location.}
+  \item{h}{Position of the axis. The value can be a character of "top" or "bottom".}
   \item{at}{Breaks points on axis.}
   \item{major_at}{Breaks points on axis. It is the same as \code{at}.}
   \item{labels}{The corresponding labels for the break points.}
+  \item{curved_labels}{Whether are the labels are curved?}
   \item{minor_ticks}{Number of minor ticks.}
   \item{major_ticks_length}{Length of the major ticks. The value should be a \code{\link[grid]{unit}} object.}
   \item{minor_ticks_length}{Length of the minor ticks. The value should be a \code{\link[grid]{unit}} object.}

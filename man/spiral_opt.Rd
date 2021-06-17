@@ -24,6 +24,9 @@ There are following global parameters:
 \describe{
   \item{\code{min_segment_len}}{Minimal length of the segment that partitions a curve.}
 }
+
+To access the value of an option: \code{spiral_opt$name} where \code{name} is the name of the option. To set a new value
+for an option: \code{spiral_opt$name = new_value}.
 }
 \examples{
 # There is no example

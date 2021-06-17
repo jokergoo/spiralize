@@ -1,5 +1,5 @@
-\name{phylo_to_dendrogame}
-\alias{phylo_to_dendrogame}
+\name{phylo_to_dendrogram}
+\alias{phylo_to_dendrogram}
 \title{
 Convert a phylo object to a dendrogram object
 }
@@ -7,7 +7,7 @@ Convert a phylo object to a dendrogram object
 Convert a phylo object to a dendrogram object
 }
 \usage{
-phylo_to_dendrogame(obj, log = FALSE)
+phylo_to_dendrogram(obj, log = FALSE)
 }
 \arguments{
 
@@ -20,13 +20,13 @@ The motivation is that phylogenetic tree may contain polytomies, which means at 
 there are more than two children branches. Available tools that do the conversion only support binary trees.
 
 The returned \code{dendrogram} object is not in its standard format which means it can not be properly
-drawn by the \code{plot.dendrogram} function. However, you can apply \code{\link[dendextend:cutree-methods]{cutree}} to the returned
+drawn by the \code{plot.dendrogram} function. However, you can still apply \code{\link[dendextend:cutree-methods]{cutree}} to the returned
 \code{dendrogram} object with no problem and the dendrogram can be properly drawn with the ComplexHeatmap package.
 }
 \examples{
 require(ape)
 data(bird.families)
-d = phylo_to_dendrogame(bird.families)
+d = phylo_to_dendrogram(bird.families)
 
 require(ComplexHeatmap)
 grid.dendrogram(d, test = TRUE)

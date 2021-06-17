@@ -19,11 +19,17 @@ spiral_dendrogram(dend, facing = c("inside", "outside"), gp = gpar(),
 
 }
 \details{
-Note the dendrogram can be rendered with the dendextend package.
+Note the dendrogram edges can be rendered with the \code{\link[dendextend:dendextend-package]{dendextend}} package.
 }
 \examples{
 k = 500
 dend = as.dendrogram(hclust(dist(runif(k))))
+spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
+spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
+spiral_dendrogram(dend, facing = "inside")
+
+require(dendextend)
+dend = color_branches(dend, k = 4)
 spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
 spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
 spiral_dendrogram(dend, facing = "inside")

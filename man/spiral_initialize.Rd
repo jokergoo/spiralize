@@ -7,7 +7,7 @@ Initialize the spiral
 Initialize the spiral
 }
 \usage{
-spiral_initialize(start = 360, end = 360*5, xlim = c(0, 1),
+spiral_initialize(xlim = c(0, 1), start = 360, end = 360*5,
     scale_by = c("angle", "curve_length"),
     flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
     polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "grey", lty = 3),
@@ -15,17 +15,17 @@ spiral_initialize(start = 360, end = 360*5, xlim = c(0, 1),
 }
 \arguments{
 
-  \item{start}{Start of the spiral, in degree.}
+  \item{xlim}{Range on x-locations.}
+  \item{start}{Start of the spiral, in degree. \code{start} and \code{end} should be positive and \code{start} should be smaller than \code{end}.}
   \item{end}{End of the spiral, in degree.}
-  \item{xlim}{Range on x coordinates.}
-  \item{scale_by}{How scales on x-axis are equally intepolated. The values can be one of "angle" and "curve_length". If the value is "angle", equal angle difference corresponds to equal difference of data. In this case, outer circle, the scales have larger distance than the inter circle, although the difference of the data are the same. If the value is "curve_length", equal curve length difference corresponds to the equal difference of the data.}
-  \item{flip}{How the flip the spiral curve. By default, the spiral starts from the center of the coordinate and grows reverseclockwisely. The argument can control the orientation of the spiral.}
-  \item{reverse}{By default, the most inside of the spiral corresponds to the lower boundary of x coordinate. Setting the value to \code{FALSE} can reverse the direction.}
+  \item{scale_by}{How scales on x-axis are equally interpolated? The values can be one of "angle" and "curve_length". If the value is "angle", equal angle difference corresponds to equal difference of data. In this case, in outer loops, the scales are longer than in the inner loops, although the difference on the data are the same. If the value is "curve_length", equal curve length difference corresponds to the equal difference of the data.}
+  \item{flip}{How to flip the spiral? By default, the spiral starts from the origin of the coordinate and grows reverseclockwisely. The argument controls the growing direction of the spiral.}
+  \item{reverse}{By default, the most inside of the spiral corresponds to the lower boundary of x-location. Setting the value to \code{FALSE} can reverse the direction.}
   \item{polar_lines}{Whether draw the polar guiding lines.}
-  \item{polar_lines_by}{Increment of the polar lines. Measures in degree.}
+  \item{polar_lines_by}{Increment of the polar lines. Measured in degree.}
   \item{polar_lines_gp}{Graphics parameters for the polar lines.}
-  \item{padding}{Padding of the spiral. The value can be a \code{\link[grid]{unit}} of length of one to two.}
-  \item{newpage}{Whether to apply \code{\link[grid]{grid.newpage}} befoer making the plot?}
+  \item{padding}{Padding of the plotting region. The value can be a \code{\link[grid]{unit}} of length of one to two.}
+  \item{newpage}{Whether to apply \code{\link[grid]{grid.newpage}} before making the plot?}
 
 }
 \examples{

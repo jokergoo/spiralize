@@ -15,9 +15,13 @@
 # 
 # -``min_segment_len`` Minimal length of the segment that partitions a curve.
 #
+# To access the value of an option: ``spiral_opt$name`` where ``name`` is the name of the option. To set a new value
+# for an option: ``spiral_opt$name = new_value``.
+#
 spiral_opt = function(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = FALSE) {}
 spiral_opt = setGlobalOptions(
-	min_segment_len = 1/180*pi
+	min_segment_len = 1/180*pi,
+	help = TRUE
 )
 
 spiral_env = new.env()

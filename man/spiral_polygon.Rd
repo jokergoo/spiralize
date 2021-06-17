@@ -1,18 +1,18 @@
 \name{spiral_polygon}
 \alias{spiral_polygon}
 \title{
-Add lines to a track
+Add polygons to a track
 }
 \description{
-Add lines to a track
+Add polygons to a track
 }
 \usage{
 spiral_polygon(x, y, id = NULL, gp = gpar(), track_index = current_track_index())
 }
 \arguments{
 
-  \item{x}{X coordinates of the data points.}
-  \item{y}{Y coordinates of the data points.}
+  \item{x}{X-locations of the data points.}
+  \item{y}{Y-locations of the data points.}
   \item{id}{A numeric vector used to separate locations in x and y into multiple polygons.}
   \item{gp}{Graphical parameters.}
   \item{track_index}{Index of the track. }

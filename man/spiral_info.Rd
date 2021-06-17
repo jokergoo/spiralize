@@ -1,16 +1,16 @@
 \name{spiral_info}
 \alias{spiral_info}
 \title{
-Information of the current spiral curve
+Information of the current spiral
 }
 \description{
-Information of the current spiral curve
+Information of the current spiral
 }
 \usage{
 spiral_info()
 }
 \details{
-It prints some information of the current spiral.
+It prints information of the current spiral.
 }
 \examples{
 # There is no example

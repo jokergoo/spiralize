@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add image to a track — spiral_raster • spiral</title>
+<title>Add image to a track — spiral_raster • spiralize</title>
 
 
 <!-- jquery -->
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -86,6 +86,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -118,7 +130,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>spiral_raster</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>image</span>, width <span class='op'>=</span> <span class='cn'>NULL</span>, height <span class='op'>=</span> <span class='cn'>NULL</span>,
-    facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"downward"</span>, <span class='st'>"inside"</span>, <span class='st'>"outside"</span><span class='op'>)</span>,
+    facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"downward"</span>, <span class='st'>"inside"</span>, <span class='st'>"outside"</span><span class='op'>)</span>, nice_facing <span class='op'>=</span> <span class='cn'>FALSE</span>,
     track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -126,15 +138,15 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>X coordinates of the center of the image.</p></td>
+      <td><p>X-locations of the center of the image.</p></td>
     </tr>
     <tr>
       <th>y</th>
-      <td><p>Y coordinates of the center of the image.</p></td>
+      <td><p>Y-locations of the center of the image.</p></td>
     </tr>
     <tr>
       <th>image</th>
-      <td><p>A vector of file paths of images. The format of the image is inferred from the suffix name of the image file. NA values or empty strings in the vector means no image to drawn. Supported formats are png/svg/pdf/eps/jpeg/jpg/tiff.</p></td>
+      <td><p>A vector of file paths of images. The format of the image is inferred from the suffix name of the image file. NA value or empty string means no image to drawn. Supported formats are png/svg/pdf/eps/jpeg/jpg/tiff.</p></td>
     </tr>
     <tr>
       <th>width</th>
@@ -142,11 +154,15 @@
     </tr>
     <tr>
       <th>height</th>
-      <td><p>Height of the image. The value should be a <code><a href='https://rdrr.io/r/grid/unit.html'>unit</a></code> object. It is suggested to only set one of <code>width</code> and <code>height</code>, the other dimension will be automatically calcualted from the aspect ratio of the image.</p></td>
+      <td><p>Height of the image. The value should be a <code><a href='https://rdrr.io/r/grid/unit.html'>unit</a></code> object. It is suggested to only set one of <code>width</code> and <code>height</code>, the other dimension will be automatically calculated from the aspect ratio of the image.</p></td>
     </tr>
     <tr>
       <th>facing</th>
       <td><p>Facing of the image.</p></td>
+    </tr>
+    <tr>
+      <th>nice_facing</th>
+      <td><p>Whether to adjust the facing.</p></td>
     </tr>
     <tr>
       <th>track_index</th>

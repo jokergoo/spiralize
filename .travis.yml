@@ -1,0 +1,30 @@
+language: r
+
+sudo: required
+
+# Be strict when checking our package
+warnings_are_errors: true
+
+r-packages:
+- GlobalOptions
+- GetoptLong
+- circlize
+- lubridate
+- knitr
+- rmarkdown
+- ape
+- cranlogs
+- cowplot
+- dendextend
+
+bioc_packages:
+- GenomicRanges
+- ComplexHeatmap
+
+r_check_args: --no-vignettes --no-build-vignettes
+
+r_github_packages:
+  - r-lib/covr
+after_success:
+  - Rscript -e 'covr::codecov()'
+  

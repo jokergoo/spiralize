@@ -15,7 +15,7 @@ spiral_clear(check_vp = TRUE)
 
 }
 \details{
-It basically sets the internally spiral object to NULL, and reset all global options.
+It basically sets the internally spiral object to NULL, and reset all the global options.
 }
 \examples{
 # There is no example

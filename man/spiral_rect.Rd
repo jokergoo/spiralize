@@ -12,10 +12,10 @@ spiral_rect(xleft, ybottom, xright, ytop, gp = gpar(),
 }
 \arguments{
 
-  \item{xleft}{X coordinates of the left bottom angle of the rectangles.}
-  \item{ybottom}{Y coordinates of the left bottom angle of the rectangles.}
-  \item{xright}{X coordinates of the right top angle of the rectangles.}
-  \item{ytop}{Y coordinates of the right top angle of the rectangles.}
+  \item{xleft}{X-locations of the left bottom of the rectangles.}
+  \item{ybottom}{Y-locations of the left bottom of the rectangles.}
+  \item{xright}{X-locations of the right top of the rectangles.}
+  \item{ytop}{Y-locations of the right top of the rectangles.}
   \item{gp}{Graphical parameters.}
   \item{track_index}{Index of the track. }
 

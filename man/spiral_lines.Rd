@@ -12,12 +12,12 @@ spiral_lines(x, y, type = "l", gp = gpar(),
 }
 \arguments{
 
-  \item{x}{X coordinates of the data points.}
-  \item{y}{Y coordinates of the data points.}
-  \item{type}{Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines relative to the baseline will be drawn.}
+  \item{x}{X-locations of the data points.}
+  \item{y}{Y-locations of the data points.}
+  \item{type}{Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines (or radical lines if you consider the polar coordinates) relative to the baseline will be drawn.}
   \item{gp}{Graphical parameters.}
   \item{baseline}{Baseline used when \code{type} is \code{"l"} or \code{area} is \code{TRUE}.}
-  \item{area}{Whether to draw the area under the lines? Note \code{gpar(fill)} controls the filled of the areas.}
+  \item{area}{Whether to draw the area under the lines? Note \code{gpar(fill = ...)} controls the filled of the areas.}
   \item{track_index}{Index of the track. }
 
 }

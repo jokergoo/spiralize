@@ -104,14 +104,22 @@ read_image = function(image) {
 	image_list
 }
 
-get_theta_from_len = function(len, interval) {
-	spiral = spiral_env$spiral
-	n = length(len)
-	t = numeric(n)
-	for(i in seq_len(n)) {
-		t[i] = uniroot(function(theta, a) {
-			spiral$spiral_length(theta) - a
-		}, interval = interval, a = len[i])$root
-	}
-	t
+
+
+
+draw_tangent = function(theta) {
+	s = spiral_env$spiral
+	a = s$tangent_slope(theta)
+	r = s$curve(theta)
+	df = polar_to_cartesian(theta, r)
+
+	x = df$x
+	y = df$y
+
+	b = y - a*x
+
+	x0 = seq(x - 1, x + 1, length = 100)
+	y0 = a*x0 + b
+
+	grid.lines(x0, y0, default.units = "native") 
 }

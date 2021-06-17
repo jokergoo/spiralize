@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Draw axis along the spiral curve — spiral_axis • spiral</title>
+<title>Draw axis along the spiral — spiral_axis • spiralize</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Draw axis along the spiral curve — spiral_axis" />
-<meta property="og:description" content="Draw axis along the spiral curve" />
+<meta property="og:title" content="Draw axis along the spiral — spiral_axis" />
+<meta property="og:description" content="Draw axis along the spiral" />
 
 
 
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -86,6 +86,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -108,24 +120,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Draw axis along the spiral curve</h1>
+    <h1>Draw axis along the spiral</h1>
     
     <div class="hidden name"><code>spiral_axis.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Draw axis along the spiral curve</p>
+    <p>Draw axis along the spiral</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_axis</span><span class='op'>(</span>h <span class='op'>=</span> <span class='st'>"top"</span>,
-    at <span class='op'>=</span> <span class='cn'>NULL</span>,
-    major_at <span class='op'>=</span> <span class='va'>at</span>,
-    labels <span class='op'>=</span> <span class='cn'>TRUE</span>,
-    minor_ticks <span class='op'>=</span> <span class='fl'>4</span>,
-    major_ticks_length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>4</span>, <span class='st'>"bigpts"</span><span class='op'>)</span>,
-    minor_ticks_length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"bigpts"</span><span class='op'>)</span>,
-    ticks_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>,
-    labels_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fontsize <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>,
+    <pre class="usage"><span class='fu'>spiral_axis</span><span class='op'>(</span>h <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"top"</span>, <span class='st'>"bottom"</span><span class='op'>)</span>, at <span class='op'>=</span> <span class='cn'>NULL</span>, major_at <span class='op'>=</span> <span class='va'>at</span>,
+    labels <span class='op'>=</span> <span class='cn'>TRUE</span>, curved_labels <span class='op'>=</span> <span class='cn'>FALSE</span>, minor_ticks <span class='op'>=</span> <span class='fl'>4</span>,
+    major_ticks_length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>4</span>, <span class='st'>"bigpts"</span><span class='op'>)</span>, minor_ticks_length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"bigpts"</span><span class='op'>)</span>,
+    ticks_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>, labels_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fontsize <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>,
     track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -133,7 +140,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>h</th>
-      <td><p>Position of the axis. The value can be a character of "top" or "bottom", or a numeric value which represents the y location.</p></td>
+      <td><p>Position of the axis. The value can be a character of "top" or "bottom".</p></td>
     </tr>
     <tr>
       <th>at</th>
@@ -146,6 +153,10 @@
     <tr>
       <th>labels</th>
       <td><p>The corresponding labels for the break points.</p></td>
+    </tr>
+    <tr>
+      <th>curved_labels</th>
+      <td><p>Whether are the labels are curved?</p></td>
     </tr>
     <tr>
       <th>minor_ticks</th>

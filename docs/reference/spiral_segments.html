@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add segments to a track — spiral_segments • spiral</title>
+<title>Add segments to a track — spiral_segments • spiralize</title>
 
 
 <!-- jquery -->
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -86,6 +86,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -125,19 +137,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x0</th>
-      <td><p>X coordinates of the start points of the segments.</p></td>
+      <td><p>X-locations of the start points of the segments.</p></td>
     </tr>
     <tr>
       <th>y0</th>
-      <td><p>Y coordinates of the start points of the segments.</p></td>
+      <td><p>Y-locations of the start points of the segments.</p></td>
     </tr>
     <tr>
       <th>x1</th>
-      <td><p>X coordinates of the end points of the segments.</p></td>
+      <td><p>X-locations of the end points of the segments.</p></td>
     </tr>
     <tr>
       <th>y1</th>
-      <td><p>Y coordinates of the end points of the segments.</p></td>
+      <td><p>Y-locations of the end points of the segments.</p></td>
     </tr>
     <tr>
       <th>gp</th>
@@ -153,6 +165,12 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The segments on spiral are not straight lines while are more like curves. This means a spiral segment is formed by a list of real straight segments.
+If there are n1 spiral segments, then there will be n2 straight segments where n2 is normally much larger than n1. To speed up drawing the spiral segments,
+the locations of the "real" segments are filled to a temporary data frame with <code>buffer</code> rows, when the number of rows exceeds <code>buffer</code>, <code><a href='https://rdrr.io/r/grid/grid.segments.html'>grid.segments</a></code>
+is called to draw all the buffered segments.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>n</span> <span class='op'>=</span> <span class='fl'>1000</span>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a track or go to an existed track — spiral_track • spiral</title>
+<title>Add a new track or go to an existed track — spiral_track • spiralize</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Add a track or go to an existed track — spiral_track" />
-<meta property="og:description" content="Add a track or go to an existed track" />
+<meta property="og:title" content="Add a new track or go to an existed track — spiral_track" />
+<meta property="og:description" content="Add a new track or go to an existed track" />
 
 
 
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -86,6 +86,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -108,32 +120,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a track or go to an existed track</h1>
+    <h1>Add a new track or go to an existed track</h1>
     
     <div class="hidden name"><code>spiral_track.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Add a track or go to an existed track</p>
+    <p>Add a new track or go to an existed track</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_track</span><span class='op'>(</span>ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, height <span class='op'>=</span> <span class='fl'>0.5</span>, background <span class='op'>=</span> <span class='cn'>TRUE</span>,
-    background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span><span class='op'>)</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>spiral_track</span><span class='op'>(</span>ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, height <span class='op'>=</span> <span class='fl'>0.8</span>, background <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='cn'>NA</span>, fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span><span class='op'>)</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>ylim</th>
-      <td><p>Data range of the y coordinates.</p></td>
+      <td><p>Data range of the y-locations.</p></td>
     </tr>
     <tr>
       <th>height</th>
-      <td><p>Height of the track. The value should be the fraction of the distance of the two neighbouring circles.</p></td>
+      <td><p>Height of the track. The value should be the fraction of the distance of the two neighbour loops.</p></td>
     </tr>
     <tr>
       <th>background</th>
-      <td><p>Whether draw the background of the track, i.e. border and filled color of background.</p></td>
+      <td><p>Whether to draw the background of the track, i.e. border and filled color of background.</p></td>
     </tr>
     <tr>
       <th>background_gp</th>

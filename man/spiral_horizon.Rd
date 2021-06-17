@@ -1,10 +1,10 @@
 \name{spiral_horizon}
 \alias{spiral_horizon}
 \title{
-Draw horizon chart
+Draw horizon chart along the spiral
 }
 \description{
-Draw horizon chart
+Draw horizon chart along the spiral
 }
 \usage{
 spiral_horizon(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
@@ -13,10 +13,10 @@ spiral_horizon(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = 
 }
 \arguments{
 
-  \item{x}{X coordinates of the data points.}
-  \item{y}{Y coordinates of the data points.}
+  \item{x}{X-locations of the data points.}
+  \item{y}{Y-locations of the data points.}
   \item{n_slices}{Number of slices.}
-  \item{slice_size}{Size of the slices. The final number of sizes is \code{ceiling(max(abs(y)/slice_size)}.}
+  \item{slice_size}{Size of the slices. The final number of sizes is \code{ceiling(max(abs(y))/slice_size)}.}
   \item{pos_fill}{Colors for positive values. }
   \item{neg_fill}{Colors for negative values.}
   \item{use_bars}{Whether to use bars?}
@@ -30,11 +30,20 @@ Since the track height is very small in the spiral, horizon chart visualization 
 distribution-like graphics.
 }
 \value{
-A list of two color mapping functions, one for positive colors and one for negative colors, mainly for generating legends.
+A list of three objects:
+
+\itemize{
+  \item a color mapping function for positive colors.
+  \item a color mapping function for negative colors.
+  \item a vector of intervals that split the data.
+}
 }
 \examples{
 \donttest{
-df = cranlogs::cran_downloads("ggplot2", from="2014-01-01", to = "2020-12-31")
+# df = cranlogs::cran_downloads("ggplot2", from="2014-01-01")
+# the data frame `df` is already downloaded
+df = readRDS(system.file("extdata", "ggplot2_download.rds", package = "spiralize"))
+df = df[df$date < as.Date("2021-01-01"), ]
 day_diff = as.numeric(df$date[nrow(df)] - df$date[1])
 v = df$count
 v[v > quantile(v, 0.95)] = quantile(v, 0.95)

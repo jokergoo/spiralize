@@ -26,6 +26,8 @@ There are following fields that can be retrieved for a given track:
   \item yrange \code{ymax - ymin}
   \item height Height of the track, measured as the fraction of the distance between two neighbouring circles.
 }
+
+It is more suggested to directly use \code{\link{TRACK_META}} to retrieve meta data for the current track.
 }
 \value{
 A numeric value of the corresponding field.

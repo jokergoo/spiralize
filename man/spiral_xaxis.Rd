@@ -1,10 +1,10 @@
 \name{spiral_xaxis}
 \alias{spiral_xaxis}
 \title{
-Draw axis along the spiral curve
+Draw axis along the spiral
 }
 \description{
-Draw axis along the spiral curve
+Draw axis along the spiral
 }
 \usage{
 spiral_xaxis(...)

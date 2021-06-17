@@ -1,26 +1,26 @@
 \name{xy_to_polar}
 \alias{xy_to_polar}
 \title{
-Convert coordinate from data coordinate to polar coordinate
+Convert data coordinates to polar coordinates
 }
 \description{
-Convert coordinate from data coordinate to polar coordinate
+Convert data coordinates to polar coordinates
 }
 \usage{
 xy_to_polar(x, y, track_index = current_track_index())
 }
 \arguments{
 
-  \item{x}{X coordinates of the data points.}
-  \item{y}{Y coordinates of the data points.}
+  \item{x}{X-locations of the data points.}
+  \item{y}{Y-locations of the data points.}
   \item{track_index}{Index of the track. }
 
 }
 \details{
-Note different settings of \code{flip} and \code{reverse} set in \code{\link{spiral_initialize}} affect the conversion.
+Note different settings of \code{flip} and \code{reverse} in \code{\link{spiral_initialize}} affect the conversion.
 }
 \value{
-A data frame with two columns: theta and r.
+A data frame with two columns: theta (in radians) and r (the radius).
 }
 \examples{
 # There is no example

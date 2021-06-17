@@ -12,8 +12,8 @@ spiral_points(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 }
 \arguments{
 
-  \item{x}{X coordinates of the data points.}
-  \item{y}{Y coordinates of the data points.}
+  \item{x}{X-locations of the data points.}
+  \item{y}{Y-locations of the data points.}
   \item{pch}{Point type.}
   \item{size}{Size of the points. Value should be a \code{\link[grid]{unit}} object.}
   \item{gp}{Graphical parameters.}

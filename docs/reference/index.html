@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • spiral</title>
+<title>Function reference • spiralize</title>
 
 
 <!-- jquery -->
@@ -70,7 +70,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -85,6 +85,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -133,6 +145,24 @@
       <tr>
         
         <td>
+          <p><code><a href="Subset.TRACK_META.html">`$`(<i>&lt;TRACK_META&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get meta data in the current track</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="TRACK_META.html">TRACK_META</a></code> </p>
+        </td>
+        <td><p>Get meta data in the current track</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="current_spiral.html">current_spiral()</a></code> </p>
+        </td>
+        <td><p>Get current spiral object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="current_spiral_vp.html">current_spiral_vp()</a></code> </p>
         </td>
         <td><p>Viewport name of current spiral</p></td>
@@ -157,27 +187,45 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="phylo_to_dendrogame.html">phylo_to_dendrogame()</a></code> </p>
+          <p><code><a href="names.TRACK_META.html">names(<i>&lt;TRACK_META&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Names of all supported meta data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="phylo_to_dendrogram.html">phylo_to_dendrogram()</a></code> </p>
         </td>
         <td><p>Convert a phylo object to a dendrogram object</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="print.TRACK_META.html">print(<i>&lt;TRACK_META&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print TRACK_META</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="set_current_track.html">set_current_track()</a></code> </p>
+        </td>
+        <td><p>Set current track</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="spiral_arrow.html">spiral_arrow()</a></code> </p>
         </td>
-        <td><p>Draw circular arrows</p></td>
+        <td><p>Draw arrows</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_axis.html">spiral_axis()</a></code> </p>
         </td>
-        <td><p>Draw axis along the spiral curve</p></td>
+        <td><p>Draw axis along the spiral</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="spiral_barplot.html">spiral_barplot()</a></code> </p>
+          <p><code><a href="spiral_bars.html">spiral_bars()</a></code> </p>
         </td>
-        <td><p>Add rectangles to a track</p></td>
+        <td><p>Add bars to a track</p></td>
       </tr><tr>
         
         <td>
@@ -195,31 +243,37 @@
         <td>
           <p><code><a href="spiral_highlight.html">spiral_highlight()</a></code> </p>
         </td>
-        <td><p>Highlight segments in the curve</p></td>
+        <td><p>Highlight a section of the spiral</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="spiral_highlight_by_theta.html">spiral_highlight_by_theta()</a></code> </p>
+          <p><code><a href="spiral_highlight_by_sector.html">spiral_highlight_by_sector()</a></code> </p>
         </td>
-        <td><p>Highlight a sector in the curve</p></td>
+        <td><p>Highlight a sector</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_horizon.html">spiral_horizon()</a></code> </p>
         </td>
-        <td><p>Draw horizon chart</p></td>
+        <td><p>Draw horizon chart along the spiral</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_info.html">spiral_info()</a></code> </p>
         </td>
-        <td><p>Information of the current spiral curve</p></td>
+        <td><p>Information of the current spiral</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_initialize.html">spiral_initialize()</a></code> </p>
         </td>
         <td><p>Initialize the spiral</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spiral_initialize_by_date.html">spiral_initialize_by_date()</a></code> </p>
+        </td>
+        <td><p>Initialize the spiral from Date object</p></td>
       </tr><tr>
         
         <td>
@@ -249,7 +303,7 @@
         <td>
           <p><code><a href="spiral_polygon.html">spiral_polygon()</a></code> </p>
         </td>
-        <td><p>Add lines to a track</p></td>
+        <td><p>Add polygons to a track</p></td>
       </tr><tr>
         
         <td>
@@ -273,19 +327,19 @@
         <td>
           <p><code><a href="spiral_text.html">spiral_text()</a></code> </p>
         </td>
-        <td><p>Add lines to a track</p></td>
+        <td><p>Add texts to a track</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_track.html">spiral_track()</a></code> </p>
         </td>
-        <td><p>Add a track or go to an existed track</p></td>
+        <td><p>Add a new track or go to an existed track</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="spiral_xaxis.html">spiral_xaxis()</a></code> </p>
         </td>
-        <td><p>Draw axis along the spiral curve</p></td>
+        <td><p>Draw axis along the spiral</p></td>
       </tr><tr>
         
         <td>
@@ -297,13 +351,13 @@
         <td>
           <p><code><a href="xy_to_cartesian.html">xy_to_cartesian()</a></code> </p>
         </td>
-        <td><p>Convert coordinate from data coordinate to the canvas coordinate</p></td>
+        <td><p>Convert data coordinates to the canvas coordinates</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="xy_to_polar.html">xy_to_polar()</a></code> </p>
         </td>
-        <td><p>Convert coordinate from data coordinate to polar coordinate</p></td>
+        <td><p>Convert data coordinates to polar coordinates</p></td>
       </tr>
     </tbody>
     </table>

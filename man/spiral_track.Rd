@@ -1,20 +1,20 @@
 \name{spiral_track}
 \alias{spiral_track}
 \title{
-Add a track or go to an existed track
+Add a new track or go to an existed track
 }
 \description{
-Add a track or go to an existed track
+Add a new track or go to an existed track
 }
 \usage{
-spiral_track(ylim = c(0, 1), height = 0.5, background = TRUE,
-    background_gp = gpar(fill = "#EEEEEE"), track_index = current_track_index() + 1)
+spiral_track(ylim = c(0, 1), height = 0.8, background = TRUE,
+    background_gp = gpar(col = NA, fill = "#EEEEEE"), track_index = current_track_index() + 1)
 }
 \arguments{
 
-  \item{ylim}{Data range of the y coordinates.}
-  \item{height}{Height of the track. The value should be the fraction of the distance of the two neighbouring circles.}
-  \item{background}{Whether draw the background of the track, i.e. border and filled color of background.}
+  \item{ylim}{Data range of the y-locations.}
+  \item{height}{Height of the track. The value should be the fraction of the distance of the two neighbour loops.}
+  \item{background}{Whether to draw the background of the track, i.e. border and filled color of background.}
   \item{background_gp}{Graphics parameters of the background.}
   \item{track_index}{Index of the track. }
 

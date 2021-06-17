@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert coordinate from data coordinate to the canvas coordinate — xy_to_cartesian • spiral</title>
+<title>Convert data coordinates to the canvas coordinates — xy_to_cartesian • spiralize</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Convert coordinate from data coordinate to the canvas coordinate — xy_to_cartesian" />
-<meta property="og:description" content="Convert coordinate from data coordinate to the canvas coordinate" />
+<meta property="og:title" content="Convert data coordinates to the canvas coordinates — xy_to_cartesian" />
+<meta property="og:description" content="Convert data coordinates to the canvas coordinates" />
 
 
 
@@ -71,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spiral</a>
+        <a class="navbar-link" href="../index.html">spiralize</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
       </span>
     </div>
@@ -86,6 +86,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -108,13 +120,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert coordinate from data coordinate to the canvas coordinate</h1>
+    <h1>Convert data coordinates to the canvas coordinates</h1>
     
     <div class="hidden name"><code>xy_to_cartesian.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert coordinate from data coordinate to the canvas coordinate</p>
+    <p>Convert data coordinates to the canvas coordinates</p>
     </div>
 
     <pre class="usage"><span class='fu'>xy_to_cartesian</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
@@ -124,11 +136,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>X coordinates of the data points.</p></td>
+      <td><p>X-locations of the data points.</p></td>
     </tr>
     <tr>
       <th>y</th>
-      <td><p>Y coordinates of the data points.</p></td>
+      <td><p>Y-locations of the data points.</p></td>
     </tr>
     <tr>
       <th>track_index</th>
@@ -138,8 +150,8 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The canvas coordinate system corresponds to the "native unit" coordinate of the viewport where the graphics are to be drawn.</p>
-<p>Note different settings of <code>flip</code> and <code>reverse</code> set in <code><a href='spiral_initialize.html'>spiral_initialize</a></code> affect the conversion.</p>
+    <p>The canvas coordinates correspond to the "native" coordinates of the viewport where the graphics are to be drawn.</p>
+<p>Note different settings of <code>flip</code> and <code>reverse</code> in <code><a href='spiral_initialize.html'>spiral_initialize</a></code> affect the conversion.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame with two columns: x and y.</p>

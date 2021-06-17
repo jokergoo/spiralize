@@ -22,8 +22,17 @@ current_track_index = function() {
 	track_env$current_track
 }
 
-set_current_track = function(i) {
-	track_env$current_track = i
+# == title
+# Set current track
+#
+# == param
+# -track_index The index of the track.
+#
+set_current_track = function(track_index) {
+	if(!track_existed(track_index)) {
+		stop_wrap(qq("Track @{track_index} does not exist."))
+	}
+	track_env$current_track = track_index
 }
 
 add_track = function(i, new_track_data) {
@@ -55,9 +64,15 @@ add_track = function(i, new_track_data) {
 # - yrange ``ymax - ymin``
 # - height Height of the track, measured as the fraction of the distance between two neighbouring circles.
 #
+# It is more suggested to directly use `TRACK_META` to retrieve meta data for the current track.
+# 
 # == value
 # A numeric value of the corresponding field.
 get_track_data = function(field, track_index = current_track_index()) {
+
+	if(!track_existed(track_index)) {
+		stop_wrap(qq("Track @{track_index} does not exist."))
+	}
 
 	if(field == "ycenter") {
 		(track_env$track_data[track_index, "ymin"] + track_env$track_data[track_index, "ymax"])/2
@@ -85,4 +100,151 @@ track_existed = function(track_index) {
 # An integer of the number of avaiable tracks.
 n_tracks = function() {
 	nrow(track_env$track_data)
+}
+
+
+# == title (variable:TRACK_META)
+# Get meta data in the current track
+#
+# == details
+# The variable ``TRACK_META`` can only be used to get meta data from the "current" track. If the current track
+# is not the one you want, you can first use `set_current_track` to set the current track.
+#
+# Don't directly use ``TRACK_META``. The value of `TRACK_META` itself is meaningless. Always use in form of ``TRACK_META$name``.
+#
+# There are following meta data for the current track:
+#
+# -``xlim``: Data range on x-axis.
+# -``xmin``: ``xlim[1]``.
+# -``xmax``: ``xlim[2]``.
+# -``xrange``: ``xlim[2] - xlim[1]``.
+# -``xcenter``: ``mean(xlim)``.
+# -``theta_lim``: Range of the angles on the spiral, measured in radians.
+# -``theta_min``: ``theta_lim[1]``.
+# -``theta_max``: ``theta_lim[2]``.
+# -``theta_range``: ``theta_lim[2] - theta_lim[1]``.
+# -``theta_center``: ``mean(theta_lim)``.
+# -``ylim``: Data range on y-axis.
+# -``ymin``: ``ylim[1]``.
+# -``ymax``: ``ylim[2]``.
+# -``yrange``: ``ylim[2] - ylim[1]``.
+# -``ycenter``: ``mean(ylim)``.
+# -``rel_height``: Fraction of height of the track to the distance between two neighbouring loops.
+# -``abs_height``: The height of the track, which is ``rel_height`` multiplied by the distance between two neighbouring loops.
+# -``track_index``: Current track index.
+#
+TRACK_META = NA
+class(TRACK_META) = "TRACK_META"
+
+# == title
+# Names of all supported meta data
+#
+# == param
+# -x Always use ``TRACK_META``.
+#
+# == example
+# names(TRACK_META)
+names.TRACK_META = function(x) {
+	
+	nm = c("xlim", "xmin", "xmax", "xcenter", "xrange",
+		   "theta_lim", "theta_min","theta_max", "theta_center", "theta_range",
+		   "ylim", "ymin", "ymax", "ycenter", "yrange",
+		   "radius_lim", "radius_min", "radius_max", "radius_center", "radius_range",
+		   "abs_height", "rel_height", "track_index")
+
+	return(nm)
+}
+
+# == title
+# Get meta data in the current track
+#
+# == param
+# -x Always use ``TRACK_META``.
+# -name Name of the meta name. For all supported names, type ``names(TRACK_META)``.
+#
+# == details
+# The variable ``TRACK_META`` can only be used to get meta data from the "current" track. If the current track
+# is not the one you want, you can first use `set_current_track` to set the current track.
+#
+# There are following meta data for the current track:
+#
+# -``xlim``: Data range on x-axis.
+# -``xmin``: ``xlim[1]``.
+# -``xmax``: ``xlim[2]``.
+# -``xrange``: ``xlim[2] - xlim[1]``.
+# -``xcenter``: ``mean(xlim)``.
+# -``theta_lim``: Range of the angles on the spiral, measured in radians.
+# -``theta_min``: ``theta_lim[1]``.
+# -``theta_max``: ``theta_lim[2]``.
+# -``theta_range``: ``theta_lim[2] - theta_lim[1]``.
+# -``theta_center``: ``mean(theta_lim)``.
+# -``ylim``: Data range on y-axis.
+# -``ymin``: ``ylim[1]``.
+# -``ymax``: ``ylim[2]``.
+# -``yrange``: ``ylim[2] - ylim[1]``.
+# -``ycenter``: ``mean(ylim)``.
+# -``rel_height``: Fraction of height of the track to the distance between two neighbouring loops.
+# -``abs_height``: The height of the track, which is ``rel_height`` multiplied by the distance between two neighbouring loops.
+# -``track_index``: Current track index.
+#
+"$.TRACK_META" = function(x, name) {
+	spiral = spiral_env$spiral
+
+	if(is.null(spiral)) {
+		stop_wrap("No spiral has been initialized.")
+	}
+	if(n_tracks() == 0) {
+		stop_wrap("No track has been created.")
+	}
+
+	if(name == "xlim") {
+		spiral$xlim
+	} else if(name == "xmin") {
+		spiral$xlim[1]
+	} else if(name == "xmax") {
+		spiral$xlim[2]
+	} else if(name == "xrange") {
+		spiral$xlim[2] - spiral$xlim[1]
+	} else if(name == "xcenter") {
+		mean(spiral$xlim)
+	} else if(name == "theta_lim") {
+		spiral$theta_lim
+	} else if(name == "theta_min") {
+		spiral$theta_lim[1]
+	} else if(name == "theta_max") {
+		spiral$theta_lim[2]
+	} else if(name == "theta_range") {
+		spiral$theta_lim[2] - spiral$theta_lim[1]
+	} else if(name == "theta_center") {
+		mean(spiral$theta_lim)
+	} else if(name == "ylim") {
+		c(get_track_data("ymin"), get_track_data("ymax"))
+	} else if(name == "ymin") {
+		get_track_data("ymin")
+	} else if(name == "ymax") {
+		get_track_data("ymax")
+	} else if(name == "yrange") {
+		get_track_data("ymax") - get_track_data("ymin")
+	} else if(name == "ycenter") {
+		(get_track_data("ymin") + get_track_data("ymax"))/2
+	} else if(name == "abs_height") {
+		get_track_data("rel_height")*( get_track_data("rmax") - get_track_data("rmin") )
+	} else if(name == "rel_height") {
+		get_track_data("rel_height")
+	} else if(name == "track_index") {
+		current_track_index()
+	} else {
+		stop_wrap(qq("'@{name}' is not supported in TRACK_META."))
+	}
+}
+
+# == title
+# Print TRACK_META
+#
+# == param
+# -x The ``TRACK_META`` object.
+# -... Additional parameters.
+#
+print.TRACK_META = function(x, ...) {
+	cat("Please use in form of `TRACK_META$name`. Type `names(TRACK_META)` for supported names.\n")
 }

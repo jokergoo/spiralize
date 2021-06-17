@@ -1,6 +1,6 @@
-Package: spiral
+Package: spiralize
 Type: Package
-Title: Visualization via Spiral Curve
+Title: Visualize Data on Spirals
 Version: 0.99.0
 Date: 2021-06-09
 Author: Zuguang Gu
@@ -12,7 +12,8 @@ Imports: GlobalOptions (>= 0.1.1),
          stats,
          methods,
          grDevices,
-         ComplexHeatmap
+         ComplexHeatmap,
+         lubridate
 Suggests: knitr, 
           rmarkdown,
           grImport,
@@ -22,8 +23,11 @@ Suggests: knitr,
           tiff,
           ape,
           cranlogs,
-          cowplot
-Description: Spiral visualization
+          cowplot,
+          dendextend
+Description: The package visualizes data along an Archimedean spiral. 
+    It has two major advantages for visualization: 1. to visualize data with very long axis,
+    and 2. to visualize periodic data.
 VignetteBuilder: knitr
 URL: https://github.com/jokergoo/spiral
 License: MIT + file LICENSE
