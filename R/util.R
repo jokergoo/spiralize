@@ -123,3 +123,14 @@ draw_tangent = function(theta) {
 
 	grid.lines(x0, y0, default.units = "native") 
 }
+
+validate_xy = function(...) {
+	lt = list(...)
+
+	len = sapply(lt, length)
+	ml = max(len)
+
+	if(!all(len == 1 | len == ml)) {
+		stop_wrap("Arguments should have length 1 or have the same lengths.")
+	}
+}

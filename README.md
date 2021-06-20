@@ -1,4 +1,4 @@
-# Visualize Data on Spirals <img width="150" alt="Screenshot 2021-06-14 at 12 08 09" src="https://user-images.githubusercontent.com/449218/121876090-723e0900-cd09-11eb-8d0d-82fbeeb83997.png" align="right" style="border:2px solid black;" >
+# Visualize Data on Spirals <img width="150" src="https://user-images.githubusercontent.com/449218/121876090-723e0900-cd09-11eb-8d0d-82fbeeb83997.png" align="right">
 
 
 [![Build Status](https://travis-ci.org/jokergoo/spiralize.svg)](https://travis-ci.org/jokergoo/spiralize) 
@@ -6,7 +6,7 @@
 
 ## Features
 
-The package **spiralize** visualizes data along an [Archimedean spiral]((https://en.wikipedia.org/wiki/Archimedean_spiral)).
+The package **spiralize** visualizes data along an [Archimedean spiral](https://en.wikipedia.org/wiki/Archimedean_spiral).
 It has two major advantages for visualization:
 
 1. to visualize data with very long axis,

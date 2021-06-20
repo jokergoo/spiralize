@@ -20,6 +20,8 @@
 spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(), 
 	track_index = current_track_index()) {
 
+	validate_xy(x, y)
+
 	spiral = spiral_env$spiral
 	x = spiral$get_numeric_x(x)
 
@@ -58,6 +60,8 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 # spiral_lines(x, y, area = TRUE, gp = gpar(fill = "red", col = NA))
 spiral_lines = function(x, y, type = "l", gp = gpar(),
 	baseline = "bottom", area = FALSE, track_index = current_track_index()) {
+
+	validate_xy(x, y)
 
 	spiral = spiral_env$spiral
 	x = spiral$get_numeric_x(x)
@@ -124,6 +128,8 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 #
 spiral_segments = function(x0, y0, x1, y1, gp = gpar(), 
 	track_index = current_track_index(), buffer = 10000) {
+
+	validate_xy(x0, y0, x1, y1)
 
 	spiral = spiral_env$spiral
 	x0 = spiral$get_numeric_x(x0)
@@ -232,6 +238,8 @@ spiral_radical_segments = function(x, y, offset, gp = gpar(), track_index = curr
 #
 spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(), 
 	track_index = current_track_index()) {
+
+	validate_xy(xleft, ybottom, xright, ytop)
 	
 	spiral = spiral_env$spiral
 	xleft = spiral$get_numeric_x(xleft)
@@ -295,6 +303,9 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 	ymin = get_track_data("ymin", track_index)
 	ymax = get_track_data("ymax", track_index)
 	if(is.matrix(value)) {
+		if(length(pos) != nrow(value)) {
+			stop_wrap("Length of 'pos' should be the same as nrow of 'value'.")
+		}
 		n = ncol(value)
 		for(i in 1:n) {
             if(i == 1) {
@@ -306,7 +317,8 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
             }
         }
     } else if(is.atomic(value)) {
-       spiral_rect(pos - bar_width/2, baseline, pos + bar_width/2, value, gp = gp, track_index = track_index)
+    	validate_xy(pos, value)
+    	spiral_rect(pos - bar_width/2, baseline, pos + bar_width/2, value, gp = gp, track_index = track_index)
 	}
 }
 
@@ -320,6 +332,7 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 # -offset Radical offset of the text. The value should be a `grid::unit` object.
 # -gp Graphical parameters.
 # -facing Facing of the text.
+# -letter_spacing Space between two letters. The value is a fraction of the width of current letter. It only works for curved texts.
 # -nice_facing If it is true, the facing will be automatically adjusted for texts which locate at different positions of the spiral. Note ``hjust`` and ``vjust`` will also be adjusted.
 # -just The justification of the text relative to (x, y). The same setting as in `grid::grid.text`.
 # -hjust Horizontal justification. Value should be numeric. 0 means the left of the text and 1 means the right of the text.
@@ -352,8 +365,11 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 #
 spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
+	letter_spacing = 0,
 	nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
 	track_index = current_track_index(), ...) {
+
+	validate_xy(x, y, text)
 
 	spiral = spiral_env$spiral
 	x = spiral$get_numeric_x(x)
@@ -418,7 +434,7 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		df2 = xy_to_polar(x, y, track_index = track_index)
 		for(i in seq_len(n)) {
 			curved_text(x[i], y[i], text[i], gp = subset_gp(gp, i), track_index = track_index, 
-				facing = gsub("curved_", "", facing), nice_facing = nice_facing, vjust = vjust, hjust = hjust)
+				facing = gsub("curved_", "", facing), nice_facing = nice_facing, vjust = vjust, hjust = hjust, letter_spacing = letter_spacing)
 		}
 	}
 }
@@ -429,6 +445,10 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 	spiral = spiral_env$spiral
 
 	letters = strsplit(text, "")[[1]]
+
+	if(!spiral$clockwise && facing == "inside") {
+		letters = rev(letters)
+	}
 	n = length(letters)
 	letters_len = sapply(1:n, function(i) convertWidth(grobWidth(textGrob(letters[i], gp = gp)), "native", valueOnly = TRUE))
 	letters_len = letters_len*(1 + letter_spacing)
@@ -455,6 +475,8 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 # == details
 # Note the polygon must be closed, which means, the last data point should overlap to the first one.
 spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_track_index()) {
+
+	validate_xy(x, y)
 
 	spiral = spiral_env$spiral
 	x = spiral$get_numeric_x(x)
@@ -527,7 +549,7 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		major_at = seq(floor(spiral$xlim[1]/major_by)*major_by, spiral$xlim[2], by = major_by)
 		major_at = c(major_at, major_at[length(major_at)] + major_by)
 
-		labels = spiral$get_original_x(major_at)
+		labels = spiral$get_charactor_x(major_at)
 	} else {
 		major_at = spiral$get_numeric_x(major_at)
 		if(!(identical(labels, NULL) | identical(labels, TRUE) | identical(labels, FALSE))) {
@@ -547,11 +569,15 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 
 	minor_at = NULL
 	if(minor_ticks != 0) {
-		for(i in seq_along(major_at)) {
+		major_at2 = major_at
+		major_at2 = c(major_at[1] - diff(major_at)[1], major_at, major_at + diff(major_at)[length(major_at)-1])
+		for(i in seq_along(major_at2)) {
 			if(i == 1) next
 			k = seq_len(minor_ticks) / (minor_ticks + 1)
-			minor_at = c(minor_at, k * (major_at[i] - major_at[i - 1]) + major_at[i - 1])
+			minor_at = c(minor_at, k * (major_at2[i] - major_at2[i - 1]) + major_at2[i - 1])
 		}
+		l = minor_at <= spiral$xlim[2] & minor_at >= spiral$xlim[1]
+		minor_at = minor_at[l]
 		spiral_radical_segments(minor_at, h, offset = ifelse(axis_on_top, 1, -1)*minor_ticks_length, track_index = track_index, gp = ticks_gp)
 	}
 	
@@ -616,7 +642,7 @@ spiral_xaxis = function(...) {
 # spiral_initialize(); spiral_track(height = 0.8)
 # spiral_yaxis("start")
 # spiral_yaxis("end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
-spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(4, "bigpts"), 
+spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(2, "bigpts"), 
 	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
 		
@@ -706,6 +732,8 @@ spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TR
 spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
 	use_bars = FALSE, bar_width = min(diff(x)),
 	negative_from_top = FALSE, track_index = current_track_index()) {
+
+	validate_xy(x, y)
 
 	if(!(get_track_data("ymin", track_index) == 0 & get_track_data("ymax", track_index) == 1)) {
 		stop_wrap("The horizon track must have 'ylim = c(0, 1)'.")
@@ -993,7 +1021,7 @@ spiral_arrow = function(
 	spiral = spiral_env$spiral
 
 	if(is.unit(width)) {
-		width = convert_to_y(width)
+		width = convert_height_to_y(width)
 	}
 
 	if(is.unit(arrow_head_length)) {
@@ -1104,7 +1132,7 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 			padding = rep(padding, 2)
 		}
 		if(is.unit(padding)) {
-			offset = convert_to_y(padding)
+			offset = convert_height_to_y(padding)
 		} else {
 			offset = get_track_data("yrange", track_index)*padding
 		}
@@ -1139,7 +1167,7 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 		if("col" %in% names(gp) && !("fill" %in% names(gp))) {
 			gp$fill = gp$col
 		}
-		offset = convert_to_y(line_width, track_index = track_index)
+		offset = convert_height_to_y(line_width, track_index = track_index)
 		if(line_side == "inside") {
 			spiral_rect(x1, ymin, x2, ymin - offset, gp = gp, track_index = track_index)
 		} else {

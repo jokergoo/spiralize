@@ -50,21 +50,10 @@ xy_to_polar = function(x, y, track_index = current_track_index()) {
 		if(spiral$reverse) {
 			len = (spiral$xlim[2] - x + spiral$xlim[1]) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
 			n = length(len)
-			theta = numeric(n)
-			for(i in seq_len(n)) {
-				theta[i] = uniroot(function(theta, a) {
-					spiral$spiral_length(theta) - a
-				}, interval = spiral$spiral_length_lim, a = len[i])$root
-			}
+			theta = solve_theta_from_spiral_length(len)
 		} else {
 			len = (x - spiral$xlim[1]) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
-			n = length(len)
-			theta = numeric(n)
-			for(i in seq_len(n)) {
-				theta[i] = uniroot(function(theta, a) {
-					spiral$spiral_length(theta) - a
-				}, interval = spiral$spiral_length_lim, a = len[i])$root
-			}
+			theta = solve_theta_from_spiral_length(len)
 		}
 	}
 
@@ -75,18 +64,12 @@ xy_to_polar = function(x, y, track_index = current_track_index()) {
 	d = (y - ymin) * (rmax - rmin)/(ymax - ymin) + rmin
 	r = spiral$curve(theta) + d
 
-	if(spiral$flip == "horizontal") {
-		theta = 2*pi - theta 
-	} else if(spiral$flip == "vertical") {
-		theta = pi - theta
-	} else if(spiral$flip == "both") {
-		theta = 2*pi - theta 
-		theta = pi - theta
-	}
+	theta = flip_theta(theta)
 
 	data.frame(theta = theta, r = r)
 }
 
+# just normal polar to cartesian conversion
 polar_to_cartesian = function(theta, r) {
 	x = cos(theta)*r
 	y = sin(theta)*r
@@ -102,8 +85,9 @@ cartesian_to_polar = function(x, y) {
 	data.frame(theta = theta, r = r)
 }
 
-
-spiral_lines_expand = function(x, y, d = spiral_opt$min_segment_len, track_index = current_track_index()) {
+# split a spiral line into d seguments
+# return in cartesian coordinates
+spiral_lines_expand = function(x, y, track_index = current_track_index()) {
 
 	df = xy_to_polar(x, y, track_index = track_index)
 	n = nrow(df)
@@ -126,6 +110,13 @@ spiral_lines_expand = function(x, y, d = spiral_opt$min_segment_len, track_index
             next
         }
 
+        d = spiral_opt$min_segment_len/(6*pi)
+        if(x[i-1] <= 4*pi) {
+        	d = spiral_opt$min_segment_len
+        } else {
+        	d = spiral_opt$min_segment_len*(4*pi/x[i-1])
+        }
+
         if(abs(x[i] - x[i-1]) <= d) {
         	nc = 2
         } else {
@@ -140,6 +131,7 @@ spiral_lines_expand = function(x, y, d = spiral_opt$min_segment_len, track_index
 }
 
 
+# return in cartesian coordinates
 radical_extend = function(x, y, offset, track_index = current_track_index()) {
 	df = xy_to_polar(x, y, track_index = track_index)
 	offset_x = convertWidth(offset*cos(df$theta), "native", valueOnly = TRUE)
@@ -152,43 +144,6 @@ radical_extend = function(x, y, offset, track_index = current_track_index()) {
 	df2
 }
 
-circular_extend = function(x, y, offset, track_index = current_track_index(), interval_extend = 1,
-	coordinate = "cartesian") {
-	
-	spiral = spiral_env$spiral
-
-	if(is.unit(offset)) {
-		offset = convertWidth(offset, "native", valueOnly = TRUE)
-	}
-
-	if(spiral$scale_by == "curve_length") {
-		x_offset = offset/spiral$spiral_length_range*spiral$xrange
-		if(coordinate == "cartesian") {
-			xy_to_cartesian(x + x_offset, y, track_index = track_index)
-		} else if(coordinate == "polar") {
-			xy_to_polar(x + x_offset, y)
-		} else {
-			data.frame(x = x + x_offset, y = y)
-		}
-	} else {
-		df = xy_to_polar(x, y, track_index = track_index)
-		v_offset = (df$r - get_track_data("rmin"))/spiral$dist
-		t = get_theta_from_len(spiral$spiral_length(df$theta, v_offset) + offset, 
-				c(spiral$theta_lim[1] - spiral$theta_range, 
-				  spiral$theta_lim[2] + spiral$theta_range))
-		r = spiral$curve(t) + (y - get_track_data("ymin", track_index))/get_track_data("yrange", track_index)*get_track_data("rrange", track_index)
-		for(i in seq_len(track_index - 1)) {
-			r = r + get_track_data("rrange", i)
-		}
-		if(coordinate == "cartesian") {
-			polar_to_cartesian(t, r)
-		} else if(coordinate == "polar") {
-			data.frame(theta = t, r = r)
-		} else {
-			data.frame(x = polar_to_x(t), y = y)
-		}
-	}
-}
 
 # in xy coordinates
 circular_extend_on_x = function(x, y, offset, track_index = track_index, coordinate = "polar") {
@@ -199,7 +154,7 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 	}
 
 	if(spiral$scale_by == "curve_length") {
-		x_offset = offset/spiral$spiral_length_range*spiral$xrange
+		x_offset = offset/(spiral$spiral_length(spiral$theta_lim[2], convert_y_to_height(y)) - spiral$spiral_length(spiral$theta_lim[1], convert_y_to_height(y)))*spiral$xrange
 		if(coordinate == "polar") {
 			xy_to_polar(x + x_offset, y)$theta
 		} else {
@@ -207,17 +162,14 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 		}
 	} else {
 		df = xy_to_polar(x, y, track_index = track_index)
-		v_offset = (y - get_track_data("ymin", track_index))*get_track_data("yrange", track_index)*(get_track_data("rmax", track_index) - get_track_data("rmin", track_index))
-		if(track_index > 1) {
-			for(i in 1:(track_index - 1))
-			v_offset = v_offset + get_track_data("rmax", i) - get_track_data("rmin", i)
-		}
-		v_offset = v_offset/spiral$dist
+		v_offset = convert_y_to_height(y, track_index)
 
-		t = get_theta_from_len(spiral$spiral_length(df$theta, v_offset) + offset, 
+		df$theta = flip_theta_back(df$theta)
+		t = solve_theta_from_spiral_length(spiral$spiral_length(df$theta, v_offset) + offset, 
 				c(spiral$spiral_length(-spiral$theta_lim[1], max(v_offset)), 
 				  spiral$spiral_length(2*spiral$theta_lim[2], max(v_offset))),
 				v_offset)
+		t = flip_theta(t)
 		if(coordinate == "polar") {
 			t
 		} else {
@@ -226,9 +178,12 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 	}
 }
 
+# given theta in spiral, it returns the corresponding x
 polar_to_x = function(theta) {
 
 	spiral = spiral_env$spiral
+
+	theta = flip_theta_back(theta)
 
 	if(spiral$scale_by == "angle") {
 		x = (theta - spiral$theta_lim[1])/spiral$theta_range*spiral$xrange + spiral$xlim[1]
@@ -242,12 +197,23 @@ polar_to_x = function(theta) {
 	x
 }
 
-convert_to_y = function(offset, track_index = current_track_index()) {
+# given a offset in absolute unit, it returns the offset in xy coordinates
+convert_height_to_y = function(offset, track_index = current_track_index()) {
 	offset = convertWidth(offset, "native", valueOnly = TRUE)
 	offset/get_track_data("rrange", track_index)*get_track_data("yrange", track_index) + get_track_data("ymin", track_index)
 }
 
-convert_height_to_y = convert_to_y
+convert_y_to_height = function(y, track_index = current_track_index()) {
+	spiral = spiral_env$spiral
+
+	v_offset = (y - get_track_data("ymin", track_index))/get_track_data("yrange", track_index)*(get_track_data("rmax", track_index) - get_track_data("rmin", track_index))
+	if(track_index > 1) {
+		for(i in 1:(track_index - 1))
+		v_offset = v_offset + get_track_data("rmax", i) - get_track_data("rmin", i)
+	}
+	v_offset = v_offset/spiral$dist
+	v_offset
+}
 
 
 get_theta_from_x = function(x) {
@@ -256,19 +222,70 @@ get_theta_from_x = function(x) {
 	(x - spiral$xlim[1])/spiral$xrange*spiral$theta_range + spiral$theta_lim[1]
 }
 
-# from the spiral length
-get_theta_from_len = function(len, interval, offset = 0) {
-	spiral = spiral_env$spiral
+# == title
+# Get theta from given spiral lengths
+#
+# == param
+# -len A vector of spiral lengths.
+# -interval Interval to search for the solution.
+# -offset Offset of the spiral. In the general form: theta = a + r*theta, offset is the value of a.
+#
+# == details
+# The length of the spiral has a complicated form, see https://downloads.imagej.net/fiji/snapshots/arc_length.pdf .
+# Let's say the form is l = f(theta), `solve_theta_from_spiral_length` tries to find theta by a known l.
+# It uses `stats::uniroot` to search solutions.
+#
+# == example
+# spiral_initialize()
+# s = current_spiral()
+# theta = pi*seq(2, 3, length = 10)
+# len = s$spiral_length(theta)
+# solve_theta_from_spiral_length(len) # should be very similar as theta
+solve_theta_from_spiral_length = function(len, interval = NULL, offset = 0) {
 	n = length(len)
-	t = numeric(n)
+	theta = numeric(n)
+
+	spiral = spiral_env$spiral
+	if(is.null(interval)) {
+		interval = c(spiral$theta_lim[1] - spiral$theta_range, spiral$theta_lim[2] + spiral$theta_range)
+	}
 
 	offset = offset
 	if(length(offset) == 1) offset = rep(offset, n)
 	for(i in seq_len(n)) {
-		t[i] = uniroot(function(theta, a) {
+		theta[i] = uniroot(function(theta, a) {
 			spiral$spiral_length(theta, offset[i]) - a
 		}, interval = interval, a = len[i])$root
 	}
-	t
+
+	theta
 }
 
+
+flip_theta = function(theta) {
+	spiral = spiral_env$spiral
+
+	if(spiral$flip == "horizontal") {
+		theta = 2*pi - theta 
+	} else if(spiral$flip == "vertical") {
+		theta = pi - theta
+	} else if(spiral$flip == "both") {
+		theta = theta - pi
+	} else {
+		theta
+	}
+}
+
+flip_theta_back = function(theta) {
+	spiral = spiral_env$spiral
+
+	if(spiral$flip == "horizontal") {
+		theta = 2*pi - theta 
+	} else if(spiral$flip == "vertical") {
+		theta = pi - theta
+	} else if(spiral$flip == "both") {
+		theta = theta + pi
+	} else {
+		theta
+	}
+}

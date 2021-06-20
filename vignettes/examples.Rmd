@@ -1,0 +1,34 @@
+---
+title: "Real World Examples"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+    css: main.css
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Real World Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.width = 5,
+    fig.height = 5,
+    fig.align = "center"
+)
+options(width = 100)
+```
+
+```{r, echo = FALSE}
+library(spiralize)
+library(cowplot)
+library(GetoptLong)
+```

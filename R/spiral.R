@@ -22,6 +22,23 @@ create_spiral = function(start = 360, end = 360*5, xlim = c(0, 1), scale_by = "a
     max_radius = max(b*end)
     dist = b * 2*pi
 
+    if(!reverse) {
+    	clockwise = switch(flip,
+    		"none" = FALSE,
+    		"horizontal" = TRUE,
+    		"vertical" = TRUE,
+    		"both" = FALSE
+    	)
+    } else {
+    	clockwise = !switch(flip,
+    		"none" = FALSE,
+    		"horizontal" = TRUE,
+    		"vertical" = TRUE,
+    		"both" = FALSE
+    	)
+    }
+
+
     spiral(
     	a = a,
 		b = b,
@@ -35,7 +52,8 @@ create_spiral = function(start = 360, end = 360*5, xlim = c(0, 1), scale_by = "a
 		dist = dist,
 		scale_by = scale_by,
 		flip = flip,
-		reverse = reverse
+		reverse = reverse,
+		clockwise = clockwise
 	)
 }
 
@@ -56,7 +74,8 @@ spiral = setRefClass("spiral",
 		reverse = "logical",
 		xclass = "character",
 		get_numeric_x = "function",
-		get_original_x = "function"
+		get_charactor_x = "function",
+		clockwise = "logical"
 	),
 	methods = list(
 		show = function() {
@@ -94,8 +113,8 @@ spiral = setRefClass("spiral",
 			(tan(theta) + theta)/(1 - theta*tan(theta))
 		},
 		initialize = function(..., xclass = "numeric", get_numeric_x = function(x) x,
-			get_original_x = function(x) x) {
-			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_original_x = get_original_x)
+			get_charactor_x = function(x) x) {
+			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_charactor_x = get_charactor_x)
 		},
 		draw_spiral = function(start = 0, end = 360*4, offset = 0) {
 			theta = seq(start, end, by = 1)

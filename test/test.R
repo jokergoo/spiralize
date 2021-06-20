@@ -314,3 +314,27 @@ draw_tangent = function(theta) {
 
 	grid.lines(x0, y0, default.units = "native") 
 }
+
+
+spiral_initialize(flip = "horizontal")
+s = current_spiral()
+theta = pi*seq(2, 3, length = 10)
+len = s$spiral_length(theta)
+solve_theta_from_spiral_length(len) 
+
+
+
+p1 = grid.grabExpr({
+	spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+	spiral_track(height = 1, background = F)
+	spiral_points(1:5000-0.5, 0.5, pch = 16, size = unit((x1+1)/5, "mm"), gp = gpar(col = x1 + 1))
+})
+
+p2 = grid.grabExpr({
+	spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+	spiral_track(height = 1, background = F)
+	spiral_points(1:5000-0.5, 0.5, pch = 16, size = unit((x2+1)/5, "mm"), gp = gpar(col = x2 + 1))
+})
+
+plot_grid(p1, p2)
+

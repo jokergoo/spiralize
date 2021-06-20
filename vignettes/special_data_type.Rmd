@@ -1,0 +1,67 @@
+---
+title: "Initialize Spirals by Special Data Types"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+    css: main.css
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Initialize Spirals by Special Data Types}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.width = 5,
+    fig.height = 5,
+    fig.align = "center"
+)
+options(width = 100)
+```
+
+```{r, echo = FALSE}
+library(spiralize)
+library(cowplot)
+library(GetoptLong)
+```
+
+## Work with Date object
+
+Most time series . Internally a simple conversion is applied. Assume the first day is `d1` and the last day is `d2`,
+the number of days is `n = d2 - d1` which is the day difference between the two. If we take [0,1]for the first day, [1, 2] for the second day,
+and [n, n+1] for the last day, then internally the spiral is initialized
+with xlim = c(0, n + 1) and the Date is converted to the internal numeric value by d - d1 + 0.5
+
+
+```{r}
+spiral_initialize_by_date(xlim = as.Date(c("2014-01-01", "2021-06-17")))
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+## Work with time object
+
+It is also possible that the basic unit is not days, while months, minites or seconds.
+
+## Work with genomic coordinates
+
+Genomic data can be represented as a data frame (e.g. in _bed_ format), or as a `GRanges` object. To initialize the spiral for
+genomic data visualization, the data on _x_-axis corresponds to the genomic coordinates. The spiral with genomic data can be
+initialized by the function `spiral_initialize_by_gcoor()`.  The genomic coordinates are linear numeric values, thus,
+`spiral_initialize_by_gcoor()` is basically the same as `spiral_initialize()`. The only difference is the axis labels are automatically
+formated for genomic coordinates.
+
+```{r}
+spiral_initialize_by_gcoor(xlim = c(2e6, 8e6))  # 2MB to 8MB
+spiral_track(height = 0.6)
+spiral_axis()
+spiral_points(x = runif(500, min = 2e6, max = 8e6), runif(500), pch = 16, gp = gpar(col = 2))
+```

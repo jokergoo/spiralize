@@ -7,7 +7,7 @@ Draw y-axis
 Draw y-axis
 }
 \usage{
-spiral_yaxis(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(4, "bigpts"),
+spiral_yaxis(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(2, "bigpts"),
     ticks_gp = gpar(), labels_gp = gpar(fontsize = 6),
     track_index = current_track_index())
 }

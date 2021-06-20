@@ -22,8 +22,7 @@ knitr::opts_chunk$set(
     warning = FALSE,
     fig.width = 5,
     fig.height = 5,
-    fig.align = "center",
-    dev = "jpeg"
+    fig.align = "center"
 )
 options(width = 100)
 ```
@@ -44,8 +43,7 @@ It has two major advantages for visualization:
 ## The Archimedean spiral
 
 In polar coordinates ($r$, $\theta$), the [Archimedean
-spiral](https://en.wikipedia.org/wiki/Archimedean_spiral) centered at
-the origin of the coordinates has the following form:
+spiral](https://en.wikipedia.org/wiki/Archimedean_spiral) has the following form:
 
 $$ r = b \cdot \theta $$
 
@@ -991,3 +989,34 @@ for(i in seq_along(tb)) {
 
 
 
+
+<script src="jquery.min.js"></script>
+<script src="jquery.sticky.js"></script>
+<script>
+$(document).ready(function(){
+    $("#TOC").sticky({
+        topSpacing: 0,
+        zIndex:1000    
+    })
+    $("#TOC").on("sticky-start", function() {
+
+        $("<p style='font-size:1.2em; padding-left:4px;'><a id='TOC-click'>Table of Content (click to open or close)</a></p>").insertBefore($("#TOC ul:first-child"));
+        $("#TOC-click").hover(function() {
+            $(this).css("color", "#0033dd").css("cursor", "pointer");
+        }, function() {
+            $(this).css("color", "#0033dd");
+        })
+        $("#TOC").children().first().next().hide();
+
+        $("#TOC-click").click(function() {
+            $("#TOC").children().first().next().toggle();
+        });
+
+    })
+    $("#TOC").on("sticky-end", function() {
+        $("#TOC").children().first().remove();
+        $("#TOC").children().first().show();
+        $("body").off("click", "#TOC-click");
+    })
+});
+</script>

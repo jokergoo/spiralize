@@ -145,20 +145,18 @@ spiral_initialize_by_date = function(x = NULL, xlim = range(x), start = NULL, en
 			if(is.character(x)) {
 				x = as.Date(x)
 			}
-			as.double(x - date_start, "days")
+			as.double(x - date_start, "days") + 0.5
 		}
 	})
 
-	get_original_x = local({
+	get_charactor_x = local({
 		date_start = date_start
 		function(x) {
-			as.character(date_start + x)
+			as.character(date_start + x - 0.5)
 		}
 	})
 
-	
-	n = as.double(date_end - date_start, "days")
-	xlim = as.double(xlim - date_start, "days") - 0.5
+	xlim = get_numeric_x(xlim)
 
 	start_of_the_year = as.Date("2021-01-01")
 	year(start_of_the_year) = year(date_start)
@@ -176,7 +174,7 @@ spiral_initialize_by_date = function(x = NULL, xlim = range(x), start = NULL, en
 	spiral = current_spiral()
 	spiral$xclass = "Date"
 	spiral$get_numeric_x = get_numeric_x
-	spiral$get_original_x = get_original_x
+	spiral$get_charactor_x = get_charactor_x
 
 	invisible(NULL)
 }
@@ -188,29 +186,45 @@ spiral_initialize_by_time = function(x, xlim, period = NULL, by = NULL, multiply
 	min = lubridate::minute(x)
 }
 
-# spiral_initialize_by_granges = function(x = NULL, xlim = range(start(x), end(x)), ...) {
+# == title
+# Initialize the spiral with genomic coordinates
+#
+# == param
+# -x A vector of genomic coordinates.
+# -xlim Range of the genomic coordinates.
+# -... All pass to `spiral_initialize`.
+#
+# == details
+# It is basically the same as `spiral_initialize`. The only difference is the axis labels are automatically
+# formated for genomic coordinates.
+#
+# == example
+# spiral_initialize_by_gcoor(c(1, 1000000000))
+# spiral_track()
+# spiral_axis()
+spiral_initialize_by_gcoor = function(x = NULL, xlim = range(x), ...) {
 
-# 	if(is.null(x) && missing(xlim)) {
-# 		stop_wrap("You need to specify one of `x` and `xlim`.")
-# 	}
+	if(is.null(x) && missing(xlim)) {
+		stop_wrap("You need to specify one of `x` and `xlim`.")
+	}
 
-# 	get_original_x = function(x) {
-# 		x2 = character(length(x))
-# 		l1 = x >= 1e6
-# 		x2[l1] = paste(x[l1]/1000000, "MB", sep = "")
-# 		l2 = x >= 1e3 & !l1
-# 		x2[l2] = paste(x[l2]/1000, "KB", sep = "")
+	get_charactor_x = function(x) {
+		x2 = character(length(x))
+		l1 = x >= 1e6
+		x2[l1] = paste(x[l1]/1000000, "MB", sep = "")
+		l2 = x >= 1e3 & !l1
+		x2[l2] = paste(x[l2]/1000, "KB", sep = "")
 		
-# 		l3 = !(l1 | l2)
-# 		x2[l3] = paste(x[l3], "bp", sep = "")
-# 		x2
-# 	}
+		l3 = !(l1 | l2)
+		x2[l3] = paste(x[l3], "bp", sep = "")
+		x2
+	}
 
-# 	spiral_initialize(xlim = xlim, ...)
+	spiral_initialize(xlim = xlim, ...)
 
-# 	spiral = current_spiral()
-# 	spiral$xclass = "GRanges"
-# 	spiral$get_original_x = get_original_x
+	spiral = current_spiral()
+	spiral$xclass = "Genomic positions"
+	spiral$get_charactor_x = get_charactor_x
 
-# 	invisible(NULL)
-# }
+	invisible(NULL)
+}
