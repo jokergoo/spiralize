@@ -43,6 +43,7 @@ jobs:
 
       - name: Query dependencies
         run: |
+          setRepositories(ind = 1:5)
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
@@ -65,6 +66,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          setRepositories(ind = 1:5)
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}

@@ -121,7 +121,7 @@ tumor_col = structure(names = unique(as.vector(df$tumor_type)), unique(df$tumor_
 r1 = rle(as.vector(df$tumor_type))
 for(i in seq_along(r1$lengths)) {
     if(i == 1) {
-        spiral_rect(0, 0, r1$lengths[1], 1, gp = gpar(fill = meth_col[r1$values[1]], col = NA))
+        spiral_rect(0, 0, r1$lengths[1], 1, gp = gpar(fill = tumor_col[r1$values[1]], col = NA))
     } else {
         spiral_rect(sum(r1$lengths[1:(i-1)]), 0, sum(r1$lengths[1:i]), 1, gp = gpar(fill = tumor_col[r1$values[i]], col = NA))
     }
