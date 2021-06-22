@@ -85,6 +85,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/spiralize.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -95,7 +98,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+      <a href="../articles/annotate.html">Annotate the Plot</a>
+    </li>
+    <li>
+      <a href="../articles/examples.html">Real World Examples</a>
+    </li>
+    <li>
+      <a href="../articles/special_data_type.html">Initialize Spirals by Special Data Types</a>
     </li>
   </ul>
 </li>
@@ -132,8 +141,8 @@
     <pre class="usage"><span class='fu'>spiral_initialize</span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='fl'>5</span>,
     scale_by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"angle"</span>, <span class='st'>"curve_length"</span><span class='op'>)</span>,
     flip <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>, <span class='st'>"vertical"</span>, <span class='st'>"horizontal"</span>, <span class='st'>"both"</span><span class='op'>)</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span>,
-    polar_lines <span class='op'>=</span> <span class='cn'>TRUE</span>, polar_lines_by <span class='op'>=</span> <span class='fl'>30</span>, polar_lines_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='st'>"grey"</span>, lty <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
-    padding <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>5</span>, <span class='st'>"mm"</span><span class='op'>)</span>, newpage <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    polar_lines <span class='op'>=</span> <span class='cn'>TRUE</span>, polar_lines_by <span class='op'>=</span> <span class='fl'>30</span>, polar_lines_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='st'>"#404040"</span>, lty <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
+    padding <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>5</span>, <span class='st'>"mm"</span><span class='op'>)</span>, newpage <span class='op'>=</span> <span class='cn'>TRUE</span>, vp_param <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -181,6 +190,10 @@
     <tr>
       <th>newpage</th>
       <td><p>Whether to apply <code><a href='https://rdrr.io/r/grid/grid.newpage.html'>grid.newpage</a></code> before making the plot?</p></td>
+    </tr>
+    <tr>
+      <th>vp_param</th>
+      <td><p>A list of parameters sent to <code><a href='https://rdrr.io/r/grid/viewport.html'>viewport</a></code>.</p></td>
     </tr>
     </table>
 

@@ -7,7 +7,7 @@ output:
     fig_caption: true
     css: main.css
 vignette: >
-  %\VignetteIndexEntry{Annotate the Plot}
+  %\VignetteIndexEntry{3. Annotate the Plot}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -170,3 +170,34 @@ lt = spiral_horizon(df$date, df$diff, use_bars = TRUE)
 lgd = horizon_legend(lt, title = "log2(difference)")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
+
+In previous examples, the spiral is always drawn in the center of the image, which results in that there are large white area
+in the right part of the image. See the following image which is the same as the previous one but I additionally add border of the image and border of the spiral viewport.
+
+```{r, fig.width = 8, results = "hide", echo = FALSE}
+grid.rect()
+spiral_initialize_by_time(xlim = range(df$date), newpage = FALSE)
+spiral_track(height = 0.9)
+lt = spiral_horizon(df$date, df$diff, use_bars = TRUE)
+grid.rect(gp = gpar(fill = NA))
+
+lgd = horizon_legend(lt, title = "log2(difference)")
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
+```
+
+Actually the position of the spiral viewport can be controlled with argument `vp_param` which is a list of parameters and will
+be sent to the function `viewport()` that contruct teh spiral viewport. E.g. to move the spiral viewport to the most left of the image:
+
+
+```{r, fig.width = 8, results = "hide"}
+spiral_initialize_by_time(xlim = range(df$date), vp_param = list(x = unit(0, "npc"), just = "left"))
+spiral_track(height = 0.9)
+lt = spiral_horizon(df$date, df$diff, use_bars = TRUE)
+grid.rect(gp = gpar(fill = NA))
+
+lgd = horizon_legend(lt, title = "log2(difference)")
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
+```
+
+
+

@@ -8,7 +8,7 @@ output:
     css: main.css
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Real World Examples}
+  %\VignetteIndexEntry{4. Real World Examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -52,13 +52,13 @@ spiral_initialize_by_time(xlim = range(df[, 1]), padding = unit(2, "cm"))
 spiral_track(height = 0.8)
 spiral_horizon(df$date, df$diff, use_bars = TRUE)
 
-spiral_highlight("2015-05-01", "2015-12-31", type = "line", gp = gpar(col = 2))
+spiral_highlight("start",      "2015-12-31", type = "line", gp = gpar(col = 2))
 spiral_highlight("2016-01-01", "2016-12-31", type = "line", gp = gpar(col = 3))
 spiral_highlight("2017-01-01", "2017-12-31", type = "line", gp = gpar(col = 4))
 spiral_highlight("2018-01-01", "2018-12-31", type = "line", gp = gpar(col = 5))
 spiral_highlight("2019-01-01", "2019-12-31", type = "line", gp = gpar(col = 6))
 spiral_highlight("2020-01-01", "2020-12-31", type = "line", gp = gpar(col = 7))
-spiral_highlight("2021-01-01", "2021-06-16", type = "line", gp = gpar(col = 8))
+spiral_highlight("2021-01-01", "end",        type = "line", gp = gpar(col = 8))
 
 s = current_spiral()
 d = seq(15, 360, by = 30) %% 360
@@ -214,7 +214,7 @@ spiral_initialize_by_time(xlim = range(date), unit_on_axis = "months", period = 
 spiral_track()
 col_fun = colorRamp2(seq(min(df$sunspot_number), max(df$sunspot_number), length = 3), c("blue", "white", "red"))
 lt = spiral_horizon(date, df$sunspot_number, use_bar = TRUE)
-lgd = horizon_legend(lt, direction = "positive", title = "Sunspot count", format = "%i")
+lgd = horizon_legend(lt, direction = "positive", title = "Sunspot count", format = "%.0f")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 

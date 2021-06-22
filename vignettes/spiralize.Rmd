@@ -8,7 +8,7 @@ output:
     css: main.css
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Visualize Data on Spirals}
+  %\VignetteIndexEntry{1. Visualize Data on Spirals}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

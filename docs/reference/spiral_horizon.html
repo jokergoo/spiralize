@@ -85,6 +85,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/spiralize.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -95,7 +98,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/spiral.html">Visualize Data on Spirals</a>
+      <a href="../articles/annotate.html">Annotate the Plot</a>
+    </li>
+    <li>
+      <a href="../articles/examples.html">Real World Examples</a>
+    </li>
+    <li>
+      <a href="../articles/special_data_type.html">Initialize Spirals by Special Data Types</a>
     </li>
   </ul>
 </li>
@@ -184,10 +193,9 @@
 distribution-like graphics.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of three objects:</p>
+    <p>A list of the following objects:</p>
 <ul>
-<li><p>a color mapping function for positive colors.</p></li>
-<li><p>a color mapping function for negative colors.</p></li>
+<li><p>a color mapping function for colors.</p></li>
 <li><p>a vector of intervals that split the data.</p></li>
 </ul>
 
@@ -204,11 +212,11 @@ distribution-like graphics.</p>
 </div><div class='output co'>#&gt; <span class='error'>Error in quantile(v, 0.95): object 'v' not found</span></div><div class='input'><span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='op'>(</span><span class='va'>day_diff</span><span class='op'>/</span><span class='fl'>364</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># a circle 52 weeks</span>
 </div><div class='output co'>#&gt; <span class='error'>Error: Length of `xlim` should be two.</span></div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0.9</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in data.frame(i = track_index, ymin = ylim[1], ymax = ylim[2], rmin = sum_height *     dist, rmax = (sum_height + height) * dist, rel_height = height): arguments imply differing number of rows: 1, 0</span></div><div class='input'><span class='fu'>spiral_horizon</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span>, <span class='va'>v</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in if (!(get_track_data("ymin", track_index) == 0 &amp; get_track_data("ymax",     track_index) == 1)) {    stop_wrap("The horizon track must have 'ylim = c(0, 1)'.")}: argument is of length zero</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in 1:nrow(df): argument of length 0</span></div><div class='input'>
 <span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='op'>(</span><span class='va'>day_diff</span><span class='op'>/</span><span class='fl'>364</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error: Length of `xlim` should be two.</span></div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0.9</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in data.frame(i = track_index, ymin = ylim[1], ymax = ylim[2], rmin = sum_height *     dist, rmax = (sum_height + height) * dist, rel_height = height): arguments imply differing number of rows: 1, 0</span></div><div class='input'><span class='fu'>spiral_horizon</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span>, <span class='va'>v</span>, use_bars <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in if (!(get_track_data("ymin", track_index) == 0 &amp; get_track_data("ymax",     track_index) == 1)) {    stop_wrap("The horizon track must have 'ylim = c(0, 1)'.")}: argument is of length zero</span></div><div class='input'><span class='co'># }</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in 1:nrow(df): argument of length 0</span></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
