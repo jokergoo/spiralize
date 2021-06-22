@@ -892,10 +892,11 @@ split_vec_by_NA = function(x) {
 # -title Title of the legend.
 # -format Number format of the legend labels.
 # -template Template to construct the labels.
+# -direction Whether only show the positive or negative values in the legend or both.
 # -... Pass to `ComplexHeatmap::Legend`.
 #
 horizon_legend = function(lt, title = "", format = "%.2f",
-	template = "[{x1}, {x2}]", ...) {
+	template = "[{x1}, {x2}]", direction = c("both", "positive", "negative"), ...) {
 
 	interval = lt$interval
 	col_fun = lt$col_fun
@@ -906,6 +907,20 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 	x1 = interval[1:(n - 1)]
 	x2 = interval[2:n]
 	labels = qq(template, collapse = FALSE, code.pattern = "\\{CODE\\}")
+
+	direction = match.arg(direction)[1]
+
+	if(direction == "positive") {
+		l = at > 0
+		at = at[l]
+		labels = labels[l]
+		at = rev(at)
+		labels = rev(labels)
+	} else if(direction == "negative") {
+		l = at < 0
+		at = at[l]
+		labels = labels[l]
+	}
 
 	Legend(title = title, at = at, labels = labels, legend_gp = gpar(fill = col_fun(at)), ...)
 }

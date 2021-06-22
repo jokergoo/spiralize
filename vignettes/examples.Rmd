@@ -34,6 +34,7 @@ library(circlize)
 library(ComplexHeatmap)
 ```
 
+## ggplot2 daily downloads
 
 ```{r, fig.width = 10}
 df = readRDS(system.file("extdata", "ggplot2_downloads.rds", package = "spiralize"))
@@ -76,6 +77,7 @@ lgd = packLegend(
 draw(lgd, x = unit(1, "npc") + unit(10, "mm"), just = "left")
 ```
 
+## Classification of central nervous system tumors
 
 ```{r}
 # https://www.nature.com/articles/nature26000
@@ -100,8 +102,8 @@ for(i in seq_along(r1$lengths)) {
 }
 ```
 
-```{r, fig.width = 12, fig.height = 7}
-spiral_initialize(xlim = c(0, n), scale_by = "curve_length", x = unit(0, "npc"), just = "left")
+```{r, fig.width = 13, fig.height = 7}
+spiral_initialize(xlim = c(0, n), scale_by = "curve_length", vp_param = list(x = unit(0, "npc"), just = "left"))
 
 spiral_track(height = 0.4)
 meth_col = structure(names = unique(df$meth_class), unique(df$meth_col))
@@ -134,10 +136,16 @@ for(i in seq_along(r1$lengths)) {
     }
 }
 
-lgd = Legend(title = "Methylation classes", at = unique(df$meth_class),
-        legend_gp = gpar(fill = unique(df$meth_col)), ncol = 3)
+lgd_list = tapply(1:nrow(df), df$tumor_type, function(ind) {
+    Legend(title = df$tumor_type[ind][1], at = unique(df$meth_class[ind]),
+        legend_gp = gpar(fill = unique(df$meth_col[ind])))
+})
+
+lgd = packLegend(list = lgd_list, max_height = unit(7, "inch"))
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
+
+## First 5000 digits of &pi;
 
 
 ```{r}
@@ -149,13 +157,13 @@ pi_digits = as.integer(pi_digits)
 pi_digits = pi_digits[1:5000]
 head(pi_digits)
 
-spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve", polar_lines = FALSE)
 spiral_track(height = 1, background = FALSE)
 spiral_points(1:5000-0.5, 0.5, pch = 16, size = unit((pi_digits+1)/5, "mm"), gp = gpar(col = pi_digits + 1))
 ```
 
 ```{r}
-spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve", polar_lines = FALSE)
 spiral_track(height = 1, background = FALSE)
 
 x = which(pi_digits == 1)
@@ -179,30 +187,38 @@ spiral_track()
 spiral_phylo(tree)
 ```
 
+## Global temperature change
 
-```{r}
+```{r, fig.width = 8}
 # https://datahub.io/core/global-temp
 df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
 df = df[df$Source == "GCAG", ]
 
-spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", 
-    period_per_loop = 10, polar_lines_by = 360/10)
+spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period = "year",
+    period_per_loop = 20, polar_lines_by = 360/20, vp_param = list(x = unit(0, "npc"), just = "left"))
 spiral_track()
-spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
+lt = spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
+lgd = horizon_legend(lt, title = "Temperature difference")
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
+## Sunspot cycle
 
-```{r}
+```{r, fig.width = 8}
 # http://www.astrostatistics.org/projects/solar-cycle
 df = readRDS(system.file("extdata", "sunspot.rds", package = "spiralize"))
-n = nrow(df)
+date = as.Date(paste(df$year, df$month, "1", sep = "-"))
 
-spiral_initialize(c(0, n), end = 360*nrow(df)/12/11, polar_lines_by = 360/11)
+spiral_initialize_by_time(xlim = range(date), unit_on_axis = "months", period = "years", period_per_loop = 11, polar_lines_by = 360/11,
+    vp_param = list(x = unit(0, "npc"), just = "left"))
 spiral_track()
 col_fun = colorRamp2(seq(min(df$sunspot_number), max(df$sunspot_number), length = 3), c("blue", "white", "red"))
-spiral_horizon(1:n - 0.5, df$sunspot_number, use_bar = TRUE)
+lt = spiral_horizon(date, df$sunspot_number, use_bar = TRUE)
+lgd = horizon_legend(lt, direction = "positive", title = "Sunspot count", format = "%i")
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
+## DNA sequence alignment
 
 
 ```{r, fig.width = 8, fig.height = 8}
@@ -232,3 +248,37 @@ spiral_segments(x, 0.35, x, 0.65)
 ```
 
 
+
+
+<script src="jquery.min.js"></script>
+<script src="jquery.sticky.js"></script>
+<script>
+$(document).ready(function(){
+    $("#TOC").sticky({
+        topSpacing: 0,
+        zIndex:1000    
+    })
+    $("#TOC").on("sticky-start", function() {
+
+        $("<p style='font-size:1.2em; padding-left:4px;'><a id='TOC-click'>Table of Content</a></p>").insertBefore($("#TOC ul:first-child"));
+        $("#TOC-click").hover(function() {
+            $(this).css("color", "#0033dd").css("cursor", "pointer");
+            $("#TOC").children().first().next().show();
+            $("#TOC").hover(function() {
+                $(this).children().first().next().show();
+            }, function() {
+                $(this).children().first().next().hide();
+                $("body").off("hover", "#TOC");
+            })
+        }, function() {
+            $(this).css("color", "#0033dd");
+        })
+        $("#TOC").children().first().next().hide();
+
+    })
+    $("#TOC").on("sticky-end", function() {
+        $("#TOC").children().first().remove();
+        $("#TOC").children().first().show();
+    })
+});
+</script>

@@ -19,7 +19,7 @@
 # -polar_lines_gp Graphics parameters for the polar lines.
 # -padding Padding of the plotting region. The value can be a `grid::unit` of length of one to two.
 # -newpage Whether to apply `grid::grid.newpage` before making the plot?
-# -... Pass to `grid::viewport`.
+# -vp_param A list of parameters sent to `grid::viewport`.
 #
 # == example
 # spiral_initialize(); spiral_track()
@@ -46,8 +46,8 @@
 spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5, 
 	scale_by = c("angle", "curve_length"), 
 	flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
-	polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "grey", lty = 3), 
-	padding = unit(5, "mm"), newpage = TRUE, ...) {
+	polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "#404040", lty = 3), 
+	padding = unit(5, "mm"), newpage = TRUE, vp_param = list()) {
 
 	spiral_clear(check_vp = FALSE)
 
@@ -88,10 +88,20 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 	if(newpage) {
 		grid.newpage()
 	}
-	pushViewport(viewport(name = paste0("spiral_", spiral_env$i_spiral),
+
+	vp_param2 = list(name = paste0("spiral_", spiral_env$i_spiral),
 		width = unit(1, "snpc") - padding[1], 
 		height = unit(1, "snpc") - padding[2],
-		xscale = c(-abs_max_x, abs_max_x), yscale = c(-abs_max_y, abs_max_y), ...))
+		xscale = c(-abs_max_x, abs_max_x), yscale = c(-abs_max_y, abs_max_y))
+	if("width" %in% names(vp_param)) {
+		vp_param2$width = NULL
+	}
+	if("height" %in% names(vp_param)) {
+		vp_param2$height = NULL
+	}
+	vp_param = vp_param[!names(vp_param) %in% c("xscale", "yscale")]
+	vp_param2 = c(vp_param2, vp_param)
+	pushViewport(do.call(viewport, vp_param2))
 
 	if(polar_lines) {
 		d = seq(0, 360, by = polar_lines_by)

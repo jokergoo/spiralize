@@ -1,8 +1,8 @@
 # Visualize Data on Spirals <img width="150" src="https://user-images.githubusercontent.com/449218/121876090-723e0900-cd09-11eb-8d0d-82fbeeb83997.png" align="right">
 
 
-[![Build Status](https://travis-ci.org/jokergoo/spiralize.svg)](https://travis-ci.org/jokergoo/spiralize) 
-[![codecov](https://img.shields.io/codecov/c/github/jokergoo/spiralize.svg)](https://codecov.io/github/jokergoo/spiralize) 
+ [![R-CMD-check](https://github.com/jokergoo/spiral/workflows/R-CMD-check/badge.svg)](https://github.com/jokergoo/spiral/actions)
+ [![codecov](https://img.shields.io/codecov/c/github/jokergoo/spiralize.svg)](https://codecov.io/github/jokergoo/spiralize) 
 
 ## Features
 

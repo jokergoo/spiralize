@@ -10,8 +10,8 @@ Initialize the spiral
 spiral_initialize(xlim = c(0, 1), start = 360, end = 360*5,
     scale_by = c("angle", "curve_length"),
     flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
-    polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "grey", lty = 3),
-    padding = unit(5, "mm"), newpage = TRUE, ...)
+    polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "#404040", lty = 3),
+    padding = unit(5, "mm"), newpage = TRUE, vp_param = list())
 }
 \arguments{
 
@@ -26,7 +26,7 @@ spiral_initialize(xlim = c(0, 1), start = 360, end = 360*5,
   \item{polar_lines_gp}{Graphics parameters for the polar lines.}
   \item{padding}{Padding of the plotting region. The value can be a \code{\link[grid]{unit}} of length of one to two.}
   \item{newpage}{Whether to apply \code{\link[grid]{grid.newpage}} before making the plot?}
-  \item{...}{Pass to \code{\link[grid]{viewport}}.}
+  \item{vp_param}{A list of parameters sent to \code{\link[grid]{viewport}}.}
 
 }
 \examples{

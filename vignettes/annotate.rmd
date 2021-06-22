@@ -59,7 +59,7 @@ assume period is day, I add hour names to the corresponding sectors in the polar
 to the start and end of the spiral.
 
 ```{r}
-spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-04 23:59:59"), padding = unit(1.5, "cm"))
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-04 23:59:59"), padding = unit(2, "cm"))
 spiral_track()
 
 s = current_spiral()
