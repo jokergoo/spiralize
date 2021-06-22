@@ -46,7 +46,8 @@
 spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5, 
 	scale_by = c("angle", "curve_length"), 
 	flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
-	polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "#404040", lty = 3), 
+	polar_lines = scale_by == "angle", polar_lines_by = 30, 
+	polar_lines_gp = gpar(col = "#404040", lty = 3), 
 	padding = unit(5, "mm"), newpage = TRUE, vp_param = list()) {
 
 	spiral_clear(check_vp = FALSE)
