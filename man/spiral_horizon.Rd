@@ -30,11 +30,10 @@ Since the track height is very small in the spiral, horizon chart visualization 
 distribution-like graphics.
 }
 \value{
-A list of three objects:
+A list of the following objects:
 
 \itemize{
-  \item a color mapping function for positive colors.
-  \item a color mapping function for negative colors.
+  \item a color mapping function for colors.
   \item a vector of intervals that split the data.
 }
 }

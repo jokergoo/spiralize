@@ -36,8 +36,8 @@ library(GetoptLong)
 In this vignette, I describe the package **spiralize** which visualizes data along an Archimedean spiral.
 It has two major advantages for visualization:
 
-1. able to visualize data with very long axis with high resolution,
-2. efficient to visualize periodic data.
+1. It is able to visualize data with very long axis with high resolution.
+2. It is efficient for periodic data to reveal periodic patterns.
 
 
 ## The Archimedean spiral
@@ -47,11 +47,11 @@ spiral](https://en.wikipedia.org/wiki/Archimedean_spiral) has the following form
 
 $$ r = b \cdot \theta $$
 
-where $b$ controls the distance between two loops. The distance between two neighbouring loops for a given $\theta$ is:
+where $b$ controls the distance between two loops. The radical distance between two neighbouring loops for a given $\theta$ is:
 
 $$ d(\theta) = r(\theta + 2\pi) - r(\theta) = b \cdot (\theta + 2\pi) - b \cdot \theta = b \cdot 2\pi $$
 
-This shows the distance between two neighbouring loops is independent to the value of $\theta$ and is a constant value. The following 
+This shows the radical distance between two neighbouring loops is independent to the value of $\theta$ and is a constant value. The following 
 figure demonstrates an Archimedean spiral with 4 loops ($\theta \in [0, 8\pi]$).
 
 
@@ -96,15 +96,20 @@ Note $\theta$ can also be negative values where the spiral is mirrored by _y_-ax
 positive values. The mirrored spiral can be set by the `flip` argument which is introduced later
 in this vignette.
 
-Since the distance between any two neighbouring loops for a given $\theta$ is
-constant, it is a ideal place to put tracks along the curve where the tracks
+Since the distance between any two neighbouring loops for any given $\theta$ is
+constant, it is a ideal place to put tracks along the spiral where the tracks
 have identical radical heights everywhere. Later the tracks can be served as
 virtual coordinate systems to map to data. This is why the package is called
 "_spiralize_" (to transform a normal Cartesian coordinate system to a curved
 spiral shape). The following two figures demonstrate a spiral with one track
 and with two tracks. The red line is the spiral itself. The spiral ranges
-between $\pi/2$ and $6\pi$.
+between $\pi/2$ and $6\pi$. It is easy to see the upper border of each track
+is also a spiral but with an offset $a$:
 
+
+$$ r = a + b \cdot \theta $$
+
+where $a$ is the offset to the "Base spiral" (the red spiral in the following plots).
 
 ```{r, fig.width = 10, fig.height = 5, echo = FALSE}
 grid.newpage()
@@ -131,17 +136,17 @@ popViewport()
 ## The layout of the spiral
 
 The function `spiral_initialize()` is used to intialize the spiral. Arguments `start` and `end` control
-the range of the spiral. Here the values should be in degrees and they are converted to radians internally.
+the angular range of the spiral. Here the values should be in degrees and they are converted to radians internally.
 
 In **spiralize**, the parameter $b$ in the spiral equation $r = b \cdot \theta$ is set to $b = 1/2\pi$, so that the distance
 between two neighbouring loops is $d = 1$. Denote $\theta_e$ as the
-end angle (in radians) of the spiral, the ranges of the viewport on both _x_-axis and _y_-axis that draw the spiral are $[-x, x]$ where
+end angle (in radians) of the spiral, the ranges of the viewport (under **grid** graphics system) on both _x_-axis and _y_-axis that draw the spiral are $[-x, x]$ where
 
 $$x = b \cdot \theta_e + d = 1/2\pi \cdot \theta_e + 1$$
 
 
 The following two plots demonstrate different values of `start` and `end`. Also as shown in the following example code,
-I suggest to set the values of `start` and `end` in a form of `360*a + b`, e.g. `360*4 + 90`, so that it is straighforward
+I suggest to set the values of `start` and `end` in a form of `360*a + b`, e.g. `360*4 + 180`, so that it is straighforward
 to know the positions in the ploar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).
 
 ```{r, eval = FALSE}
@@ -150,7 +155,7 @@ spiral_initialize(start = 90, end = 360)
 spiral_track()
 
 # the right plot
-spiral_initialize(start = 180, end = 360*5)
+spiral_initialize(start = 180, end = 360*4 + 180)
 spiral_track()
 ```
 
@@ -165,7 +170,7 @@ popViewport()
 
 pushViewport(viewport(x = 0.75, width = 0.5))
 
-spiral_initialize(start = 180, end = 360*5, newpage = FALSE)
+spiral_initialize(start = 180, end = 360*4 + 180, newpage = FALSE)
 spiral_track()
 spiral_clear()
 popViewport()
@@ -225,7 +230,7 @@ p4 = grid.grabExpr({
 plot_grid(p1, p2, p3, p4, nrow = 2)
 ```
 
-Argument `scale_by` controls how to linearly interpolate the data on the
+Argument `scale_by` controls how to linearly scale the data on the
 spiral. It allows value of `"angle"` or `"curve_length"` (or for short,
 `"curve"`). `"angle"` means equal difference on data corresponds to equal
 difference of angles in the polar coordinates. `"curve_length"` means equal
@@ -283,7 +288,8 @@ plot_grid(p1, p2)
 As you can see, when `scale_by` is set to `"angle"`, in outer loops, even when the actually difference
 on data is the same, the physical widths are larger than these in inner loops. However, when the data is 
 time series or periodic, `"angle"` is the proper choice because it is easy to directly compare between loops
-which are the same time points over different periods.
+which are the same time points over different periods. As a comparison, `"curve_length"` won't provide any
+periodic information.
 
 The spiral grows from inner loops to outer loops, thus, by default, data increases from
 the inner loops as well. This can be reversed by setting argument `reverse = TRUE`. See
@@ -354,7 +360,7 @@ plot_grid(p1, p2)
 
 After the spiral is intialized, next we can add tracks along it. Argument `height` controls
 the height of the track. The value of `height` is a value between 0 and 1 which is the fraction of the distance
-between two neighbouring loops in the spiral. In the following left plot, I added black border to the track 
+between two neighbouring loops in the spiral. In the following left plot, I add black border to the track 
 by setting the argument `background_gp`.
 
 ```{r, eval = FALSE}
@@ -391,7 +397,7 @@ spiral_track(height = 0.2, background_gp = gpar(fill = 3))
 spiral_track(height = 0.1, background_gp = gpar(fill = 4))
 ```
 
-Data range on _y_-axis is specified by the argument `ylim`. In the following example, I also added a _y_-axis
+Data range on _y_-axis is specified by the argument `ylim`. In the following example, I also add a _y_-axis
 by `spiral_yaxis()`.
 
 ```{r}
@@ -701,6 +707,9 @@ plot_grid(p1, p2)
 dev.off()
 ```
 
+one last thing for drawing text is that the argument `nice_facing` can be set to `TRUE` so that the rotation
+of texts are automatically adjusted so that they are easy to read, i.e. all the texts always face the lower part of the polar coordinate system.
+
 ### Axis
 
 `spiral_aixs()` draws axis along the spiral. So it is the _x_-axis of the data.
@@ -715,10 +724,12 @@ Argument `major_at` or simply `at` controls the break points on the axis and arg
 controls the corresponding axis labels.
 
 ```{r, eval = FALSE}
+# the left plot
 spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
 spiral_track(height = 0.6)
 spiral_axis(major_at = seq(0, 360*4, by = 30))
 
+# the right plot
 spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5)
 spiral_track(height = 0.6)
 spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
@@ -795,6 +806,7 @@ the mean of the current year, between 2015-01-01 to 2020-12-31.
 # The data can be downloaded by the next line. The data object is already saved in spiralize package.
 # df = cranlogs::cran_downloads("ggplot2", from = "2015-01-01")
 df = readRDS(system.file("extdata", "ggplot2_downloads.rds", package = "spiralize"))
+# to simplify the data, I only take the complete years between 2015 and 2020
 df = df[df$date < as.Date("2021-01-01"), ]
 day_diff = as.double(df$date[nrow(df)] - df$date[1], "days")
 year_mean = tapply(df$count, lubridate::year(df$date), function(x) mean(x[x > 0]))
@@ -919,13 +931,15 @@ spiral_highlight_by_sector(216, 252, 936, 972, gp = gpar(fill = "blue"))
 ### Dendrograms and phylogenetic trees
 
 When the dendrograms or phlogenetic trees have huge number of leaves, it is also suitable to use spiral to visualize them. 
-There are two functions `spiral_dendrogram()` for `dendrogram` objects and `spiral_phylo()` for
+There are two functions: `spiral_dendrogram()` for `dendrogram` objects and `spiral_phylo()` for
 `phylo` objects.
+
+
+Note since dendrograms or phylogenetic trees do not have "periodic patterns",
+`scale_by` in `spiral_initialize()` is usually set to `"curve_length"`.
 
 The `dendrogram` object can be rendered with **dendextend** package. See the following examples.
 
-Also since dendrograms or phylogenetic trees do not have "periodic patterns",
-`scale_by` in `spiral_initialize()` is usually set to `"curve_length"`.
 
 ```{r, eval = FALSE}
 dend = as.dendrogram(hclust(dist(runif(1000))))
@@ -963,8 +977,8 @@ plot_grid(p1, p2)
 ```
 
 `spiral_phylo()` works on the `phylo` object. In the following example, to cut the phylogenetic tree into several parts, 
-the `phylo` object is converted to a `dendrogram` by the function `phylo_to_dendrogram()`, later `denddrogram::cutree.dendrogram()`
-is applied to obtain the classifications.
+the `phylo` object is converted to a `dendrogram` by the function `phylo_to_dendrogram()`, later `dendextend::cutree.dendrogram()`
+is applied to obtain the splits.
 
 ```{r}
 library(ape)
@@ -976,8 +990,8 @@ spiral_initialize(xlim =c(0, n), start = 360, end = 360*2 + 180, scale_by = "cur
 spiral_track()
 spiral_phylo(tree.hiv)
 
-cl = cutree(phylo_to_dendrogram(tree.hiv), k = 8)
-tb = table(cl)
+split = cutree(phylo_to_dendrogram(tree.hiv), k = 8)
+tb = table(split)
 for(i in seq_along(tb)) {
     if(i == 1) {
         spiral_highlight(0, tb[1], gp = gpar(fill = i))
@@ -987,7 +1001,44 @@ for(i in seq_along(tb)) {
 }
 ```
 
+## Utility functions
 
+There are several utility functions which help to get the information of current spiral plot. `spiral_info()` prints
+the general information of current spiral:
+
+```{r, echo = c(2, 3, 5)}
+pdf(NULL)
+spiral_initialize(xlim = c(0, 100))
+spiral_track(ylim = c(-1, 1))
+dev.off()
+spiral_info()
+```
+
+The special variable `TRACK_META` retrieves several meta-information of the current track.
+
+```{r}
+TRACK_META
+names(TRACK_META)
+```
+
+The following two functions convert the data coordinates to polar coordinates or the canvas coordinates
+(the coordinates where the graphics are finally drawn).
+
+- `xy_to_cartesian()`
+- `xy_to_polar()`
+
+The following three functions get or set the tracks:
+
+- `current_track_index()`
+- `set_current_track()`
+- `n_track()`
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
 
 
 <script src="jquery.min.js"></script>
@@ -1000,23 +1051,25 @@ $(document).ready(function(){
     })
     $("#TOC").on("sticky-start", function() {
 
-        $("<p style='font-size:1.2em; padding-left:4px;'><a id='TOC-click'>Table of Content (click to open or close)</a></p>").insertBefore($("#TOC ul:first-child"));
+        $("<p style='font-size:1.2em; padding-left:4px;'><a id='TOC-click'>Table of Content</a></p>").insertBefore($("#TOC ul:first-child"));
         $("#TOC-click").hover(function() {
             $(this).css("color", "#0033dd").css("cursor", "pointer");
+            $("#TOC").children().first().next().show();
+            $("#TOC").hover(function() {
+                $(this).children().first().next().show();
+            }, function() {
+                $(this).children().first().next().hide();
+                $("body").off("hover", "#TOC");
+            })
         }, function() {
             $(this).css("color", "#0033dd");
         })
         $("#TOC").children().first().next().hide();
 
-        $("#TOC-click").click(function() {
-            $("#TOC").children().first().next().toggle();
-        });
-
     })
     $("#TOC").on("sticky-end", function() {
         $("#TOC").children().first().remove();
         $("#TOC").children().first().show();
-        $("body").off("click", "#TOC-click");
     })
 });
 </script>

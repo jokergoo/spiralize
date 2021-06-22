@@ -74,8 +74,9 @@ spiral = setRefClass("spiral",
 		reverse = "logical",
 		xclass = "character",
 		get_numeric_x = "function",
-		get_charactor_x = "function",
-		clockwise = "logical"
+		get_character_x = "function",
+		clockwise = "logical",
+		other = "list"
 	),
 	methods = list(
 		show = function() {
@@ -84,8 +85,8 @@ spiral = setRefClass("spiral",
   b: @{.self$b}
   distance between two neighbouring circles: @{.self$dist}
   xlim: [@{.self$xlim[1]}, @{.self$xlim[2]}] @{ifelse(.self$reverse, '(from outside of the curve to the inside)', '')}
-  range of theta (in degree): [@{round(as.degree(.self$theta_lim[1], scale = FALSE))}, @{round(as.degree(.self$theta_lim[2], scale = FALSE))}]
-  The spiral curve is equally intepolated by @{.self$scale_by}.
+  range of theta (in degrees): [@{round(as.degree(.self$theta_lim[1], scale = FALSE))}, @{round(as.degree(.self$theta_lim[2], scale = FALSE))}]
+  The spiral curve is linearly scaled by @{.self$scale_by}.
 ")
 			if(.self$flip == "horizontal") {
 				cat("  spiral is flipped horizontally.\n")
@@ -113,8 +114,8 @@ spiral = setRefClass("spiral",
 			(tan(theta) + theta)/(1 - theta*tan(theta))
 		},
 		initialize = function(..., xclass = "numeric", get_numeric_x = function(x) x,
-			get_charactor_x = function(x) x) {
-			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_charactor_x = get_charactor_x)
+			get_character_x = function(x) x, other = list()) {
+			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_character_x = get_character_x, other = other)
 		},
 		draw_spiral = function(start = 0, end = 360*4, offset = 0) {
 			theta = seq(start, end, by = 1)

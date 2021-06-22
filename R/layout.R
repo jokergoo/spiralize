@@ -71,6 +71,12 @@ spiral_track = function(ylim = c(0, 1), height = 0.8, background = TRUE,
 			add_track(track_index, new_track_data)
 		}
 
+		if(spiral$theta_range/2/pi > 30) { # if there are more than 30 loops
+			if(missing(background)) {
+				background = FALSE
+			}
+		}
+
 		if(background) {
 			if(!"col" %in% names(background_gp)) {
 				background_gp$col = NA

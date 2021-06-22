@@ -69,7 +69,13 @@ xy_to_polar = function(x, y, track_index = current_track_index()) {
 	data.frame(theta = theta, r = r)
 }
 
-# just normal polar to cartesian conversion
+# == title
+# Convert polar coordinates to catersian coordinates
+#
+# == param
+# -theta Angles, in radians.
+# -r Radius.
+#
 polar_to_cartesian = function(theta, r) {
 	x = cos(theta)*r
 	y = sin(theta)*r
@@ -266,9 +272,9 @@ flip_theta = function(theta) {
 	spiral = spiral_env$spiral
 
 	if(spiral$flip == "horizontal") {
-		theta = 2*pi - theta 
+		theta = pi - theta 
 	} else if(spiral$flip == "vertical") {
-		theta = pi - theta
+		theta = 2*pi - theta
 	} else if(spiral$flip == "both") {
 		theta = theta - pi
 	} else {
@@ -280,9 +286,9 @@ flip_theta_back = function(theta) {
 	spiral = spiral_env$spiral
 
 	if(spiral$flip == "horizontal") {
-		theta = 2*pi - theta 
+		theta = pi - theta 
 	} else if(spiral$flip == "vertical") {
-		theta = pi - theta
+		theta = 2*pi - theta
 	} else if(spiral$flip == "both") {
 		theta = theta + pi
 	} else {

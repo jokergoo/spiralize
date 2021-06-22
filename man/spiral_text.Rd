@@ -9,6 +9,7 @@ Add texts to a track
 \usage{
 spiral_text(x, y, text, offset = NULL, gp = gpar(),
     facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
+    letter_spacing = 0,
     nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
     track_index = current_track_index(), ...)
 }
@@ -20,6 +21,7 @@ spiral_text(x, y, text, offset = NULL, gp = gpar(),
   \item{offset}{Radical offset of the text. The value should be a \code{\link[grid]{unit}} object.}
   \item{gp}{Graphical parameters.}
   \item{facing}{Facing of the text.}
+  \item{letter_spacing}{Space between two letters. The value is a fraction of the width of current letter. It only works for curved texts.}
   \item{nice_facing}{If it is true, the facing will be automatically adjusted for texts which locate at different positions of the spiral. Note \code{hjust} and \code{vjust} will also be adjusted.}
   \item{just}{The justification of the text relative to (x, y). The same setting as in \code{\link[grid]{grid.text}}.}
   \item{hjust}{Horizontal justification. Value should be numeric. 0 means the left of the text and 1 means the right of the text.}

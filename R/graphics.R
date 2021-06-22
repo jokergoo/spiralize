@@ -131,12 +131,20 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 
 	validate_xy(x0, y0, x1, y1)
 
+	n1 = length(x0)
+    n2 = length(y0)
+    n3 = length(x1)
+    n4 = length(y1)
+    n = max(c(n1, n2, n3, n4))
+    if(n1 == 1) x0 = rep(x0, n)
+    if(n2 == 1) y0 = rep(y0, n)
+    if(n3 == 1) x1 = rep(x1, n)
+    if(n4 == 1) y1 = rep(y1, n)
+
 	spiral = spiral_env$spiral
 	x0 = spiral$get_numeric_x(x0)
 	x1 = spiral$get_numeric_x(x1)
-	
-	n = length(x0)
-	
+		
 	if("col" %in% names(gp)) {
 		if(length(gp$col) == 1) gp$col = rep(gp$col, n)
 	} else {
@@ -174,8 +182,8 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 
 		if(ir + nb2 > k) {
 			# draw the segments
-			df_store = df_store[!is.na(df_store$x0), ]
-			grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
+			df_store = df_store[!is.na(df_store$x0), , drop = FALSE]
+			if(nrow(df_store)) grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
 
 			ir = 0
 			df_store = data.frame(x0 = rep(NA_real_, k), y0 = rep(NA_real_, k), x1 = rep(NA_real_, k), y1 = rep(NA_real_, k),
@@ -439,12 +447,24 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	}
 }
 
+# a single text
 curved_text = function(x, y, text, gp = gpar(), track_index = current_track_index(), 
 	facing = "inside", nice_facing = FALSE, vjust = 0.5, hjust = 0.5, letter_spacing = 0) {
 
 	spiral = spiral_env$spiral
 
 	letters = strsplit(text, "")[[1]]
+
+	df = xy_to_cartesian(x, y, track_index)
+	if(nice_facing) {
+		if(facing == "inside" && df$y < 0) {
+			facing = "outside"
+			vjust = 1 - vjust
+		} else if(facing == "outside" && df$y > 0) {
+			facing = "inside"
+			vjust = 1 - vjust
+		}
+	}
 
 	if(!spiral$clockwise && facing == "inside") {
 		letters = rev(letters)
@@ -458,7 +478,7 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 		offset = sum(letters_len[1:i]) - letters_len[i]*0.5 - sum(letters_len)*(1-hjust)
 		x0[i] = circular_extend_on_x(x, y, offset, track_index, "xy")
 	}
-	spiral_text(x0, y, letters, gp = gp, track_index = track_index, facing = facing, nice_facing = nice_facing, vjust = vjust)
+	spiral_text(x0, y, letters, gp = gp, track_index = track_index, facing = facing, vjust = vjust)
 }
 
 
@@ -543,13 +563,18 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 	spiral = spiral_env$spiral
 
 	if(is.null(major_at)) {
-		major_by = spiral$xrange/2/20 # the circle have median size is split into 20 sectors
-		digits = as.numeric(gsub("^.*e([+-]\\d+)$", "\\1", sprintf("%e", major_by))) - 1
-		major_by = round(major_by, digits = -1*digits)
-		major_at = seq(floor(spiral$xlim[1]/major_by)*major_by, spiral$xlim[2], by = major_by)
-		major_at = c(major_at, major_at[length(major_at)] + major_by)
+		# if(spiral$xclass == "Genomic positions") {
+			nb = round(spiral$spiral_length_range/(spiral$curve(mean(spiral$theta_lim))^2*pi/360*20))
+			major_at = pretty(spiral$xlim, nb)
+		# } else {
+		# 	major_by = spiral$xrange/2/20 # the circle have median size is split into 20 sectors
+		# 	digits = as.numeric(gsub("^.*e([+-]\\d+)$", "\\1", sprintf("%e", major_by))) - 1
+		# 	major_by = round(major_by, digits = -1*digits)
+		# 	major_at = seq(floor(spiral$xlim[1]/major_by)*major_by, spiral$xlim[2], by = major_by)
+		# 	major_at = c(major_at, major_at[length(major_at)] + major_by)
+		# }
 
-		labels = spiral$get_charactor_x(major_at)
+		labels = spiral$get_character_x(major_at)
 	} else {
 		major_at = spiral$get_numeric_x(major_at)
 		if(!(identical(labels, NULL) | identical(labels, TRUE) | identical(labels, FALSE))) {
@@ -568,6 +593,12 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 	spiral_radical_segments(major_at, h, offset = ifelse(axis_on_top, 1, -1)*major_ticks_length, track_index = track_index, gp = ticks_gp)
 
 	minor_at = NULL
+	if(identical(minor_ticks, FALSE)) {
+		minor_ticks = 0
+	}
+	if(missing(minor_ticks) && spiral$xclass == "Time") {
+		minor_ticks = 0
+	}
 	if(minor_ticks != 0) {
 		major_at2 = major_at
 		major_at2 = c(major_at[1] - diff(major_at)[1], major_at, major_at + diff(major_at)[length(major_at)-1])
@@ -601,7 +632,7 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		if(!axis_on_top) vjust = ifelse(vjust == 0, 1, 0)
 
 		if(missing(curved_labels)) {
-			if(spiral$xclass == "Date") {
+			if(spiral$xclass == "Time") {
 				curved_labels = TRUE
 			}
 		}
@@ -706,10 +737,9 @@ spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TR
 # distribution-like graphics.
 #
 # == value
-# A list of three objects:
+# A list of the following objects:
 # 
-# - a color mapping function for positive colors.
-# - a color mapping function for negative colors.
+# - a color mapping function for colors.
 # - a vector of intervals that split the data.
 #
 # == example
@@ -758,7 +788,6 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 	l = is.na(y)
 	y[l] = 0
 
-	interval = 0:n_slices*slice_size
 	pos_col_fun = colorRamp2(c(0, n_slices), c("white", pos_fill))
 	neg_col_fun = colorRamp2(c(0, n_slices), c("white", neg_fill))
 	for(i in seq_len(n_slices)) {
@@ -805,7 +834,14 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		}
 	}
 
-	invisible(list(pos_col_fun = pos_col_fun, neg_col_fun = neg_col_fun, interval = interval))
+	interval = 0:n_slices*slice_size
+	if(all(y >= 0)) {
+		col_fun = colorRamp2(c(0, n_slices*slice_size), c("white", pos_fill))
+		return(invisible(list(col_fun = col_fun, interval = interval)))
+	} else {
+		col_fun = colorRamp2(c(-n_slices*slice_size, 0, n_slices*slice_size), c(neg_fill, "white", pos_fill))
+		return(invisible(list(col_fun = col_fun, interval = seq(-n_slices, n_slices)*slice_size)))
+	}
 }
 
 add_horizon_polygons = function(x, y, slice_size = NULL, from_top = FALSE, ...) {
@@ -846,6 +882,32 @@ split_vec_by_NA = function(x) {
 	idx = 1 + cumsum(is.na(x))
 	not.na = !is.na(x)
 	split(x[not.na], idx[not.na])
+}
+
+# == title
+# Legend for the horizon chart
+#
+# == param
+# -lt The object returned by `spiral_horizon`.
+# -title Title of the legend.
+# -format Number format of the legend labels.
+# -template Template to construct the labels.
+# -... Pass to `ComplexHeatmap::Legend`.
+#
+horizon_legend = function(lt, title = "", format = "%.2f",
+	template = "[{x1}, {x2}]", ...) {
+
+	interval = lt$interval
+	col_fun = lt$col_fun
+	
+	n = length(interval)
+	at = interval[interval != 0]
+	interval = sprintf(format, interval)
+	x1 = interval[1:(n - 1)]
+	x2 = interval[2:n]
+	labels = qq(template, collapse = FALSE, code.pattern = "\\{CODE\\}")
+
+	Legend(title = title, at = at, labels = labels, legend_gp = gpar(fill = col_fun(at)), ...)
 }
 
 # == title
@@ -1104,8 +1166,16 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 	gp = gpar(fill = "red"), track_index = current_track_index()) {
 
 	spiral = spiral_env$spiral
-	x1 = spiral$get_numeric_x(x1)
-	x2 = spiral$get_numeric_x(x2)
+	if(identical(x1, "start")) {
+		x1 = spiral$xlim[1]
+	} else {
+		x1 = spiral$get_numeric_x(x1)
+	}
+	if(identical(x2, "end")) {
+		x2 = spiral$xlim[2]
+	} else {
+		x2 = spiral$get_numeric_x(x2)
+	}
 
 	if(x1 > x2) {
 		foo = x1
@@ -1201,6 +1271,10 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = unit(1, "mm"),
 	gp = gpar(fill = "red")) {
 
+	spiral = spiral_env$spiral
+	if(spiral$scale_by != "angle") {
+		stop_wrap("spiral_highlight_by_sector() can only be used when scale_by = 'angle'.")
+	}
 	# just to make sure x1/x2 is always smaller than x3/x4
 	if(x1 > x2) {
 		foo = x1
@@ -1237,8 +1311,6 @@ spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = un
 			stop_wrap("Angular difference between x3 and x4 should not be larger than a circle.")
 		}
 	}
-
-	spiral = spiral_env$spiral
 
 	# inner curve
 	df1 = xy_to_polar(c(x1, x2), rep(get_track_data("ymin", 1), 2), track_index = 1)
@@ -1292,3 +1364,7 @@ add_transparency = function (col, transparency = 0){
     rgb(t(col1/255), alpha = col1[4, ]/255)
 }
 
+
+spiral_rle = function(x, col) {
+
+}

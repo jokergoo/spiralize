@@ -248,7 +248,7 @@ nlevel2 = length(unique(cate2))
 cate1_col = structure(rand_color(nlevel1), names = unique(cate1))
 cate2_col = structure(rand_color(nlevel2), names = unique(cate2))
 
-n = length(x1)
+n = length(cate1)
 
 spiral_initialize(xlim =c(0, n), scale_by = "curve_length", reverse = TRUE)
 spiral_track()
@@ -337,4 +337,38 @@ p2 = grid.grabExpr({
 })
 
 plot_grid(p1, p2)
+
+
+
+spiral_initialize_by_time(xlim = c("2014-01-01", "2021-06-17"))
+spiral_track(height = 0.6)
+spiral_axis()
+
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-05 00:00:00"))
+spiral_track(height = 0.6)
+spiral_axis()
+
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-01 00:10:00"),
+	unit_on_axis = "secs", period = "mins")
+spiral_track(height = 0.6)
+spiral_axis()
+
+
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5, flip = "horizontal")
+spiral_track(height = 0.6)
+spiral_axis()
+spiral_highlight_by_sector(36, 72)
+spiral_highlight_by_sector(648, 684)
+spiral_highlight_by_sector(216, 252, 936, 972, gp = gpar(fill = "blue"))
+
+
+spiral_initialize(padding = unit(1.5, "cm"))
+spiral_track()
+
+d = seq(15, 360, by = 30) %% 360
+for(i in seq_along(d)) {
+	foo = polar_to_cartesian(d[i]/180*pi, (spiral_env$spiral$max_radius + 1))
+	grid.text(month.name[i], x = foo[1, 1], y = foo[1, 2], default.unit = "native",
+		rot = ifelse(d[i] > 0 & d[i] < 180, d[i] - 90, d[i] + 90), gp = gpar(fontsize = 10))
+}
 

@@ -134,3 +134,4 @@ validate_xy = function(...) {
 		stop_wrap("Arguments should have length 1 or have the same lengths.")
 	}
 }
+

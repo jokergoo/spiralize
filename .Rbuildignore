@@ -13,3 +13,4 @@ make_index.pl
 build_pkg_site.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.github$

@@ -20,15 +20,215 @@ knitr::opts_chunk$set(
     tidy  = FALSE,
     message = FALSE,
     warning = FALSE,
-    fig.width = 5,
-    fig.height = 5,
+    fig.width = 7,
+    fig.height = 7,
     fig.align = "center"
 )
 options(width = 100)
 ```
 
-```{r, echo = FALSE}
+
+```{r}
 library(spiralize)
-library(cowplot)
-library(GetoptLong)
+library(circlize)
+library(ComplexHeatmap)
 ```
+
+
+```{r, fig.width = 10}
+df = readRDS(system.file("extdata", "ggplot2_downloads.rds", package = "spiralize"))
+df = df[df$date > as.Date("2015-05-01"), ]
+day_diff = as.double(df$date[nrow(df)] - df$date[1], "days")
+year_mean = tapply(df$count, lubridate::year(df$date), function(x) mean(x[x > 0]))
+
+df$diff = log2(df$count/year_mean[as.character(lubridate::year(df$date))])
+df$diff[is.infinite(df$diff)] = 0
+q = quantile(abs(df$diff), 0.99)  # adjust outliers
+df$diff[df$diff > q] = q
+df$diff[df$diff < -q] = -q
+
+spiral_initialize_by_time(xlim = range(df[, 1]), padding = unit(2, "cm"))
+spiral_track(height = 0.8)
+spiral_horizon(df$date, df$diff, use_bars = TRUE)
+
+spiral_highlight("2015-05-01", "2015-12-31", type = "line", gp = gpar(col = 2))
+spiral_highlight("2016-01-01", "2016-12-31", type = "line", gp = gpar(col = 3))
+spiral_highlight("2017-01-01", "2017-12-31", type = "line", gp = gpar(col = 4))
+spiral_highlight("2018-01-01", "2018-12-31", type = "line", gp = gpar(col = 5))
+spiral_highlight("2019-01-01", "2019-12-31", type = "line", gp = gpar(col = 6))
+spiral_highlight("2020-01-01", "2020-12-31", type = "line", gp = gpar(col = 7))
+spiral_highlight("2021-01-01", "2021-06-16", type = "line", gp = gpar(col = 8))
+
+s = current_spiral()
+d = seq(15, 360, by = 30) %% 360
+for(i in seq_along(d)) {
+    foo = polar_to_cartesian(d[i]/180*pi, (s$max_radius + 1)*1.05)
+    grid.text(month.name[i], x = foo[1, 1], y = foo[1, 2], default.unit = "native",
+        rot = ifelse(d[i] > 0 & d[i] < 180, d[i] - 90, d[i] + 90), gp = gpar(fontsize = 10))
+}
+
+lgd = packLegend(
+    Legend(title = "Difference to\nyearly average", at = c("higher", "lower"),
+        legend_gp = gpar(fill = c("#D73027", "#313695"))),
+    Legend(title = "Year", type = "lines", at = 2015:2021,
+        legend_gp = gpar(col = 2:8))
+)
+draw(lgd, x = unit(1, "npc") + unit(10, "mm"), just = "left")
+```
+
+
+```{r}
+# https://www.nature.com/articles/nature26000
+df = readRDS(system.file("extdata", "CNS_tumour_classification.rds", package = "spiralize"))
+head(df)
+n = nrow(df)
+spiral_initialize(xlim = c(0, n), scale_by = "curve_length")
+spiral_track(height = 0.4)
+spiral_rect(1:n - 1, 0, 1:n, 1, gp = gpar(fill = df$meth_col, col = NA))
+spiral_track(height = 0.4)
+spiral_rect(1:n - 1, 0, 1:n, 1, gp = gpar(fill = df$tumor_col, col = NA))
+
+r1 = rle(as.vector(df$tumor_type))
+
+for(i in seq_along(r1$lengths)) {
+    if(i == 1) {
+        spiral_text(r1$lengths[1]/2, 0.5, r1$values[1], facing = "curved_inside", nice_facing = TRUE)
+    } else {
+        spiral_text( (sum(r1$lengths[1:(i-1)]) + sum(r1$lengths[1:i]))/2, 0.5, r1$values[i], 
+            facing = "curved_inside", nice_facing = TRUE)
+    }
+}
+```
+
+```{r, fig.width = 12, fig.height = 7}
+spiral_initialize(xlim = c(0, n), scale_by = "curve_length", x = unit(0, "npc"), just = "left")
+
+spiral_track(height = 0.4)
+meth_col = structure(names = unique(df$meth_class), unique(df$meth_col))
+r2 = rle(as.vector(df$meth_class))
+for(i in seq_along(r2$lengths)) {
+    if(i == 1) {
+        spiral_rect(0, 0, r2$lengths[1], 1, gp = gpar(fill = meth_col[r2$values[1]], col = NA))
+    } else {
+        spiral_rect(sum(r2$lengths[1:(i-1)]), 0, sum(r2$lengths[1:i]), 1, gp = gpar(fill = meth_col[r2$values[i]], col = NA))
+    }
+}
+
+spiral_track(height = 0.4)
+tumor_col = structure(names = unique(as.vector(df$tumor_type)), unique(df$tumor_col))
+r1 = rle(as.vector(df$tumor_type))
+for(i in seq_along(r1$lengths)) {
+    if(i == 1) {
+        spiral_rect(0, 0, r1$lengths[1], 1, gp = gpar(fill = meth_col[r1$values[1]], col = NA))
+    } else {
+        spiral_rect(sum(r1$lengths[1:(i-1)]), 0, sum(r1$lengths[1:i]), 1, gp = gpar(fill = tumor_col[r1$values[i]], col = NA))
+    }
+}
+
+for(i in seq_along(r1$lengths)) {
+    if(i == 1) {
+        spiral_text(r1$lengths[1]/2, 0.5, r1$values[1], facing = "curved_inside", nice_facing = TRUE)
+    } else {
+        spiral_text( (sum(r1$lengths[1:(i-1)]) + sum(r1$lengths[1:i]))/2, 0.5, r1$values[i], 
+            facing = "curved_inside", nice_facing = TRUE)
+    }
+}
+
+lgd = Legend(title = "Methylation classes", at = unique(df$meth_class),
+        legend_gp = gpar(fill = unique(df$meth_col)), ncol = 3)
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
+```
+
+
+```{r}
+# https://www.math.utah.edu/~alfeld/math/pi.html
+pi_txt = readLines(system.file("extdata", "pi_10000_digits.txt", package = "spiralize"))
+pi_txt = gsub("\\s", "", pi_txt)
+pi_digits = strsplit(pi_txt, "")[[1]][-(1:2)]
+pi_digits = as.integer(pi_digits)
+pi_digits = pi_digits[1:5000]
+head(pi_digits)
+
+spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+spiral_track(height = 1, background = FALSE)
+spiral_points(1:5000-0.5, 0.5, pch = 16, size = unit((pi_digits+1)/5, "mm"), gp = gpar(col = pi_digits + 1))
+```
+
+```{r}
+spiral_initialize(c(0,5000), end = 365*30, scale_by = "curve")
+spiral_track(height = 1, background = FALSE)
+
+x = which(pi_digits == 1)
+if(length(x) %% 2 == 1) x = x[-1]
+n = length(x)
+x1 = x[1:(n/2)*2 - 1]
+x2 = x[1:(n/2)*2]
+
+spiral_segments(x1, 0.5, x2, 0.5, gp = gpar(col = rand_color(length(x1)), lwd = runif(length(x1), min = 0.5, max = 6)))
+```
+
+```{r}
+# https://www.nature.com/articles/nmicrobiol201648
+library(ape)
+tree = readRDS(system.file("extdata", "life_tree_Nat_Microbiol_2016.rds", package = "spiralize"))
+tree
+
+n = length(tree$tip.label)
+spiral_initialize(xlim =c(0, n), scale_by = "curve_length", reverse = TRUE)
+spiral_track()
+spiral_phylo(tree)
+```
+
+
+```{r}
+# https://datahub.io/core/global-temp
+df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
+df = df[df$Source == "GCAG", ]
+
+spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", 
+    period_per_loop = 10, polar_lines_by = 360/10)
+spiral_track()
+spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
+```
+
+
+```{r}
+# http://www.astrostatistics.org/projects/solar-cycle
+df = readRDS(system.file("extdata", "sunspot.rds", package = "spiralize"))
+n = nrow(df)
+
+spiral_initialize(c(0, n), end = 360*nrow(df)/12/11, polar_lines_by = 360/11)
+spiral_track()
+col_fun = colorRamp2(seq(min(df$sunspot_number), max(df$sunspot_number), length = 3), c("blue", "white", "red"))
+spiral_horizon(1:n - 0.5, df$sunspot_number, use_bar = TRUE)
+```
+
+
+
+```{r, fig.width = 8, fig.height = 8}
+lines = readLines(system.file("extdata", "tp53_blast.txt", package = "spiralize"))
+query = lines[seq(1, length(lines), by = 4)]
+subject = lines[seq(3, length(lines), by = 4)]
+
+query = gsub("^\\S+\\s+\\S+\\s+|\\s+\\S+$", "", query)
+query = paste(query, collapse = "")
+query = strsplit(query, "")[[1]]
+
+subject = gsub("^\\S+\\s+\\S+\\s+|\\s+\\S+$", "", subject)
+subject = paste(subject, collapse = "")
+subject = strsplit(subject, "")[[1]]
+
+n = length(query)
+col = c("A" = 2, "T" = 4, "C" = 3, "G" = 7, "-" = "black")
+spiral_initialize(xlim = c(0, n), start = 180, end = 360*6, scale_by = "curve")
+spiral_track()
+# Here you may need to adjust the value of `fontsize` on your computer
+spiral_text(1:n, 0.3, query, facing = "inside", 
+    gp = gpar(fontsize = 6, col = col[query]), just = "top",)
+spiral_text(1:n, 0.7, subject, facing = "inside", 
+    gp = gpar(fontsize = 6, col = col[subject]), just = "bottom")
+x = which(query == subject)
+spiral_segments(x, 0.35, x, 0.65)
+```
+
+
