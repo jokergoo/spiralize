@@ -111,7 +111,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -141,7 +141,8 @@
     <pre class="usage"><span class='fu'>spiral_initialize</span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='fl'>5</span>,
     scale_by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"angle"</span>, <span class='st'>"curve_length"</span><span class='op'>)</span>,
     flip <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>, <span class='st'>"vertical"</span>, <span class='st'>"horizontal"</span>, <span class='st'>"both"</span><span class='op'>)</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span>,
-    polar_lines <span class='op'>=</span> <span class='cn'>TRUE</span>, polar_lines_by <span class='op'>=</span> <span class='fl'>30</span>, polar_lines_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='st'>"#404040"</span>, lty <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
+    polar_lines <span class='op'>=</span> <span class='va'>scale_by</span> <span class='op'>==</span> <span class='st'>"angle"</span>, polar_lines_by <span class='op'>=</span> <span class='fl'>30</span>,
+    polar_lines_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='st'>"#808080"</span>, lty <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
     padding <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>5</span>, <span class='st'>"mm"</span><span class='op'>)</span>, newpage <span class='op'>=</span> <span class='cn'>TRUE</span>, vp_param <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>

@@ -50,7 +50,8 @@ spiral_clear = function(check_vp = TRUE) {
 # spiral_track(height = 0.2, background_gp = gpar(fill = "green"))
 # spiral_track(height = 0.1, background_gp = gpar(fill = "blue"))
 spiral_track = function(ylim = c(0, 1), height = 0.8, background = TRUE, 
-	background_gp = gpar(col = NA, fill = "#EEEEEE"), track_index = current_track_index() + 1) {
+	background_gp = gpar(col = NA, fill = "#EEEEEE"), 
+	track_index = current_track_index() + 1) {
 
 	spiral = spiral_env$spiral
 	dist = spiral$dist

@@ -111,7 +111,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -138,7 +138,7 @@
     <p>Convert data coordinates to polar coordinates</p>
     </div>
 
-    <pre class="usage"><span class='fu'>xy_to_polar</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>xy_to_polar</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span>, flip <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,6 +154,10 @@
     <tr>
       <th>track_index</th>
       <td><p>Index of the track.</p></td>
+    </tr>
+    <tr>
+      <th>flip</th>
+      <td><p>If it is FALSE, it returns theta for the original spiral (before flipping).</p></td>
     </tr>
     </table>
 

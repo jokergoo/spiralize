@@ -70,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -91,9 +91,9 @@
       <h1 data-toc-skip>Visualize Data on Spirals</h1>
                         <h4 class="author">Zuguang Gu (<a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a>)</h4>
             
-            <h4 class="date">2021-06-22</h4>
+            <h4 class="date">2021-06-23</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiral/blob/master/vignettes/spiralize.Rmd"><code>vignettes/spiralize.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiralize/blob/master/vignettes/spiralize.Rmd"><code>vignettes/spiralize.Rmd</code></a></small>
       <div class="hidden name"><code>spiralize.Rmd</code></div>
 
     </div>
@@ -103,7 +103,7 @@
 <p>In this vignette, I describe the package <strong>spiralize</strong> which visualizes data along an Archimedean spiral. It has two major advantages for visualization:</p>
 <ol style="list-style-type: decimal">
 <li>It is able to visualize data with very long axis with high resolution.</li>
-<li>It is efficient for periodic data to reveal periodic patterns.</li>
+<li>It is efficient for time series data to reveal periodic patterns.</li>
 </ol>
 <div id="the-archimedean-spiral" class="section level2">
 <h2 class="hasAnchor">
@@ -119,6 +119,10 @@
 <p><span class="math display">\[ r = a + b \cdot \theta \]</span></p>
 <p>where <span class="math inline">\(a\)</span> is the offset to the “Base spiral” (the red spiral in the following plots).</p>
 <p><img src="spiralize_files/figure-html/unnamed-chunk-4-1.png" width="960" style="display: block; margin: auto;"></p>
+<p>Denote the maximal radius of the spiral as <span class="math inline">\(d_{max} = b \cdot \theta_{max}\)</span>, and denote the length of the spiral as <span class="math inline">\(l\)</span> (which has a complex form, see <a href="https://downloads.imagej.net/fiji/snapshots/arc_length.pdf" class="uri">https://downloads.imagej.net/fiji/snapshots/arc_length.pdf</a>), we can treat <span class="math inline">\(d_{max}\)</span> as the resolution of the visualization applied in the normal Cartesian coordinate system and <span class="math inline">\(l\)</span> as the resolution of the visualization applied on the spiral. Then the ratio of the two resolutions is:</p>
+<p><span class="math display">\[ ratio = \frac{l}{2d_{max}} \]</span></p>
+<p>E.g., for a spiral with 5 loops (<span class="math inline">\(\theta_{max} = 10\pi\)</span>), the ratio is 7.89, which means the spiral improves the resolution of visualization almost to 8 folds. Generally, the ratio increases almost linearly to the number of loops.</p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-6-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="the-layout-of-the-spiral" class="section level2">
 <h2 class="hasAnchor">
@@ -126,7 +130,7 @@
 <p>The function <code><a href="../reference/spiral_initialize.html">spiral_initialize()</a></code> is used to intialize the spiral. Arguments <code>start</code> and <code>end</code> control the angular range of the spiral. Here the values should be in degrees and they are converted to radians internally.</p>
 <p>In <strong>spiralize</strong>, the parameter <span class="math inline">\(b\)</span> in the spiral equation <span class="math inline">\(r = b \cdot \theta\)</span> is set to <span class="math inline">\(b = 1/2\pi\)</span>, so that the distance between two neighbouring loops is <span class="math inline">\(d = 1\)</span>. Denote <span class="math inline">\(\theta_e\)</span> as the end angle (in radians) of the spiral, the ranges of the viewport (under <strong>grid</strong> graphics system) on both <em>x</em>-axis and <em>y</em>-axis that draw the spiral are <span class="math inline">\([-x, x]\)</span> where</p>
 <p><span class="math display">\[x = b \cdot \theta_e + d = 1/2\pi \cdot \theta_e + 1\]</span></p>
-<p>The following two plots demonstrate different values of <code>start</code> and <code>end</code>. Also as shown in the following example code, I suggest to set the values of <code>start</code> and <code>end</code> in a form of <code>360*a + b</code>, e.g. <code>360*4 + 180</code>, so that it is straighforward to know the positions in the ploar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).</p>
+<p>The following two plots demonstrate different values of <code>start</code> and <code>end</code>. Also as shown in the following example code, I suggest to set the values of <code>start</code> and <code>end</code> in a form of <code>360*a + b</code>, e.g. <code>360*4 + 180</code>, so that it is straighforward to know the positions in the polar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">90</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">)</span>
@@ -135,7 +139,7 @@
 <span class="co"># the right plot</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">180</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">*</span><span class="fl">4</span> <span class="op">+</span> <span class="fl">180</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-6-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Argument <code>flip</code> controls how to flip the spiral. It accpets one of the four values: <code>"none"</code>/<code>"horizontal"</code>/<code>"vertical"</code>/<code>"both"</code>. Examples are as follows. In the examples, I additionally add the axes in the tracks to show in which direction the data extends along the spiral. I also manually adjust the height of the track to give enough space for axes.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the top left plot</span>
@@ -157,8 +161,8 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>flip <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;"></p>
-<p>Argument <code>scale_by</code> controls how to linearly scale the data on the spiral. It allows value of <code>"angle"</code> or <code>"curve_length"</code> (or for short, <code>"curve"</code>). <code>"angle"</code> means equal difference on data corresponds to equal difference of angles in the polar coordinates. <code>"curve_length"</code> means equal difference on data corresponds to euqal difference of the length of the spiral. Observe how the axis ticks distribute in the following two plots.</p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-10-1.png" width="960" style="display: block; margin: auto;"></p>
+<p>Argument <code>scale_by</code> controls how to linearly scale the data on the spiral. It allows value of <code>"angle"</code> or <code>"curve_length"</code> (or for short, <code>"curve"</code>). <code>"angle"</code> means equal difference on data corresponds to equal difference of angles in the polar coordinates. <code>"curve_length"</code> means equal difference on data corresponds to euqal difference of the length of the spiral. Observe how the axis ticks distribute in the following two plots. Also the polar lines are removed for <code>scale_by = "curve_length"</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>scale_by <span class="op">=</span> <span class="st">"angle"</span><span class="op">)</span> <span class="co"># default</span>
@@ -169,10 +173,10 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>scale_by <span class="op">=</span> <span class="st">"curve_length"</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-10-1.png" width="960" style="display: block; margin: auto;"></p>
-<p>The following heatmap might be clearer to demonstrate the difference between <code>"angle"</code> and <code>"curve_length"</code>. In this example, each grid has the equal bin size of the data.</p>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-11-1.png" width="960" style="display: block; margin: auto;"></p>
-<p>As you can see, when <code>scale_by</code> is set to <code>"angle"</code>, in outer loops, even when the actually difference on data is the same, the physical widths are larger than these in inner loops. However, when the data is time series or periodic, <code>"angle"</code> is the proper choice because it is easy to directly compare between loops which are the same time points over different periods. As a comparison, <code>"curve_length"</code> won’t provide any periodic information.</p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-12-1.png" width="960" style="display: block; margin: auto;"></p>
+<p>The following heatmaps might be clearer to demonstrate the difference between <code>"angle"</code> and <code>"curve_length"</code>. In this example, each grid has the equal bin size of the data.</p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-13-1.png" width="960" style="display: block; margin: auto;"></p>
+<p>As you can see, when <code>scale_by</code> is set to <code>"angle"</code>, in outer loops, even when the actually difference on data is the same, the physical widths are larger than these in inner loops. Nevertheless, when the data is time series or periodic, <code>"angle"</code> is the proper choice because it is easy to directly compare between loops which are the same time points over different periods. As a comparison, <code>"curve_length"</code> won’t provide any periodic information.</p>
 <p>The spiral grows from inner loops to outer loops, thus, by default, data increases from the inner loops as well. This can be reversed by setting argument <code>reverse = TRUE</code>. See the following example and also observe the axes. The red arrows indicate the direction of axes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -186,7 +190,7 @@
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_arrow.html">spiral_arrow</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.8</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-13-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-15-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>To map data to spiral, argument <code>xlim</code> should be set which corresponds to data range on <em>x</em>-axis. Observe the axes in the following plots.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -198,7 +202,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1000</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-15-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-17-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 <div id="create-tracks" class="section level2">
 <h2 class="hasAnchor">
@@ -212,20 +216,20 @@
 <span class="co"># the right plot</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-17-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-19-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Multiple tracks can be added sequentially. Just note the sum of heights of all tracks should not exceed 1.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.4</span>, background_gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.2</span>, background_gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.1</span>, background_gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-18-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-20-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Data range on <em>y</em>-axis is specified by the argument <code>ylim</code>. In the following example, I also add a <em>y</em>-axis by <code><a href="../reference/spiral_yaxis.html">spiral_yaxis()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_yaxis.html">spiral_yaxis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-19-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-21-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="graphics-functions" class="section level2">
 <h2 class="hasAnchor">
@@ -239,7 +243,7 @@
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># by default xlim = c(0, 1)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># by default ylim = c(0, 1)</span>
 <span class="fu"><a href="../reference/spiral_points.html">spiral_points</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-20-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-22-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="lines" class="section level3">
 <h3 class="hasAnchor">
@@ -251,7 +255,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_lines.html">spiral_lines</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-21-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-23-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Argument <code>type</code> can be set to <code>"h"</code> so that vertical lines (or radical lines if you take polar coordinates as reference) are drawn to the baseline for each data point.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -263,13 +267,13 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_lines.html">spiral_lines</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, type <span class="op">=</span> <span class="st">"h"</span>, baseline <span class="op">=</span> <span class="fl">0.5</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">y</span> <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-23-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-25-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Argument <code>area</code> can be set to <code>TRUE</code> so that area under the lines can be filled with a certain color.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_lines.html">spiral_lines</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, area <span class="op">=</span> <span class="cn">TRUE</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-24-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-26-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Note you can also set <code>baseline</code> with <code>area = TRUE</code>, however, you cannot set different colors for the area above the baseline and below the baseline. Consider to use <code><a href="../reference/spiral_bars.html">spiral_bars()</a></code> or <code><a href="../reference/spiral_horizon.html">spiral_horizon()</a></code> for this scenario.</p>
 </div>
 <div id="segments" class="section level3">
@@ -287,7 +291,7 @@
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_segments.html">spiral_segments</a></span><span class="op">(</span><span class="va">x0</span>, <span class="va">y0</span>, <span class="va">x1</span>, <span class="va">y1</span>, 
     gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>col <span class="op">=</span> <span class="fu">circlize</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/rand_color.html">rand_color</a></span><span class="op">(</span><span class="va">n</span>, luminosity <span class="op">=</span> <span class="st">"bright"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-25-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-27-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="rectangles" class="section level3">
 <h3 class="hasAnchor">
@@ -306,7 +310,7 @@
 <span class="va">x2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>
 <span class="va">col2</span> <span class="op">=</span> <span class="fu">circlize</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_rect.html">spiral_rect</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span> <span class="op">-</span> <span class="fl">1</span>, <span class="fl">0.5</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="fl">1</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu">col2</span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-26-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-28-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="bars" class="section level3">
 <h3 class="hasAnchor">
@@ -325,7 +329,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_bars.html">spiral_bars</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, baseline <span class="op">=</span> <span class="fl">0.5</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">y</span> <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-28-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-30-1.png" width="960" style="display: block; margin: auto;"></p>
 <p><code><a href="../reference/spiral_bars.html">spiral_bars()</a></code> can also draw bars from a matrix, then each column in the matrix correspond to one stack of the bars.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">y</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">3</span><span class="op">*</span><span class="fl">1000</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
@@ -333,7 +337,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_bars.html">spiral_bars</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">4</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-29-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-31-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="polygons" class="section level3">
 <h3 class="hasAnchor">
@@ -358,7 +362,7 @@
         gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/circlize/man/rand_color.html">rand_color</a></span><span class="op">(</span><span class="fl">1</span>, luminosity <span class="op">=</span> <span class="st">"bright"</span><span class="op">)</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>
     <span class="op">)</span>
 <span class="op">}</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-30-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-32-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="text" class="section level3">
 <h3 class="hasAnchor">
@@ -382,7 +386,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_text.html">spiral_text</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.5</span>, <span class="va">text</span>, facing <span class="op">=</span> <span class="st">"outside"</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-32-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-34-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>For long texts, <code>facing</code> can be set to <code>"curved_inside"</code> or <code>"curved_outside"</code> so that curved texts are draw along the spiral.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, length <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
@@ -397,7 +401,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_text.html">spiral_text</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.5</span>, <span class="va">text</span>, facing <span class="op">=</span> <span class="st">"curved_outside"</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-34-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-36-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Calculation of positions of letters of the curved text depends on the size of current graphics device. When the device changes its size, the positions of letters will not be correct and you need to regenerate the plot. Also users need to be careful when using <code>grid.grabExpr()</code> to capture the plot. By default <code>grid.grabExpr()</code> captures graphics output in a device with 7inch x 7inch. Users might need to manually set the device size to make sure the curved texts are not affected.</p>
 <p>In the next example, I use <code>grid.grabExpr()</code> to capture two spiral plots with curved texts. Later the two plots are merged with using the <strong>cowplot</strong> package and the final merged plot is saved in a PDF with 10 inches width and 5 inches height. I manually set the device size in the two <code>grid.grabExpr()</code> calls so that the size of the place where the graphics are captured is the same as the size of the place where they are finally drawn.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -425,7 +429,7 @@
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-36-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-38-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Argument <code>major_at</code> or simply <code>at</code> controls the break points on the axis and argument <code>labels</code> controls the corresponding axis labels.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -437,13 +441,13 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span>, start <span class="op">=</span> <span class="fl">360</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">*</span><span class="fl">5</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span>major_at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">*</span><span class="fl">4</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="va">month.name</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-38-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-40-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>If the axis labels are too long, argument <code>curved_labels</code> can be set to <code>TRUE</code> so that the labels are curved along the spiral.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span>at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.9</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strrep.html">strrep</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">20</span><span class="op">)</span>, curved_labels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-39-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-41-1.png" width="480" style="display: block; margin: auto;"></p>
 <p><code><a href="../reference/spiral_yaxis.html">spiral_yaxis()</a></code> draws <em>y</em>-axis. Argument <code>side</code> controls which side of the track to put the <em>y</em>-axis. <code>side</code> can be set to <code>"both"</code> so that <em>y</em>-axis is drawn on the two sides of the track.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -456,7 +460,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_yaxis.html">spiral_yaxis</a></span><span class="op">(</span>side <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-41-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-43-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 <div id="horizon-chart" class="section level3">
 <h3 class="hasAnchor">
@@ -490,13 +494,13 @@
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span>, start <span class="op">=</span> <span class="fl">360</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">*</span><span class="op">(</span><span class="va">day_diff</span><span class="op">/</span><span class="fl">364</span><span class="op">)</span> <span class="op">+</span> <span class="fl">360</span><span class="op">)</span> <span class="co"># a circle of 52 weeks</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_horizon.html">spiral_horizon</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">-</span> <span class="fl">0.5</span>, <span class="va">df</span><span class="op">$</span><span class="va">diff</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-43-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-45-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Bars can be used to put on each days by setting argument <code>use_bar = TRUE</code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span>, start <span class="op">=</span> <span class="fl">360</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">*</span><span class="op">(</span><span class="va">day_diff</span><span class="op">/</span><span class="fl">364</span><span class="op">)</span> <span class="op">+</span> <span class="fl">360</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_horizon.html">spiral_horizon</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">-</span> <span class="fl">0.5</span>, <span class="va">df</span><span class="op">$</span><span class="va">diff</span>, use_bars <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-44-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-46-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="images" class="section level3">
 <h3 class="hasAnchor">
@@ -509,7 +513,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_raster.html">spiral_raster</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.5</span>, <span class="va">image</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-45-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-47-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Similar as text, argument <code>facing</code> can be set to control the rotation of images. If <code>nice_facing = TRUE</code>, the image with rotation facing the top will be automatically adjusted to bottom.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
@@ -521,7 +525,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_raster.html">spiral_raster</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0.5</span>, <span class="va">image</span>, facing <span class="op">=</span> <span class="st">"inside"</span>, nice_facing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-47-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-49-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 <div id="arrows" class="section level3">
 <h3 class="hasAnchor">
@@ -532,7 +536,7 @@
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_arrow.html">spiral_arrow</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.6</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"red"</span>, col <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_arrow.html">spiral_arrow</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.9</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span>, tail <span class="op">=</span> <span class="st">"point"</span>, arrow_position <span class="op">=</span> <span class="st">"start"</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-48-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-50-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="highlight" class="section level3">
 <h3 class="hasAnchor">
@@ -544,7 +548,7 @@
 <span class="fu"><a href="../reference/spiral_highlight.html">spiral_highlight</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_highlight.html">spiral_highlight</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span>, type <span class="op">=</span> <span class="st">"line"</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_highlight.html">spiral_highlight</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.8</span>, type <span class="op">=</span> <span class="st">"line"</span>, line_side <span class="op">=</span> <span class="st">"outside"</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-49-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-51-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>If <code>scale_by</code> is set to <code>angle</code> (the default), users might also want to highlight a specific of interval but across several cycles, e.g. from January to March in year 2000 to 2010. Here the function <code><a href="../reference/spiral_highlight_by_sector.html">spiral_highlight_by_sector()</a></code> draws a semi-transparent sector to highlight a fixed interval over several cycles.</p>
 <p>The first four argument <code>x1</code>, <code>x2</code>, <code>x3</code> and <code>x4</code> in <code><a href="../reference/spiral_highlight_by_sector.html">spiral_highlight_by_sector()</a></code> determine the position of the sector. If only <code>x1</code> and <code>x2</code> are specified, the start circle is calculated from <code>x1</code> and <code>x2</code> and the end circle is the most outside one. If <code>x3</code> and <code>x4</code> are also specified, the outer circle is calcualted from <code>x3</code> and <code>x4</code>.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
@@ -554,7 +558,7 @@
 <span class="fu"><a href="../reference/spiral_highlight_by_sector.html">spiral_highlight_by_sector</a></span><span class="op">(</span><span class="fl">36</span>, <span class="fl">72</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_highlight_by_sector.html">spiral_highlight_by_sector</a></span><span class="op">(</span><span class="fl">648</span>, <span class="fl">684</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_highlight_by_sector.html">spiral_highlight_by_sector</a></span><span class="op">(</span><span class="fl">216</span>, <span class="fl">252</span>, <span class="fl">936</span>, <span class="fl">972</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-50-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-52-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="dendrograms-and-phylogenetic-trees" class="section level3">
 <h3 class="hasAnchor">
@@ -576,7 +580,7 @@
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1000</span><span class="op">)</span>, start <span class="op">=</span> <span class="fl">360</span>, end <span class="op">=</span> <span class="fl">360</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">180</span>, scale_by <span class="op">=</span> <span class="st">"curve_length"</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_dendrogram.html">spiral_dendrogram</a></span><span class="op">(</span><span class="va">dend</span><span class="op">)</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-52-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-54-1.png" width="960" style="display: block; margin: auto;"></p>
 <p><code><a href="../reference/spiral_phylo.html">spiral_phylo()</a></code> works on the <code>phylo</code> object. In the following example, to cut the phylogenetic tree into several parts, the <code>phylo</code> object is converted to a <code>dendrogram</code> by the function <code><a href="../reference/phylo_to_dendrogram.html">phylo_to_dendrogram()</a></code>, later <code><a href="http://talgalili.github.io/dendextend/reference/cutree-methods.html">dendextend::cutree.dendrogram()</a></code> is applied to obtain the splits.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ape-package.ird.fr/">ape</a></span><span class="op">)</span>
@@ -597,7 +601,7 @@
         <span class="fu"><a href="../reference/spiral_highlight.html">spiral_highlight</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">tb</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">i</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">tb</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>, gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">i</span><span class="op">)</span><span class="op">)</span>
     <span class="op">}</span>
 <span class="op">}</span></code></pre></div>
-<p><img src="spiralize_files/figure-html/unnamed-chunk-53-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="spiralize_files/figure-html/unnamed-chunk-55-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="utility-functions" class="section level2">
@@ -606,11 +610,8 @@
 <p>There are several utility functions which help to get the information of current spiral plot. <code><a href="../reference/spiral_info.html">spiral_info()</a></code> prints the general information of current spiral:</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## agg_png 
-##       2</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/spiral_info.html">spiral_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../reference/spiral_info.html">spiral_info</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## An Archimedean spiral (r = b*theta) with the following parameters:
 ##   b: 0.159154943091895
 ##   distance between two neighbouring circles: 1
@@ -622,10 +623,10 @@
 ##     ylim: [-1, 1]
 ##     height: 0.8 (fraction of the distance of two neighbour loops)</code></pre>
 <p>The special variable <code>TRACK_META</code> retrieves several meta-information of the current track.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">TRACK_META</span></code></pre></div>
 <pre><code>## Please use in form of `TRACK_META$name`. Type `names(TRACK_META)` for supported names.</code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">TRACK_META</span><span class="op">)</span></code></pre></div>
 <pre><code>##  [1] "xlim"          "xmin"          "xmax"          "xcenter"       "xrange"        "theta_lim"    
 ##  [7] "theta_min"     "theta_max"     "theta_center"  "theta_range"   "ylim"          "ymin"         
@@ -646,7 +647,7 @@
 <div id="session-info" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h2>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.1.0 (2021-05-18)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)

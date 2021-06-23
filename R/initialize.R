@@ -46,7 +46,8 @@
 spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5, 
 	scale_by = c("angle", "curve_length"), 
 	flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
-	polar_lines = TRUE, polar_lines_by = 30, polar_lines_gp = gpar(col = "#404040", lty = 3), 
+	polar_lines = scale_by == "angle", polar_lines_by = 30, 
+	polar_lines_gp = gpar(col = "#808080", lty = 3), 
 	padding = unit(5, "mm"), newpage = TRUE, vp_param = list()) {
 
 	spiral_clear(check_vp = FALSE)
@@ -126,6 +127,7 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 # -period Which period to use?
 # -period_per_loop How many periods to put in a loop?
 # -polar_lines_by By default different value of ``polar_lines_by`` is set for different ``period``. E.g. 360/7 is set if ``period`` is "weeks" or 360/24 is set if ``peroid`` is set to "hours".
+# -verbose Whether to print messages?
 # -... All pass to `spiral_initialize`.
 #
 # == details
@@ -148,7 +150,7 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	unit_on_axis = c("days", "months", "weeks", "hours", "mins", "secs"), 
 	period = c("years", "months", "weeks", "days", "hours", "mins"),
-	period_per_loop = 1, polar_lines_by = NULL, ...) {
+	period_per_loop = 1, polar_lines_by = NULL, verbose = TRUE, ...) {
 
 	xlim_is_date = inherits(xlim, "Date")
 	xlim = as.POSIXlt(xlim)
@@ -174,7 +176,7 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 				}
 			}
 		}
-		qqcat("'unit_to_axis' is set to '@{unit_on_axis}'.\n")
+		if(verbose) qqcat("'unit_to_axis' is set to '@{unit_on_axis}'.\n")
 	} else {
 		unit_on_axis = match.arg(unit_on_axis)[1]
 	}
@@ -186,7 +188,7 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		} else if(unit_on_axis == "secs") {
 			period = "hours"
 		}
-		qqcat("'period' is set to '@{period}'.\n")
+		if(verbose) qqcat("'period' is set to '@{period}'.\n")
 	} else {
 		period = match.arg(period)[1]
 	}

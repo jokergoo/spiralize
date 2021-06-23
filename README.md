@@ -12,7 +12,7 @@ The package **spiralize** visualizes data along an [Archimedean spiral](https://
 It has two major advantages for visualization:
 
 1. It is able to visualize data with very long axis with high resolution.
-2. It is efficient for periodic data to reveal periodic patterns.
+2. It is efficient for time series data to reveal periodic patterns.
 
 ## Install
 
@@ -37,9 +37,9 @@ The code for making spiral plot looks like follows:
 
 ```r
 library(spiralize)
-spiral_initialize()
-spiral_track()
-spiral_points()
+spiral_initialize(...)
+spiral_track(...)
+spiral_points(...)
 ...
 ```
 

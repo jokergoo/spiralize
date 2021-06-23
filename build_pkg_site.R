@@ -20,5 +20,5 @@ if(file.exists(".Rbuildignore")) {
 ^docs$
 ^pkgdown$", ".Rbuildignore")
 }
-
+options(rmarkdown.html_vignette.check_title = FALSE)
 pkgdown::build_site(run_dont_run = TRUE)

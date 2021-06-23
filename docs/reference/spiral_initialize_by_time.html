@@ -111,7 +111,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -141,7 +141,7 @@
     <pre class="usage"><span class='fu'>spiral_initialize_by_time</span><span class='op'>(</span><span class='va'>xlim</span>, start <span class='op'>=</span> <span class='cn'>NULL</span>, end <span class='op'>=</span> <span class='cn'>NULL</span>,
     unit_on_axis <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"days"</span>, <span class='st'>"months"</span>, <span class='st'>"weeks"</span>, <span class='st'>"hours"</span>, <span class='st'>"mins"</span>, <span class='st'>"secs"</span><span class='op'>)</span>,
     period <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"years"</span>, <span class='st'>"months"</span>, <span class='st'>"weeks"</span>, <span class='st'>"days"</span>, <span class='st'>"hours"</span>, <span class='st'>"mins"</span><span class='op'>)</span>,
-    period_per_loop <span class='op'>=</span> <span class='fl'>1</span>, polar_lines_by <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    period_per_loop <span class='op'>=</span> <span class='fl'>1</span>, polar_lines_by <span class='op'>=</span> <span class='cn'>NULL</span>, verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,6 +173,10 @@
     <tr>
       <th>polar_lines_by</th>
       <td><p>By default different value of <code>polar_lines_by</code> is set for different <code>period</code>. E.g. 360/7 is set if <code>period</code> is "weeks" or 360/24 is set if <code>peroid</code> is set to "hours".</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Whether to print messages?</p></td>
     </tr>
     <tr>
       <th>...</th>

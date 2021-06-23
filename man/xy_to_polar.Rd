@@ -7,13 +7,14 @@ Convert data coordinates to polar coordinates
 Convert data coordinates to polar coordinates
 }
 \usage{
-xy_to_polar(x, y, track_index = current_track_index())
+xy_to_polar(x, y, track_index = current_track_index(), flip = TRUE)
 }
 \arguments{
 
   \item{x}{X-locations of the data points.}
   \item{y}{Y-locations of the data points.}
   \item{track_index}{Index of the track. }
+  \item{flip}{If it is FALSE, it returns theta for the original spiral (before flipping).}
 
 }
 \details{

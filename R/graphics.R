@@ -673,7 +673,8 @@ spiral_xaxis = function(...) {
 # spiral_initialize(); spiral_track(height = 0.8)
 # spiral_yaxis("start")
 # spiral_yaxis("end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
-spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, ticks_length = unit(2, "bigpts"), 
+spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, 
+	ticks_length = unit(2, "bigpts"), 
 	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
 		
@@ -743,22 +744,13 @@ spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TR
 # - a vector of intervals that split the data.
 #
 # == example
-# \donttest{
-# # df = cranlogs::cran_downloads("ggplot2", from="2014-01-01")
-# # the data frame `df` is already downloaded
-# df = readRDS(system.file("extdata", "ggplot2_download.rds", package = "spiralize"))
-# df = df[df$date < as.Date("2021-01-01"), ]
-# day_diff = as.numeric(df$date[nrow(df)] - df$date[1])
-# v = df$count
-# v[v > quantile(v, 0.95)] = quantile(v, 0.95)
-# spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364)) # a circle 52 weeks
-# spiral_track(height = 0.9)
-# spiral_horizon(1:nrow(df), v)
-#
-# spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364))
-# spiral_track(height = 0.9)
-# spiral_horizon(1:nrow(df), v, use_bars = TRUE)
-# }
+# df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
+# df = df[df$Source == "GCAG", ]
+# spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period = "year",
+#     period_per_loop = 20, polar_lines_by = 360/20, 
+#     vp_param = list(x = unit(0, "npc"), just = "left"))
+# spiral_track()
+# spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
 spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
 	use_bars = FALSE, bar_width = min(diff(x)),
 	negative_from_top = FALSE, track_index = current_track_index()) {
@@ -1296,6 +1288,7 @@ spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = un
 		x1 = x2
 		x2 = foo
 	}
+
 	spiral = spiral_env$spiral
 	x1 = spiral$get_numeric_x(x1)
 	x2 = spiral$get_numeric_x(x2)
@@ -1318,48 +1311,83 @@ spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = un
 		x4 = spiral$get_numeric_x(x4)
 	}
 
-	if(diff(get_theta_from_x(c(x1, x2))) > 2*pi) {
+	if(abs(diff(get_theta_from_x(c(x1, x2), flip = FALSE))) > 2*pi) {
 		stop_wrap("Angular difference between x1 and x2 should not be larger than a circle.")
 	}
 	if(upper_defined) {
-		if(diff(get_theta_from_x(c(x3, x4))) > 2*pi) {
+		if(abs(diff(get_theta_from_x(c(x3, x4), flip = FALSE))) > 2*pi) {
 			stop_wrap("Angular difference between x3 and x4 should not be larger than a circle.")
 		}
 	}
 
-	# inner curve
-	df1 = xy_to_polar(c(x1, x2), rep(get_track_data("ymin", 1), 2), track_index = 1)
-	theta1 = seq(df1[1, 1], df1[2, 1], by = 0.5/180*pi)
-	
-	if(upper_defined) {
-		df2 = xy_to_polar(c(x3, x4), rep(get_track_data("ymin", n_tracks()), 2), track_index = n_tracks())
-		theta2 = seq(df2[1, 1], df2[2, 1], by = 0.5/180*pi)
-	} else {
-		theta2 = get_theta_from_x(c(x1, x2))
-		while(1) {
-			if(theta2[1] + 2*pi > spiral$theta_lim[2]) {
-				break
-			}
-			theta2 = theta2 + 2*pi
-		}
-		theta2 = seq(theta2[1], theta2[2], by = 0.5/180*pi)
-	}
-	theta = c(theta1, rev(theta2))
-
-	r1 = spiral$curve(theta1)
-	r2 = spiral$curve(theta2) + sum(sapply(1:n_tracks(), function(i) get_track_data("rmax", i) - get_track_data("rmin", i)))
-	
-	if(!is.unit(padding)) {
+ 	if(!is.unit(padding)) {
 		stop_wrap("`padding` can only be a unit object.")
 	}
 	if(length(padding) == 1) {
 		padding = rep(padding, 2)
 	}
 	offset = convertWidth(padding, "native", valueOnly = TRUE)
-	r1 = r1 - offset[1]
-	r2 = r2 + offset[2]
+	
 
-	r = c(r1, rev(r2))
+ 	if(spiral$reverse) {
+ 		df1 = xy_to_polar(c(x1, x2), rep(get_track_data("ymax", n_tracks()), 2), track_index = n_tracks(), flip = FALSE)
+		theta1 = seq(df1[2, 1], df1[1, 1], by = 0.5/180*pi)
+		
+		if(upper_defined) {  # when reverse is TRUE, upper is actually inside of the spiral
+			df2 = xy_to_polar(c(x3, x4), rep(get_track_data("ymin", 1), 2), track_index = 1, flip = FALSE)
+			theta2 = seq(df2[2, 1], df2[1, 1], by = 0.5/180*pi)
+		} else {
+			theta2 = get_theta_from_x(c(x1, x2), flip = FALSE)
+			while(1) {
+				if(theta2[1] - 2*pi < spiral$theta_lim[1]) {
+					break
+				}
+				theta2 = theta2 - 2*pi
+			}
+			theta2 = seq(theta2[2], theta2[1], by = 0.5/180*pi)
+		}
+		theta = c(rev(theta1), theta2)
+
+		r1 = spiral$curve(theta1) + sum(sapply(1:n_tracks(), function(i) get_track_data("rmax", i) - get_track_data("rmin", i)))
+		r2 = spiral$curve(theta2)
+		
+		r1 = r1 + offset[1]
+		r2 = r2 - offset[2]
+
+		r = c(rev(r1), r2)
+
+ 	} else {
+		df1 = xy_to_polar(c(x1, x2), rep(get_track_data("ymin", 1), 2), track_index = 1, flip = FALSE)
+		theta1 = seq(df1[1, 1], df1[2, 1], by = 0.5/180*pi)
+		
+		if(upper_defined) {
+			df2 = xy_to_polar(c(x3, x4), rep(get_track_data("ymax", n_tracks()), 2), track_index = n_tracks(), flip = FALSE)
+			theta2 = seq(df2[1, 1], df2[2, 1], by = 0.5/180*pi)
+		} else {
+			theta2 = get_theta_from_x(c(x1, x2), flip = FALSE)
+			while(1) {
+				if(theta2[1] + 2*pi > spiral$theta_lim[2]) {
+					break
+				}
+				theta2 = theta2 + 2*pi
+			}
+			theta2 = seq(theta2[1], theta2[2], by = 0.5/180*pi)
+		}
+		theta = c(theta1, rev(theta2))
+
+		r1 = spiral$curve(theta1)
+		r2 = spiral$curve(theta2) + sum(sapply(1:n_tracks(), function(i) get_track_data("rmax", i) - get_track_data("rmin", i)))
+		
+		r1 = r1 - offset[1]
+		r2 = r2 + offset[2]
+
+		r = c(r1, rev(r2))
+	
+	}
+
+	# now consider flipping
+	theta = flip_theta(theta)
+
 	df = polar_to_cartesian(c(theta, theta[1]), c(r, r[1]))
 
 	if("fill" %in% names(gp)) {
@@ -1379,7 +1407,3 @@ add_transparency = function (col, transparency = 0){
     rgb(t(col1/255), alpha = col1[4, ]/255)
 }
 
-
-spiral_rle = function(x, col) {
-
-}

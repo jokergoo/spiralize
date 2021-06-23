@@ -70,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -91,9 +91,9 @@
       <h1 data-toc-skip>Initialize Spirals by Special Data Types</h1>
                         <h4 class="author">Zuguang Gu (<a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a>)</h4>
             
-            <h4 class="date">2021-06-22</h4>
+            <h4 class="date">2021-06-23</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiral/blob/master/vignettes/special_data_type.Rmd"><code>vignettes/special_data_type.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiralize/blob/master/vignettes/special_data_type.Rmd"><code>vignettes/special_data_type.Rmd</code></a></small>
       <div class="hidden name"><code>special_data_type.Rmd</code></div>
 
     </div>
@@ -104,7 +104,7 @@
 <h2 class="hasAnchor">
 <a href="#work-with-datetime-object" class="anchor"></a>Work with date/time object</h2>
 <p>For time series data, values on <em>x</em>-axis are time points in a certain unit, e.g. days, or hours, and are linearly distributed along the axis. To map time series data to the spiral, internally a simple conversion is applied. Assume the first time point is <code>t1</code> and the last time point is <code>t2</code>, the number of time points is <code>n = t2 - t1</code> which is the time difference between the two. If we take <code>[0, 1]</code> for the first time point, <code>[1, 2]</code> for the second time point, and <code>[n-1, n]</code> for the last time point, then internally the spiral is initialized with <code>xlim = c(0, n)</code> and a time point <code>d</code> is converted to the internal numeric value by <code>d - d1 + 0.5</code>.</p>
-<p>The unit of time point can be set via the argument <code>unit_on_axis</code> and the unit of the period can be set via the argument <code>period</code>, e.g. <code>unit_on_axis = "days"</code> and <code>period = "years"</code>. <code>unit_on_aixs</code> can be set as one of <code>"days"</code>, <code>"months"</code>, <code>"weeks"</code>, <code>"hours"</code>, <code>"mins"</code> and <code>"secs"</code>. And there are also corresponding valid values for <code>period</code>. If these two arguments are not set, they are guessed from <code>xlim</code> automatically.</p>
+<p>The unit of time point can be set via the argument <code>unit_on_axis</code> and the unit of the period can be set via the argument <code>period</code>, e.g. <code>unit_on_axis = "days"</code> and <code>period = "years"</code>. <code>unit_on_aixs</code> can be set as one of <code>"days"</code>, <code>"months"</code>, <code>"weeks"</code>, <code>"hours"</code>, <code>"mins"</code> and <code>"secs"</code>. And there are also corresponding values for <code>period</code>. If these two arguments are not set, they are guessed from <code>xlim</code> automatically.</p>
 <p>In the following examples, also note the default value of <code>polar_lines_by</code> is also different for different <code>period</code>. E.g. there are 12 polar lines for years (12 months), 7 polar lines for weeks (7 weekdays), 24 polar lines for days (24 hours).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize_by_time.html">spiral_initialize_by_time</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2014-01-01"</span>, <span class="st">"2021-06-17"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -128,14 +128,14 @@
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="special_data_type_files/figure-html/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;"></p>
-<p>As shown in previous examples, the values for <code>xlim</code> should be a time/date object or an object that can be converted to the time/date object. Later when adding graphics, the time/date objects can also be used as the <em>x</em>-locations for the low-level graphics functions. e.g.</p>
+<p>As shown in previous examples, the values for <code>xlim</code> should be a time/date object or their character forms that can be converted to the time/date object. Later when adding graphics, the time/date objects or their character forms can also be used as the <em>x</em>-locations for the low-level graphics functions. For example:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_points.html">spiral_points</a></span><span class="op">(</span><span class="st">"2021-01-01"</span>, <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="work-with-genomic-coordinates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#work-with-genomic-coordinates" class="anchor"></a>Work with genomic coordinates</h2>
-<p>Genomic data can be represented as a data frame (e.g. in <em>bed</em> format), or as a <code>GRanges</code> object. To initialize the spiral for genomic data visualization, the data on <em>x</em>-axis corresponds to the genomic coordinates. The spiral with genomic data can be initialized by the function <code><a href="../reference/spiral_initialize_by_gcoor.html">spiral_initialize_by_gcoor()</a></code>. The genomic coordinates are linear numeric values, thus, <code><a href="../reference/spiral_initialize_by_gcoor.html">spiral_initialize_by_gcoor()</a></code> is basically the same as <code><a href="../reference/spiral_initialize.html">spiral_initialize()</a></code>. The only difference is the axis labels are automatically formated for genomic coordinates.</p>
+<p>Genomic data can be represented as a data frame (e.g. in <em>bed</em> format), or as a <code>GRanges</code> object. To initialize the spiral for genomic data visualization, the data on <em>x</em>-axis corresponds to the genomic coordinates. The spiral with genomic data can be initialized by the function <code><a href="../reference/spiral_initialize_by_gcoor.html">spiral_initialize_by_gcoor()</a></code>. The genomic coordinates are linear numeric values, thus, <code><a href="../reference/spiral_initialize_by_gcoor.html">spiral_initialize_by_gcoor()</a></code> is basically the same as <code><a href="../reference/spiral_initialize.html">spiral_initialize()</a></code>. The only difference is the axis labels are automatically formatted for genomic coordinates.</p>
 <p>Also since normally there are no periodic patterns for genomc data, <code>scale_by</code> is by default set to <code>"curve_length"</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize_by_gcoor.html">spiral_initialize_by_gcoor</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2e6</span>, <span class="fl">8e6</span><span class="op">)</span><span class="op">)</span>  <span class="co"># 2MB to 8MB</span>

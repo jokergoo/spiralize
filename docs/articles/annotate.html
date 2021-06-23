@@ -70,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jokergoo/spiral/">
+  <a href="https://github.com/jokergoo/spiralize/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -91,9 +91,9 @@
       <h1 data-toc-skip>Annotate the Plot</h1>
                         <h4 class="author">Zuguang Gu (<a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a>)</h4>
             
-            <h4 class="date">2021-06-22</h4>
+            <h4 class="date">2021-06-23</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiral/blob/master/vignettes/annotate.Rmd"><code>vignettes/annotate.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiralize/blob/master/vignettes/annotate.Rmd"><code>vignettes/annotate.Rmd</code></a></small>
       <div class="hidden name"><code>annotate.Rmd</code></div>
 
     </div>
@@ -107,7 +107,7 @@
 <p><strong>spiralize</strong> is implemented under <strong>grid</strong> graphics system, thus functions from <strong>grid</strong> need to be used with <strong>spiralize</strong>.</p>
 <p>The spiral plot is drawn in a square viewport, as shown in the following figure, thus, simply you can use <code>grid.text()</code> to add text to a specific position.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/spiral">spiralize</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/spiralize">spiralize</a></span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu">grid.rect</span><span class="op">(</span>gp <span class="op">=</span> <span class="fu">gpar</span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>
@@ -207,9 +207,9 @@
 <span class="va">lgd</span> <span class="op">=</span> <span class="fu"><a href="../reference/horizon_legend.html">horizon_legend</a></span><span class="op">(</span><span class="va">lt</span>, title <span class="op">=</span> <span class="st">"log2(difference)"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html">draw</a></span><span class="op">(</span><span class="va">lgd</span>, x <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">1</span>, <span class="st">"npc"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">2</span>, <span class="st">"mm"</span><span class="op">)</span>, just <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></code></pre></div>
 <p><img src="annotate_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>In previous examples, the spiral is always drawn in the center of the image, which results in that there are large white area in the right part of the image. See the following image which is the same as the previous one but I additionally add border of the image and border of the spiral viewport.</p>
+<p>In previous examples, the spirals are always drawn in the center of images, which results in that there are large white area in the left part of the image. See the following image which is the same as the previous one but I additionally add border of the image and border of the spiral viewport.</p>
 <p><img src="annotate_files/figure-html/unnamed-chunk-8-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>Actually the position of the spiral viewport can be controlled with argument <code>vp_param</code> which is a list of parameters and will be sent to the function <code>viewport()</code> that contruct teh spiral viewport. E.g. to move the spiral viewport to the most left of the image:</p>
+<p>The position of the spiral viewport can be controlled with argument <code>vp_param</code> which is a list of parameters and will be sent to the function <code>viewport()</code> that contructs the spiral viewport. E.g. to move the spiral viewport to the most left of the image:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/spiral_initialize_by_time.html">spiral_initialize_by_time</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>, vp_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0</span>, <span class="st">"npc"</span><span class="op">)</span>, just <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span>

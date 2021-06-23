@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
     fig.align = "center"
 )
 options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 In this vignette, I demonstrate how to add text and legend to the spiral plot.
@@ -171,8 +172,10 @@ lgd = horizon_legend(lt, title = "log2(difference)")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
-In previous examples, the spiral is always drawn in the center of the image, which results in that there are large white area
-in the right part of the image. See the following image which is the same as the previous one but I additionally add border of the image and border of the spiral viewport.
+In previous examples, the spirals are always drawn in the center of images,
+which results in that there are large white area in the left part of the
+image. See the following image which is the same as the previous one but I
+additionally add border of the image and border of the spiral viewport.
 
 ```{r, fig.width = 8, results = "hide", echo = FALSE}
 grid.rect()
@@ -185,9 +188,10 @@ lgd = horizon_legend(lt, title = "log2(difference)")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
-Actually the position of the spiral viewport can be controlled with argument `vp_param` which is a list of parameters and will
-be sent to the function `viewport()` that contruct teh spiral viewport. E.g. to move the spiral viewport to the most left of the image:
-
+The position of the spiral viewport can be controlled with argument `vp_param`
+which is a list of parameters and will be sent to the function `viewport()`
+that contructs the spiral viewport. E.g. to move the spiral viewport to the
+most left of the image:
 
 ```{r, fig.width = 8, results = "hide"}
 spiral_initialize_by_time(xlim = range(df$date), vp_param = list(x = unit(0, "npc"), just = "left"))

@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
     fig.align = "center"
 )
 options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r, echo = FALSE}
@@ -37,7 +38,7 @@ In this vignette, I describe the package **spiralize** which visualizes data alo
 It has two major advantages for visualization:
 
 1. It is able to visualize data with very long axis with high resolution.
-2. It is efficient for periodic data to reveal periodic patterns.
+2. It is efficient for time series data to reveal periodic patterns.
 
 
 ## The Archimedean spiral
@@ -132,6 +133,37 @@ spiral_clear()
 popViewport()
 ```
 
+Denote the maximal radius of the spiral as $d_{max} = b \cdot \theta_{max}$,
+and denote the length of the spiral as $l$ (which has a complex form, see https://downloads.imagej.net/fiji/snapshots/arc_length.pdf), we can
+treat $d_{max}$ as the resolution of the visualization applied in the normal
+Cartesian coordinate system and $l$ as the resolution of the visualization
+applied on the spiral. Then the ratio of the two resolutions is:
+
+$$ ratio = \frac{l}{2d_{max}} $$
+
+E.g., for a spiral with 5 loops ($\theta_{max} = 10\pi$), the ratio is 7.89,
+which means the spiral improves the resolution of visualization almost to 8
+folds. Generally, the ratio increases almost linearly to the number of loops.
+
+```{r, echo = FALSE, fig.keep = "none"}
+spiral_initialize()
+s = current_spiral()
+```
+
+```{r, echo = FALSE}
+ratio = function(k) {
+    theta = pi*2*k
+    b = 1/2/pi
+    r = b*theta
+    len = s$spiral_length(theta)
+    len/2/r
+}
+
+k = 1:20
+plot(k, ratio(k), xlab = "number of loops in the spiral", ylab = "ratio", 
+    main = "ratio of the resolution between\nspiral and normal Cartesian system")
+```
+
 
 ## The layout of the spiral
 
@@ -147,7 +179,7 @@ $$x = b \cdot \theta_e + d = 1/2\pi \cdot \theta_e + 1$$
 
 The following two plots demonstrate different values of `start` and `end`. Also as shown in the following example code,
 I suggest to set the values of `start` and `end` in a form of `360*a + b`, e.g. `360*4 + 180`, so that it is straighforward
-to know the positions in the ploar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).
+to know the positions in the polar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).
 
 ```{r, eval = FALSE}
 # the left plot
@@ -235,7 +267,8 @@ spiral. It allows value of `"angle"` or `"curve_length"` (or for short,
 `"curve"`). `"angle"` means equal difference on data corresponds to equal
 difference of angles in the polar coordinates. `"curve_length"` means equal
 difference on data corresponds to euqal difference of the length of the
-spiral. Observe how the axis ticks distribute in the following two plots.
+spiral. Observe how the axis ticks distribute in the following two plots. Also
+the polar lines are removed for `scale_by = "curve_length"`.
 
 ```{r, eval = FALSE}
 # the left plot
@@ -265,7 +298,7 @@ p2 = grid.grabExpr({
 plot_grid(p1, p2)
 ```
 
-The following heatmap might be clearer to demonstrate the difference between `"angle"` and `"curve_length"`. In this 
+The following heatmaps might be clearer to demonstrate the difference between `"angle"` and `"curve_length"`. In this 
 example, each grid has the equal bin size of the data.
 
 
@@ -286,7 +319,7 @@ plot_grid(p1, p2)
 ```
 
 As you can see, when `scale_by` is set to `"angle"`, in outer loops, even when the actually difference
-on data is the same, the physical widths are larger than these in inner loops. However, when the data is 
+on data is the same, the physical widths are larger than these in inner loops. Nevertheless, when the data is 
 time series or periodic, `"angle"` is the proper choice because it is easy to directly compare between loops
 which are the same time points over different periods. As a comparison, `"curve_length"` won't provide any
 periodic information.
@@ -1010,7 +1043,7 @@ the general information of current spiral:
 pdf(NULL)
 spiral_initialize(xlim = c(0, 100))
 spiral_track(ylim = c(-1, 1))
-dev.off()
+invisible(dev.off())
 spiral_info()
 ```
 

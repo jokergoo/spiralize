@@ -354,9 +354,10 @@ spiral_track(height = 0.6)
 spiral_axis()
 
 
-spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5, flip = "horizontal")
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5, reverse = TRUE, flip = "both")
 spiral_track(height = 0.6)
 spiral_axis()
+
 spiral_highlight_by_sector(36, 72)
 spiral_highlight_by_sector(648, 684)
 spiral_highlight_by_sector(216, 252, 936, 972, gp = gpar(fill = "blue"))
@@ -371,4 +372,5 @@ for(i in seq_along(d)) {
 	grid.text(month.name[i], x = foo[1, 1], y = foo[1, 2], default.unit = "native",
 		rot = ifelse(d[i] > 0 & d[i] < 180, d[i] - 90, d[i] + 90), gp = gpar(fontsize = 10))
 }
+
 

@@ -26,13 +26,14 @@ xy_to_cartesian = function(x, y, track_index = current_track_index()) {
 # -x X-locations of the data points.
 # -y Y-locations of the data points.
 # -track_index Index of the track. 
+# -flip If it is FALSE, it returns theta for the original spiral (before flipping).
 #
 # == details
 # Note different settings of ``flip`` and ``reverse`` in `spiral_initialize` affect the conversion.
 #
 # == value
 # A data frame with two columns: theta (in radians) and r (the radius).
-xy_to_polar = function(x, y, track_index = current_track_index()) {
+xy_to_polar = function(x, y, track_index = current_track_index(), flip = TRUE) {
 
 	if(track_index == 0) {
 		stop_wrap("No track has been created. Maybe you need to call `spiral_track()` first.")
@@ -64,7 +65,7 @@ xy_to_polar = function(x, y, track_index = current_track_index()) {
 	d = (y - ymin) * (rmax - rmin)/(ymax - ymin) + rmin
 	r = spiral$curve(theta) + d
 
-	theta = flip_theta(theta)
+	if(flip) theta = flip_theta(theta)
 
 	data.frame(theta = theta, r = r)
 }
@@ -222,10 +223,8 @@ convert_y_to_height = function(y, track_index = current_track_index()) {
 }
 
 
-get_theta_from_x = function(x) {
-	spiral = spiral_env$spiral
-
-	(x - spiral$xlim[1])/spiral$xrange*spiral$theta_range + spiral$theta_lim[1]
+get_theta_from_x = function(x, ...) {
+	xy_to_polar(x, rep(0, length(x)), ...)$theta
 }
 
 # == title
@@ -294,4 +293,5 @@ flip_theta_back = function(theta) {
 	} else {
 		theta
 	}
+	theta
 }

@@ -28,9 +28,11 @@ spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
 spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
 spiral_dendrogram(dend, facing = "inside")
 
+\donttest{
 require(dendextend)
 dend = color_branches(dend, k = 4)
 spiral_initialize(xlim = c(0, k), start = 360, end = 360*3)
 spiral_track(height = 0.8, background_gp = gpar(fill = "#EEEEEE", col = NA))
 spiral_dendrogram(dend, facing = "inside")
+}
 }

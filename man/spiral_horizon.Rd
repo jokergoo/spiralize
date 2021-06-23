@@ -38,20 +38,11 @@ A list of the following objects:
 }
 }
 \examples{
-\donttest{
-# df = cranlogs::cran_downloads("ggplot2", from="2014-01-01")
-# the data frame `df` is already downloaded
-df = readRDS(system.file("extdata", "ggplot2_download.rds", package = "spiralize"))
-df = df[df$date < as.Date("2021-01-01"), ]
-day_diff = as.numeric(df$date[nrow(df)] - df$date[1])
-v = df$count
-v[v > quantile(v, 0.95)] = quantile(v, 0.95)
-spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364)) # a circle 52 weeks
-spiral_track(height = 0.9)
-spiral_horizon(1:nrow(df), v)
-
-spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364))
-spiral_track(height = 0.9)
-spiral_horizon(1:nrow(df), v, use_bars = TRUE)
-}
+df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
+df = df[df$Source == "GCAG", ]
+spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period = "year",
+    period_per_loop = 20, polar_lines_by = 360/20, 
+    vp_param = list(x = unit(0, "npc"), just = "left"))
+spiral_track()
+spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
 }

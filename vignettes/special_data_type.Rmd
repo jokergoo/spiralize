@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
     fig.align = "center"
 )
 options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r, echo = FALSE}
@@ -47,7 +48,7 @@ The unit of time point can be set via the argument `unit_on_axis` and the unit
 of the period can be set via the argument `period`, e.g. `unit_on_axis =
 "days"` and `period = "years"`. `unit_on_aixs` can be set as one of `"days"`,
 `"months"`, `"weeks"`, `"hours"`, `"mins"` and `"secs"`. And there are also
-corresponding valid values for `period`. If these two arguments are not set,
+corresponding values for `period`. If these two arguments are not set,
 they are guessed from `xlim` automatically.
 
 In the following examples, also note the default value of `polar_lines_by` is also different for different `period`. 
@@ -69,8 +70,10 @@ spiral_axis()
 ```
 
 
-As shown in previous examples, the values for `xlim` should be a time/date object or an object that can be converted to the time/date object.
-Later when adding graphics, the time/date objects can also be used as the _x_-locations for the low-level graphics functions. e.g.
+As shown in previous examples, the values for `xlim` should be a time/date
+object or their character forms that can be converted to the time/date object.
+Later when adding graphics, the time/date objects or their character forms can
+also be used as the _x_-locations for the low-level graphics functions. For example:
 
 ```{r, eval = FALSE}
 spiral_points("2021-01-01", 0.5)
@@ -85,7 +88,7 @@ genomic data can be initialized by the function
 `spiral_initialize_by_gcoor()`.  The genomic coordinates are linear numeric
 values, thus, `spiral_initialize_by_gcoor()` is basically the same as
 `spiral_initialize()`. The only difference is the axis labels are
-automatically formated for genomic coordinates.
+automatically formatted for genomic coordinates.
 
 Also since normally there are no periodic patterns for genomc data, `scale_by`
 is by default set to `"curve_length"`.
