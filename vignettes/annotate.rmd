@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
     fig.align = "center"
 )
 options(width = 100)
-options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 In this vignette, I demonstrate how to add text and legend to the spiral plot.

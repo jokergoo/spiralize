@@ -25,7 +25,6 @@ knitr::opts_chunk$set(
     fig.align = "center"
 )
 options(width = 100)
-options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 
