@@ -163,6 +163,10 @@ plot(k, ratio(k), xlab = "number of loops in the spiral", ylab = "ratio",
     main = "ratio of the resolution between\nspiral and normal Cartesian system")
 ```
 
+The relationship between ratio and $\theta$ has the following form:
+
+$$ ratio = \frac{\mathrm{ln}(\theta + \sqrt{1 + \theta^2})}{4\theta} + \frac{\sqrt{1 + \theta^2}}{4} $$
+
 
 ## The layout of the spiral
 
@@ -594,6 +598,21 @@ spiral_track(height = 0.8)
 spiral_bars(x, y, gp = gpar(fill = 2:4, col = NA))
 ```
 
+Width of bars can be different. You can set a vector to the argument of `bar_width`. Note `x` always corresponds
+to the middle of each bar.
+
+```{r}
+w = runif(100)
+w = w/sum(w)  # width of bars, sum of all width is 1
+b = c(0, cumsum(w))
+x = (b[1:100] + b[2:101])/2  # middle of each bar
+y = runif(100)
+
+spiral_initialize()
+spiral_track()
+spiral_bars(x, y, bar_width = w)
+```
+
 ### Polygons
 
 `spiral_polygon()` draws polygons. Note the polygon must be closed, which means, the last data point should overlap to the first one.
@@ -672,6 +691,41 @@ p4 = grid.grabExpr({
     grid.text("facing = 'outside'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
 })
 plot_grid(plot_grid(p1, p2), plot_grid(p3, p4), nrow = 2)
+```
+
+Text can also be set to `"clockwise"` or `"reverse_clockwise"`:
+
+```{r, eval = FALSE}
+x = seq(0.1, 0.9, length = 26)
+
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, "aaaa", facing = "clockwise")
+
+# the right plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, "aaaa", facing = "reverse_clockwise")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+x = seq(0.1, 0.9, length = 26)
+
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, "aaaa", facing = "clockwise")
+    grid.text("facing = 'clockwise'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, "aaaa", facing = "reverse_clockwise")
+    grid.text("facing = 'reverse_clockwise'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2)
 ```
 
 For long texts, `facing` can be set to `"curved_inside"` or `"curved_outside"` so that curved
@@ -869,6 +923,8 @@ spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364) +
 spiral_track(height = 0.9)
 spiral_horizon(1:nrow(df) - 0.5, df$diff, use_bars = TRUE)
 ```
+
+When using bars, argument `bar_width` can be set as a vector if the bar widths are not all equal.
 
 ### Images
 

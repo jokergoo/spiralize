@@ -198,11 +198,11 @@ names.TRACK_META = function(x) {
 	}
 
 	if(name == "xlim") {
-		spiral$xlim
+		spiral$get_data_x(spiral$xlim)
 	} else if(name == "xmin") {
-		spiral$xlim[1]
+		spiral$get_data_x(spiral$xlim[1])
 	} else if(name == "xmax") {
-		spiral$xlim[2]
+		spiral$get_data_x(spiral$xlim[2])
 	} else if(name == "xrange") {
 		spiral$xlim[2] - spiral$xlim[1]
 	} else if(name == "xcenter") {

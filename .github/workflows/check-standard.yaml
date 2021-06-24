@@ -64,6 +64,11 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
+      - name: Install X11 dependencies on MacOS
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install xquartz
+
       - name: Install dependencies
         run: |
           setRepositories(ind = 1:5)

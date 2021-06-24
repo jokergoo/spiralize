@@ -8,7 +8,8 @@ Add texts to a track
 }
 \usage{
 spiral_text(x, y, text, offset = NULL, gp = gpar(),
-    facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
+    facing = c("downward", "inside", "outside", "clockwise", "reverse_clockwise",
+    "curved_inside", "curved_outside"),
     letter_spacing = 0,
     nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
     track_index = current_track_index(), ...)

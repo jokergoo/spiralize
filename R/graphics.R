@@ -106,6 +106,7 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 # -x1 X-locations of the end points of the segments.
 # -y1 Y-locations of the end points of the segments.
 # -gp Graphical parameters.
+# -arrow A `grid::arrow` object.
 # -track_index Index of the track. 
 # -buffer Number of segments to buffer.
 #
@@ -126,7 +127,7 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 # spiral_track()
 # spiral_segments(x0, y0, x1, y1, gp = gpar(col = circlize::rand_color(n)))
 #
-spiral_segments = function(x0, y0, x1, y1, gp = gpar(), 
+spiral_segments = function(x0, y0, x1, y1, gp = gpar(), arrow = NULL, 
 	track_index = current_track_index(), buffer = 10000) {
 
 	validate_xy(x0, y0, x1, y1)
@@ -140,6 +141,12 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
     if(n2 == 1) y0 = rep(y0, n)
     if(n3 == 1) x1 = rep(x1, n)
     if(n4 == 1) y1 = rep(y1, n)
+
+    if(!is.null(arrow)) {
+    	if(n > 1) {
+    		stop_wrap("Only one segment can be drawn at a same time when 'arrow' is set.")
+    	}
+    }
 
 	spiral = spiral_env$spiral
 	x0 = spiral$get_numeric_x(x0)
@@ -166,6 +173,8 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 	df_store = data.frame(x0 = rep(NA_real_, k), y0 = rep(NA_real_, k), x1 = rep(NA_real_, k), y1 = rep(NA_real_, k),
 		col = vector(k, mode = mode(gp$col)), lwd = vector(k, mode = mode(gp$lwd)), lty = vector(k, mode = mode(gp$lty)))
 
+	first_segment = last_segment = NULL
+
 	for(i in seq_len(n)) {
 		df = spiral_lines_expand(c(x0[i], x1[i]), c(y0[i], y1[i]), track_index = track_index)
 		nb = nrow(df)
@@ -183,7 +192,13 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 		if(ir + nb2 > k) {
 			# draw the segments
 			df_store = df_store[!is.na(df_store$x0), , drop = FALSE]
-			if(nrow(df_store)) grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
+			if(nrow(df_store)) {
+				grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
+				if(is.null(first_segment)) {
+					first_segment = df_store[1, ]
+				}
+				last_segment = df_store[nrow(df_store), ]
+			}
 
 			ir = 0
 			df_store = data.frame(x0 = rep(NA_real_, k), y0 = rep(NA_real_, k), x1 = rep(NA_real_, k), y1 = rep(NA_real_, k),
@@ -192,6 +207,10 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 
 		if(nb2 > k) {
 			grid.segments(df2$x0, df2$y0, df2$x1, df2$y1, gp = gpar(col = df2$col, lwd = df2$lwd, lty = df2$lty), default.units = "native")
+			if(is.null(first_segment)) {
+				first_segment = df2[1, ]
+			}
+			last_segment = df2[nrow(df2), ]
 			next
 		}
 
@@ -208,8 +227,25 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(),
 	}
 	if(ir > 0) {
 		df_store = df_store[!is.na(df_store$x0), ]
-		grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
+		grid.segments(df_store$x0, df_store$y0, df_store$x1, df_store$y1, 
+			gp = gpar(col = df_store$col, lwd = df_store$lwd, lty = df_store$lty), default.units = "native")
+		if(is.null(first_segment)) {
+			first_segment = df_store[1, ]
+		}
+
+		last_segment = df_store[nrow(df_store), ]
 	}
+
+	if(!is.null(arrow)) {
+		if(arrow$ends %in% c(2, 3)) {  # last, both
+			grid.segments(last_segment$x0, last_segment$y0, last_segment$x1, last_segment$y1, arrow = arrow,
+				gp = gpar(col = last_segment$col, lwd = last_segment$lwd, lty = last_segment$lty), default.units = "native")
+		} else if(arrow$ends %in% c(1, 3)) {
+			grid.segments(first_segment$x1, first_segment$y1, first_segment$x0, first_segment$y0, arrow = arrow,
+				gp = gpar(col = first_segment$col, lwd = first_segment$lwd, lty = first_segment$lty), default.units = "native")
+		}
+	}
+	
 }
 
 
@@ -372,7 +408,8 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 # spiral_text(x, 0.5, text, facing = "curved_outside")
 #
 spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
-	facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"),
+	facing = c("downward", "inside", "outside", "clockwise", "reverse_clockwise", 
+		"curved_inside", "curved_outside"),
 	letter_spacing = 0,
 	nice_facing = FALSE, just = "centre", hjust = NULL, vjust = NULL,
 	track_index = current_track_index(), ...) {
@@ -405,7 +442,6 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, ...)
 	} else if(facing == "inside") {
 		df2 = xy_to_polar(x, y, track_index = track_index)
-		degree = as.degree(atan(spiral$tangent_slope(df2$theta)))
 		degree = (as.degree(df2$theta) - 90) %% 360
 		if(nice_facing) {
 			l = df$y < 0
@@ -437,6 +473,40 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 			}
 		} else {
 			grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, rot = degree, ...)
+		}
+	} else if(facing == "clockwise") {
+		df2 = xy_to_polar(x, y, track_index = track_index)
+		degree = as.degree(df2$theta) %% 360
+		if(nice_facing) {
+			l = df$x < 0
+			if(any(l)) {
+				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
+					hjust = 1 - hjust, vjust = 1 - vjust, rot = degree[l] + 180, ...)
+			}
+			if(any(!l)) {
+				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
+					hjust = hjust, vjust = vjust, rot = degree[!l], ...)
+			}
+		} else {
+			grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, 
+				hjust = hjust, vjust = vjust, rot = degree, ...)
+		}
+	} else if(facing == "reverse_clockwise") {
+		df2 = xy_to_polar(x, y, track_index = track_index)
+		degree = (as.degree(df2$theta) + 180) %% 360
+		if(nice_facing) {
+			l = df$x > 0
+			if(any(l)) {
+				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
+					hjust = 1 - hjust, vjust = 1 - vjust, rot = degree[l] + 180, ...)
+			}
+			if(any(!l)) {
+				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
+					hjust = hjust, vjust = vjust, rot = degree[!l], ...)
+			}
+		} else {
+			grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, 
+				hjust = hjust, vjust = vjust, rot = degree, ...)
 		}
 	} else if(facing %in% c("curved_inside", "curved_outside")) {
 		df2 = xy_to_polar(x, y, track_index = track_index)
@@ -773,12 +843,25 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		return(invisible(NULL))
 	}
 
+	n = length(x)
+	if(length(bar_width) == 1) {
+		bar_width = rep(bar_width, n)
+	}
+
 	l = is.na(x)
 	x = x[!l]
 	y = y[!l]
 
 	l = is.na(y)
 	y[l] = 0
+
+	if(all(y >= 0)) {
+		y_type = "positive"
+	} else if(all(y <= 0)) {
+		y_type = "negative"
+	} else {
+		y_type = "both"
+	}
 
 	pos_col_fun = colorRamp2(c(0, n_slices), c("white", pos_fill))
 	neg_col_fun = colorRamp2(c(0, n_slices), c("white", neg_fill))
@@ -789,13 +872,15 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		if(any(l1)) {
 			x2 = x
 			y2 = y
+			bar_width2 = bar_width
 			y2[l1] = y2[l1] - slice_size*(i-1)
 			y2[l3] = slice_size
 			x2[l2] = NA
 			y2[l2] = NA
+			bar_width2[l2] = NA
 
 			if(use_bars) {
-				add_horizon_bars(x2, y2, bar_width = bar_width, slice_size = slice_size, 
+				add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, 
 					gp = gpar(fill = pos_col_fun(i), col = pos_col_fun(i)), track_index = track_index) 
 			} else {
 				add_horizon_polygons(x2, y2, slice_size = slice_size, 
@@ -811,13 +896,15 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 		if(any(l1)) {
 			x2 = x
 			y2 = y
+			bar_width2 = bar_width
 			y2[l1] = y2[l1] - slice_size*(i-1)
 			y2[l3] = slice_size
 			x2[l2] = NA
 			y2[l2] = NA
+			bar_width2[l2] = NA
 
 			if(use_bars) {
-				add_horizon_bars(x2, y2, bar_width = bar_width, slice_size = slice_size, from_top = negative_from_top, 
+				add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, from_top = negative_from_top, 
 					gp = gpar(fill = neg_col_fun(i), col = neg_col_fun(i)), track_index = track_index)
 			} else {
 				add_horizon_polygons(x2, y2, slice_size = slice_size, from_top = negative_from_top, 
@@ -827,9 +914,12 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 	}
 
 	interval = 0:n_slices*slice_size
-	if(all(y >= 0)) {
+	if(y_type == "positive") {
 		col_fun = colorRamp2(c(0, n_slices*slice_size), c("white", pos_fill))
 		return(invisible(list(col_fun = col_fun, interval = interval)))
+	} else if(y_type == "negative") {
+		col_fun = colorRamp2(c(-n_slices*slice_size, 0), c(neg_fill, "white"))
+		return(invisible(list(col_fun = col_fun, interval = -rev(interval))))
 	} else {
 		col_fun = colorRamp2(c(-n_slices*slice_size, 0, n_slices*slice_size), c(neg_fill, "white", pos_fill))
 		return(invisible(list(col_fun = col_fun, interval = seq(-n_slices, n_slices)*slice_size)))
@@ -857,14 +947,16 @@ add_horizon_polygons = function(x, y, slice_size = NULL, from_top = FALSE, ...) 
 add_horizon_bars = function(x, y, bar_width, slice_size = NULL, from_top = FALSE, ...) {
 	ltx = split_vec_by_NA(x)
 	lty = split_vec_by_NA(y)
+	lbw = split_vec_by_NA(bar_width)
 
 	for(i in seq_along(ltx)) {
 		x0 = ltx[[i]]
 		y0 = lty[[i]]
+		bw = lbw[[i]]
 		if(from_top) {
-			spiral_bars(x0, y0/slice_size, bar_width = bar_width, baseline = 1, ...)
+			spiral_bars(x0, y0/slice_size, bar_width = bw, baseline = 1, ...)
 		} else {
-			spiral_bars(x0, y0/slice_size, bar_width = bar_width, ...)
+			spiral_bars(x0, y0/slice_size, bar_width = bw, ...)
 		}
 	}
 }
@@ -884,11 +976,10 @@ split_vec_by_NA = function(x) {
 # -title Title of the legend.
 # -format Number format of the legend labels.
 # -template Template to construct the labels.
-# -direction Whether only show the positive or negative values in the legend or both.
 # -... Pass to `ComplexHeatmap::Legend`.
 #
 horizon_legend = function(lt, title = "", format = "%.2f",
-	template = "[{x1}, {x2}]", direction = c("both", "positive", "negative"), ...) {
+	template = "[{x1}, {x2}]", ...) {
 
 	interval = lt$interval
 	col_fun = lt$col_fun
@@ -900,15 +991,13 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 	x2 = interval[2:n]
 	labels = qq(template, collapse = FALSE, code.pattern = "\\{CODE\\}")
 
-	direction = match.arg(direction)[1]
-
-	if(direction == "positive") {
+	if(all(interval >= 0)) {
 		l = at > 0
 		at = at[l]
 		labels = labels[l]
 		at = rev(at)
 		labels = rev(labels)
-	} else if(direction == "negative") {
+	} else if(all(interval <= 0)) {
 		l = at < 0
 		at = at[l]
 		labels = labels[l]

@@ -251,6 +251,13 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		}
 	})
 
+	get_data_x = local({
+		time_start = time_start
+		function(x) {
+			add_time(time_start, x, unit_on_axis)
+		}
+	})
+
 	if(unit_on_axis == "days") {
 		get_character_x = local({
 			time_start = time_start
@@ -426,12 +433,30 @@ time_difference = function(x, y, unit = "days") {
 	}
 }
 
+add_time = function(t, diff, unit) {
+	if(unit == "days") {
+		t + lubridate::days(diff)
+	} else if(unit == "weeks") {
+		t + lubridate::weeks(diff)
+	} else if(unit == "hours") {
+		t + lubridate::hours(diff) 
+	} else if(unit == "mins") {
+		t + lubridate::minutes(diff)
+	} else if(unit == "secs") {
+		t + lubridate::seconds(diff)
+	} else if(unit == "months") {
+		month2 = (month(t) + diff - 1) %% 12 + 1
+		year2 = year(t) + floor((month(t) + diff - 1)/12)
+		year(t) = year2
+		month(t) = month2
+		t
+	}
+}
 
 # == title
 # Initialize the spiral with genomic coordinates
 #
 # == param
-# -x A vector of genomic coordinates.
 # -xlim Range of the genomic coordinates.
 # -scale_by For genomic plot, axis is linearly scaled by the curve length.
 # -... All pass to `spiral_initialize`.
@@ -444,11 +469,7 @@ time_difference = function(x, y, unit = "days") {
 # spiral_initialize_by_gcoor(c(1, 1000000000))
 # spiral_track()
 # spiral_axis()
-spiral_initialize_by_gcoor = function(x = NULL, xlim = range(x), scale_by = "curve_length", ...) {
-
-	if(is.null(x) && missing(xlim)) {
-		stop_wrap("You need to specify one of `x` and `xlim`.")
-	}
+spiral_initialize_by_gcoor = function(xlim, scale_by = "curve_length", ...) {
 
 	get_character_x = function(x) {
 		x2 = character(length(x))

@@ -7,11 +7,10 @@ Initialize the spiral with genomic coordinates
 Initialize the spiral with genomic coordinates
 }
 \usage{
-spiral_initialize_by_gcoor(x = NULL, xlim = range(x), scale_by = "curve_length", ...)
+spiral_initialize_by_gcoor(xlim, scale_by = "curve_length", ...)
 }
 \arguments{
 
-  \item{x}{A vector of genomic coordinates.}
   \item{xlim}{Range of the genomic coordinates.}
   \item{scale_by}{For genomic plot, axis is linearly scaled by the curve length.}
   \item{...}{All pass to \code{\link{spiral_initialize}}.}

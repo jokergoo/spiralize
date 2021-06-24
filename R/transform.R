@@ -49,8 +49,7 @@ xy_to_polar = function(x, y, track_index = current_track_index(), flip = TRUE) {
 		}
 	} else if(spiral$scale_by == "curve_length") {
 		if(spiral$reverse) {
-			len = (spiral$xlim[2] - x + spiral$xlim[1]) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
-			n = length(len)
+			len = (spiral$xlim[2] - x) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
 			theta = solve_theta_from_spiral_length(len)
 		} else {
 			len = (x - spiral$xlim[1]) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]

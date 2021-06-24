@@ -7,7 +7,7 @@ Add segments to a track
 Add segments to a track
 }
 \usage{
-spiral_segments(x0, y0, x1, y1, gp = gpar(),
+spiral_segments(x0, y0, x1, y1, gp = gpar(), arrow = NULL,
     track_index = current_track_index(), buffer = 10000)
 }
 \arguments{
@@ -17,6 +17,7 @@ spiral_segments(x0, y0, x1, y1, gp = gpar(),
   \item{x1}{X-locations of the end points of the segments.}
   \item{y1}{Y-locations of the end points of the segments.}
   \item{gp}{Graphical parameters.}
+  \item{arrow}{A \code{\link[grid]{arrow}} object.}
   \item{track_index}{Index of the track. }
   \item{buffer}{Number of segments to buffer.}
 

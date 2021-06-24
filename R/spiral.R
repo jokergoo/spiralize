@@ -74,6 +74,7 @@ spiral = setRefClass("spiral",
 		reverse = "logical",
 		xclass = "character",
 		get_numeric_x = "function",
+		get_data_x = "function",
 		get_character_x = "function",
 		clockwise = "logical",
 		other = "list"
@@ -113,9 +114,9 @@ spiral = setRefClass("spiral",
 		tangent_slope = function(theta) {
 			(tan(theta) + theta)/(1 - theta*tan(theta))
 		},
-		initialize = function(..., xclass = "numeric", get_numeric_x = function(x) x,
+		initialize = function(..., xclass = "numeric", get_numeric_x = function(x) x, get_data_x = function(x) x,
 			get_character_x = function(x) x, other = list()) {
-			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_character_x = get_character_x, other = other)
+			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_data_x = get_data_x, get_character_x = get_character_x, other = other)
 		},
 		draw_spiral = function(start = 0, end = 360*4, offset = 0) {
 			theta = seq(start, end, by = 1)
