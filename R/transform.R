@@ -160,7 +160,8 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 	}
 
 	if(spiral$scale_by == "curve_length") {
-		x_offset = offset/(spiral$spiral_length(spiral$theta_lim[2], convert_y_to_height(y)) - spiral$spiral_length(spiral$theta_lim[1], convert_y_to_height(y)))*spiral$xrange
+		v_offset = convert_y_to_height(y)
+		x_offset = offset/(spiral$spiral_length(spiral$theta_lim[2], v_offset) - spiral$spiral_length(spiral$theta_lim[1], v_offset))*spiral$xrange
 		if(coordinate == "polar") {
 			xy_to_polar(x + x_offset, y)$theta
 		} else {
@@ -217,7 +218,6 @@ convert_y_to_height = function(y, track_index = current_track_index()) {
 			v_offset = v_offset + get_track_data("rmax", i) - get_track_data("rmin", i)
 		}
 	}
-	v_offset = v_offset/spiral$dist
 	v_offset
 }
 
@@ -232,11 +232,11 @@ get_theta_from_x = function(x, ...) {
 # == param
 # -len A vector of spiral lengths.
 # -interval Interval to search for the solution.
-# -offset Offset of the spiral. In the general form: theta = a + r*theta, offset is the value of a.
+# -offset Offset of the spiral. In the general form: ``r = a + r*theta``, offset is the value of ``a``.
 #
 # == details
 # The length of the spiral has a complicated form, see https://downloads.imagej.net/fiji/snapshots/arc_length.pdf .
-# Let's say the form is l = f(theta), `solve_theta_from_spiral_length` tries to find theta by a known l.
+# Let's say the form is ``l = f(theta)``, `solve_theta_from_spiral_length` tries to find theta by a known ``l``.
 # It uses `stats::uniroot` to search solutions.
 #
 # == example

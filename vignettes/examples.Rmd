@@ -128,15 +128,16 @@ for(i in seq_along(r1$lengths)) {
 ```
 
 The plot already looks good. However, one problem of that plot is I actually drawed 2801x2 rectangles,
-which might results in that you can observe "wave lines" in the plot. This is because rectangles on spirals
+which might results in that you can observe "interference wave lines" in the plot. This is because rectangles on spirals
 are not real rectangles while polygons and edges of the neighbouring polygons cannot perfectly match.
 
 In the previous code where I draw the text of tumor types, I used `rle()` function to group the tumor types.
-Actually we can also use it for the heatmap because tumor types and methylation classes are already grouped,
+Actually we can also use it for the heatmap because tumor types and methylation classes are already sorted and grouped,
 so that we don't need to draw every single rectangle for every sample in a class, which we just draw one rectangle
 that covers all samples in that class.
 
-In the following code, I defined a function `spiral_rle()` for this purpose:
+In the following code, I first define a function `spiral_rle()` for this purpose. This function
+draws rectangles and adds labels on them.
 
 
 ```{r}
@@ -164,7 +165,7 @@ spiral_rle = function(x, col, labels = FALSE) {
 }
 ```
 
-I applied `spiral_rle()` to both tumor type track and methylation class track. The plot looks nicer. I also
+I apply `spiral_rle()` to both tumor type track and methylation class track. Now the plot looks nicer. I also
 add legends for methylation classes, grouped by tumor types.
 
 ```{r, fig.width = 13, fig.height = 7}
@@ -355,7 +356,7 @@ spiral_segments(x - 0.5, 0.35, x - 0.5, 0.65)
 This example visualizes DNA methylation and four histone modification signals along _BCAT2_ gene.
 The data is from [Roadmap project](http://www.roadmapepigenomics.org/).
 
-```{r, fig.width = 9, fig.width = 10}
+```{r, fig.height = 8, fig.width = 10}
 df_list = readRDS(system.file("extdata", "BCAT2_tracks.rds", package = "spiralize"))
 spiral_initialize_by_gcoor(xlim = c(df_list$range[1, 2], df_list$range[1, 3]), end = 360*3,
     vp_param = list(x = unit(0, "npc"), just = "left"))
@@ -371,6 +372,7 @@ spiral_text(49314320, -1, "TSS", hjust = -0.2, facing = "outside", gp = gpar(fon
 
 spiral_segments(49298321, 0, 49298321, -1)
 spiral_text(49298321, -1, "TES", hjust = -0.2, facing = "inside", gp = gpar(fontsize = 6))
+spiral_points(49298321, -1, pch = 16)
 
 meth = df_list$meth
 spiral_track(height = 0.1)
@@ -392,31 +394,24 @@ for(mark in grep("H3", names(df_list), value = TRUE)) {
 }
 
 spiral_lines(TRACK_META$xlim, 1)
-spiral_axis(curved_labels = TRUE)
+at = seq(df_list$range[1, 3], df_list$range[1, 2], by = -1000)
+labels = -(seq(df_list$range[1, 3], df_list$range[1, 2], by = -1000) - 49314320)
+labels = paste0(labels/1000, "KB")
+spiral_axis(at = at, labels = labels)
 
-spiral_text(49297321, 0.5, "Methylation", hjust = 0, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 2)
-spiral_text(49297321, 0.5, "H3K4me1", hjust = 0, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 3)
-spiral_text(49297321, 0.5, "H3K4me3", hjust = 0, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 4)
-spiral_text(49297321, 0.5, "H3K9me3", hjust = 0, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 5)
-spiral_text(49297321, 0.5, "H3K27ac", hjust = 0, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 6)
+spiral_text(49297321, 0.5, "Methylation", hjust = 0, facing = "inside", gp = gpar(fontsize = 6), track_index = 2)
+spiral_text(49297321, 0.5, "H3K4me1", hjust = 0, facing = "inside", gp = gpar(fontsize = 6), track_index = 3)
+spiral_text(49297321, 0.5, "H3K4me3", hjust = 0, facing = "inside", gp = gpar(fontsize = 6), track_index = 4)
+spiral_text(49297321, 0.5, "H3K9me3", hjust = 0, facing = "inside", gp = gpar(fontsize = 6), track_index = 5)
+spiral_text(49297321, 0.5, "H3K27ac", hjust = 0, facing = "inside", gp = gpar(fontsize = 6), track_index = 6)
 
-spiral_text(49315320, 0.5, "Methylation", hjust = 1, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 2)
-spiral_text(49315320, 0.5, "H3K4me1", hjust = 1, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 3)
-spiral_text(49315320, 0.5, "H3K4me3", hjust = 1, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 4)
-spiral_text(49315320, 0.5, "H3K9me3", hjust = 1, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 5)
-spiral_text(49315320, 0.5, "H3K27ac", hjust = 1, 
-    facing = "inside", gp = gpar(fontsize = 6), track_index = 6)
+spiral_text(49315320, 0.5, "Methylation", hjust = 1, facing = "inside", gp = gpar(fontsize = 6), track_index = 2)
+spiral_text(49315320, 0.5, "H3K4me1", hjust = 1, facing = "inside", gp = gpar(fontsize = 6), track_index = 3)
+spiral_text(49315320, 0.5, "H3K4me3", hjust = 1, facing = "inside", gp = gpar(fontsize = 6), track_index = 4)
+spiral_text(49315320, 0.5, "H3K9me3", hjust = 1, facing = "inside", gp = gpar(fontsize = 6), track_index = 5)
+spiral_text(49315320, 0.5, "H3K27ac", hjust = 1, facing = "inside", gp = gpar(fontsize = 6), track_index = 6)
 
-lgd = packLegend(list = lgd_list, max_height = unit(7, "in"))
+lgd = packLegend(list = lgd_list, max_height = unit(8, "in"))
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 

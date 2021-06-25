@@ -1174,7 +1174,7 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 }
 
 # == title
-# Draw arrows
+# Draw arrows in the spiral direction
 #
 # == param
 # -x1 Start of the arrow.
@@ -1188,6 +1188,9 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 # -tail The shape of the arrow tail.
 # -gp Graphics parameters.
 # -track_index Index of the track. 
+#
+# == seealso
+# Note `spiral_segments()` also supports drawing line-based arrows.
 #
 # == example
 # spiral_initialize()

@@ -97,7 +97,7 @@ track_existed = function(track_index) {
 # Number of tracks
 #
 # == value
-# An integer of the number of avaiable tracks.
+# An integer of the number of available tracks.
 n_tracks = function() {
 	nrow(track_env$track_data)
 }

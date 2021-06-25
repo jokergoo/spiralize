@@ -109,7 +109,7 @@ spiral = setRefClass("spiral",
 			s1 = log(s1+sqrt(1+s1*s1))/2/b2
 			s2 = sqrt(b2*b2*theta*theta + 2*a2*b2*theta+b2*b2+a2*a2)/2
 
-			-a*a*s1 + (b2*b2 + a*a)*s1 + theta*s2 + a*s2/b2
+			-a2*a2*s1 + (b2*b2 + a2*a2)*s1 + theta*s2 + a2*s2/b2
 		},
 		tangent_slope = function(theta) {
 			(tan(theta) + theta)/(1 - theta*tan(theta))

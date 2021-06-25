@@ -79,10 +79,27 @@ grid.text("2012-04-01\n23:59:59", df$x[2], df$y[2], default.units = "native", vj
     gp = gpar(fontsize = 8))
 ```
 
+The drawback of the previous plot is e.g. 1h and 2h are too far away to the spiral. Users might want
+to put the text closer to the spiral. This can be done by just drawing text in the track, but with _y_-locations
+larger than the maximal _y_-location in the track (drawing above the plot region of the track).
+
+```{r}
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-04 23:59:59"), padding = unit(1, "cm"))
+spiral_track()
+
+# ymax of the track is 1, but here we draw the text at y = 1.5
+library(lubridate)
+spiral_text(as.POSIXlt("2021-01-04 00:30:00") + lubridate::hours(0:23), y = 1.5, paste0(1:24, "h"), gp = gpar(fontsize = 8))
+spiral_text("2021-01-01 00:00:00", 0.5, "01-01", gp = gpar(fontsize = 8))
+spiral_text("2021-01-02 00:00:00", 0.5, "01-02", gp = gpar(fontsize = 8))
+spiral_text("2021-01-03 00:00:00", 0.5, "01-03", gp = gpar(fontsize = 8))
+spiral_text("2021-01-04 00:00:00", 0.5, "01-04", gp = gpar(fontsize = 8))
+```
+
 ## Legend
 
 Legends are important graphics elements in a plot which guild users to understand the plot.
-**spiralize** does not directly draw legends, but it can be very easily done by other legend functions,
+**spiralize** does not directly draw legends, but it can be very easily done with other legend functions,
 such as `Legend()` and `packLegend()` from **ComplexHeatmap** package. 
 
 `Legend()` creates a single legend, either continuous or discrete, and `packLegend()` combines a list
@@ -172,7 +189,7 @@ draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
 In previous examples, the spirals are always drawn in the center of images,
-which results in that there are large white area in the left part of the
+which results in that there is large white area in the left part of the
 image. See the following image which is the same as the previous one but I
 additionally add border of the image and border of the spiral viewport.
 
@@ -181,7 +198,7 @@ grid.rect()
 spiral_initialize_by_time(xlim = range(df$date), newpage = FALSE)
 spiral_track(height = 0.9)
 lt = spiral_horizon(df$date, df$diff, use_bars = TRUE)
-grid.rect(gp = gpar(fill = NA))
+grid.rect(gp = gpar(fill = NA)) # to draw the border
 
 lgd = horizon_legend(lt, title = "log2(difference)")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")

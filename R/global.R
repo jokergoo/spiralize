@@ -33,7 +33,7 @@ spiral_env$spiral = NULL
 # Viewport name of current spiral
 #
 # == value
-# A character scale of the viewport name.
+# A string of the viewport name.
 current_spiral_vp = function() {
 	paste0("spiral_", spiral_env$i_spiral)
 }

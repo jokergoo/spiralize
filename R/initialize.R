@@ -332,8 +332,8 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	}
 
 	xlim = get_numeric_x(xlim)
-	# xlim[1] = xlim[1] - 0.5
-	# xlim[2] = xlim[2] + 0.5
+	xlim[1] = xlim[1] - 0.5
+	xlim[2] = xlim[2] + 0.5
 
 	if( (is.null(start) && !is.null(end)) || (!is.null(start) && is.null(end)) ) {
 		stop_wrap("You should both set 'start' and 'end'.")
@@ -466,7 +466,7 @@ add_time = function(t, diff, unit) {
 # formated for genomic coordinates.
 #
 # == example
-# spiral_initialize_by_gcoor(c(1, 1000000000))
+# spiral_initialize_by_gcoor(c(0, 1000000000))
 # spiral_track()
 # spiral_axis()
 spiral_initialize_by_gcoor = function(xlim, scale_by = "curve_length", ...) {
