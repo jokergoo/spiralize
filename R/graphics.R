@@ -127,6 +127,17 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 # spiral_track()
 # spiral_segments(x0, y0, x1, y1, gp = gpar(col = circlize::rand_color(n)))
 #
+# n = 100
+# x0 = runif(n)
+# y0 = runif(n)
+# x1 = x0 + runif(n, min = -0.01, max = 0.01)
+# y1 = 1 - y0
+#
+# spiral_initialize(xlim = range(c(x0, x1)))
+# spiral_track()
+# spiral_segments(x0, y0, x1, y1, arrow = arrow(length = unit(2, "mm")),
+#     gp = gpar(col = circlize::rand_color(n, luminosity = "bright"), lwd = runif(n, 0.5, 3)))
+#
 spiral_segments = function(x0, y0, x1, y1, gp = gpar(), arrow = NULL, 
 	track_index = current_track_index(), buffer = 10000) {
 
@@ -144,7 +155,11 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(), arrow = NULL,
 
     if(!is.null(arrow)) {
     	if(n > 1) {
-    		stop_wrap("Only one segment can be drawn at a same time when 'arrow' is set.")
+    		for(i in 1:n) {
+    			spiral_segments(x0[i], y0[i], x1[i], y1[i], gp = subset_gp(gp, i),
+    				arrow = arrow, track_index = track_index, buffer = buffer)
+    		}
+    		return(invisible(NULL))
     	}
     }
 
@@ -427,6 +442,8 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	if(length(y) == 1) y = rep(y, n)
 	if(length(text) == 1) text = rep(text, n)
 
+	text = as.character(text)
+
 	if(is.null(offset)) {
 		df = xy_to_cartesian(x, y, track_index = track_index)
 	} else {
@@ -442,7 +459,13 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, ...)
 	} else if(facing == "inside") {
 		df2 = xy_to_polar(x, y, track_index = track_index)
-		degree = (as.degree(df2$theta) - 90) %% 360
+		# degree = (as.degree(df2$theta) - 90) %% 360
+		slope = spiral$tangent_slope(df2$theta)
+		degree = atan(slope)*180/pi
+		# degree is between -90 and 90
+		l = df$y < 0 & slope < 0 | df$x > 0 & slope > 0
+		degree[l] = degree[l] + 180
+
 		if(nice_facing) {
 			l = df$y < 0
 			if(any(l)) {
@@ -460,7 +483,13 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		
 	} else if(facing == "outside") {
 		df2 = xy_to_polar(x, y, track_index = track_index)
-		degree = (as.degree(df2$theta) + 90) %% 360
+		# degree = (as.degree(df2$theta) + 90) %% 360
+		slope = spiral$tangent_slope(df2$theta)
+		degree = atan(slope)*180/pi
+		# degree is between -90 and 90
+		l = df$x < 0 & slope > 0 | df$y > 0 & slope < 0
+		degree[l] = degree[l] + 180
+
 		if(nice_facing) {
 			l = df$y > 0
 			if(any(l)) {
@@ -515,7 +544,17 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 				facing = gsub("curved_", "", facing), nice_facing = nice_facing, vjust = vjust, hjust = hjust, letter_spacing = letter_spacing)
 		}
 	}
+
+	# if(facing %in% c("inside", "outside")) {
+	# 	df = xy_to_cartesian(x, y)
+	# 	for(i in seq_along(x)) {
+	# 		pushViewport(viewport(x = df$x[i], y = df$y[i], angle = degree[i], width = grobWidth(textGrob(text[i], gp = gp)), height = grobHeight(textGrob(text[i], gp = gp)), default.units = "native"))
+	# 		grid.rect(gp = gpar(fill = "transparent", col = "red"))
+	# 		popViewport()
+	# 	}
+	# }
 }
+
 
 # a single text
 curved_text = function(x, y, text, gp = gpar(), track_index = current_track_index(), 
@@ -545,10 +584,14 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 
 	x0 = numeric(n)
 	for(i in seq_along(letters)) {
-		offset = sum(letters_len[1:i]) - letters_len[i]*0.5 - sum(letters_len)*(1-hjust)
+		# offset = sum(letters_len[1:i]) - letters_len[i]*0.5 - sum(letters_len)*(1-hjust)
+		offset = sum(letters_len[1:i]) - letters_len[i]*0.5 - sum(letters_len)*0.5 + sum(letters_len)*(hjust - 0.5)
 		x0[i] = circular_extend_on_x(x, y, offset, track_index, "xy")
 	}
 	spiral_text(x0, y, letters, gp = gp, track_index = track_index, facing = facing, vjust = vjust)
+	# spiral_points(x0, y, gp = gpar(col = "red"))
+	# spiral_points(x, y, pch = 16, gp = gpar(col = "blue"))
+
 }
 
 

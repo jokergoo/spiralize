@@ -138,7 +138,7 @@
     <p>Add segments to a track</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_segments</span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>y0</span>, <span class='va'>x1</span>, <span class='va'>y1</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>,
+    <pre class="usage"><span class='fu'>spiral_segments</span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>y0</span>, <span class='va'>x1</span>, <span class='va'>y1</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>, arrow <span class='op'>=</span> <span class='cn'>NULL</span>,
     track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span>, buffer <span class='op'>=</span> <span class='fl'>10000</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -163,6 +163,10 @@
     <tr>
       <th>gp</th>
       <td><p>Graphical parameters.</p></td>
+    </tr>
+    <tr>
+      <th>arrow</th>
+      <td><p>A <code><a href='https://rdrr.io/r/grid/arrow.html'>arrow</a></code> object.</p></td>
     </tr>
     <tr>
       <th>track_index</th>
@@ -191,7 +195,18 @@ is called to draw all the buffered segments.</p>
 <span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>x1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'>spiral_segments</span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>y0</span>, <span class='va'>x1</span>, <span class='va'>y1</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='fu'>circlize</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/circlize/man/rand_color.html'>rand_color</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='spiral_segments-1.png' alt='' width='700' height='433' /></div></pre>
+</div><div class='img'><img src='spiral_segments-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>n</span> <span class='op'>=</span> <span class='fl'>100</span>
+<span class='va'>x0</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span>
+<span class='va'>y0</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span>
+<span class='va'>x1</span> <span class='op'>=</span> <span class='va'>x0</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, min <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.01</span>, max <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
+<span class='va'>y1</span> <span class='op'>=</span> <span class='fl'>1</span> <span class='op'>-</span> <span class='va'>y0</span>
+
+<span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>x1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>spiral_segments</span><span class='op'>(</span><span class='va'>x0</span>, <span class='va'>y0</span>, <span class='va'>x1</span>, <span class='va'>y1</span>, arrow <span class='op'>=</span> <span class='fu'>arrow</span><span class='op'>(</span>length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"mm"</span><span class='op'>)</span><span class='op'>)</span>,
+    gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='fu'>circlize</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/circlize/man/rand_color.html'>rand_color</a></span><span class='op'>(</span><span class='va'>n</span>, luminosity <span class='op'>=</span> <span class='st'>"bright"</span><span class='op'>)</span>, lwd <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='fl'>0.5</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='spiral_segments-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

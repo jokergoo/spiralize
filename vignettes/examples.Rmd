@@ -352,9 +352,10 @@ spiral_segments(x - 0.5, 0.35, x - 0.5, 0.65)
 
 ## Integrative visualization of methylation and histone modifications for BCAT2
 
-This example visualizes DNA methylation 
+This example visualizes DNA methylation and four histone modification signals along _BCAT2_ gene.
+The data is from [Roadmap project](http://www.roadmapepigenomics.org/).
 
-```{r, fig.width = 8, fig.width = 10}
+```{r, fig.width = 9, fig.width = 10}
 df_list = readRDS(system.file("extdata", "BCAT2_tracks.rds", package = "spiralize"))
 spiral_initialize_by_gcoor(xlim = c(df_list$range[1, 2], df_list$range[1, 3]), end = 360*3,
     vp_param = list(x = unit(0, "npc"), just = "left"))
@@ -367,6 +368,9 @@ spiral_rect(exons[, 2], 0.1, exons[, 3], 0.9, gp = gpar(fill = "grey"))
 spiral_segments(49314320, 0, 49314320, -1)
 spiral_segments(49314320, -1, 49314320 - 200, -1, arrow = arrow(length = unit(2, "mm")))
 spiral_text(49314320, -1, "TSS", hjust = -0.2, facing = "outside", gp = gpar(fontsize = 6))
+
+spiral_segments(49298321, 0, 49298321, -1)
+spiral_text(49298321, -1, "TES", hjust = -0.2, facing = "inside", gp = gpar(fontsize = 6))
 
 meth = df_list$meth
 spiral_track(height = 0.1)
@@ -413,7 +417,7 @@ spiral_text(49315320, 0.5, "H3K27ac", hjust = 1,
     facing = "inside", gp = gpar(fontsize = 6), track_index = 6)
 
 lgd = packLegend(list = lgd_list, max_height = unit(7, "in"))
-draw(lgd, x = unit(1, "npc") + unit(2, "mm"))
+draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
 

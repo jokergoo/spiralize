@@ -38,4 +38,15 @@ y1 = 1 - y0
 spiral_initialize(xlim = range(c(x0, x1)))
 spiral_track()
 spiral_segments(x0, y0, x1, y1, gp = gpar(col = circlize::rand_color(n)))
+
+n = 100
+x0 = runif(n)
+y0 = runif(n)
+x1 = x0 + runif(n, min = -0.01, max = 0.01)
+y1 = 1 - y0
+
+spiral_initialize(xlim = range(c(x0, x1)))
+spiral_track()
+spiral_segments(x0, y0, x1, y1, arrow = arrow(length = unit(2, "mm")),
+    gp = gpar(col = circlize::rand_color(n, luminosity = "bright"), lwd = runif(n, 0.5, 3)))
 }
