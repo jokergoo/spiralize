@@ -49,7 +49,6 @@ import(lubridate)
 import(methods)
 importFrom("circlize", colorRamp2)
 importFrom("grDevices", "col2rgb", "rgb")
-importFrom("utils", "getFromNamespace")
+importFrom("utils", "getFromNamespace", "packageDescription")
 importFrom(ComplexHeatmap, adjust_dend_by_x, Legend)
 importFrom(stats, is.leaf, uniroot)
-
