@@ -8,7 +8,7 @@ output:
     css: main.css
     toc: true
 vignette: >
-  %\VignetteIndexEntry{1. Visualize Data on Spirals}
+  %\VignetteIndexEntry{Visualize Data on Spirals}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -269,7 +269,7 @@ Argument `scale_by` controls how to linearly scale the data on the
 spiral. It allows value of `"angle"` or `"curve_length"` (or for short,
 `"curve"`). `"angle"` means equal difference on data corresponds to equal
 difference of angles in the polar coordinates. `"curve_length"` means equal
-difference on data corresponds to euqal difference of the length of the
+difference on data corresponds to equal difference of the length of the
 spiral. Observe how the axis ticks distribute in the following two plots. Also
 the polar lines are removed for `scale_by = "curve_length"`.
 

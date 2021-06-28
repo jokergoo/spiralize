@@ -232,7 +232,7 @@ construct_phylo_segments = function(obj) {
 # -obj A ``phylo`` object.
 # -facing Facing of the tree.
 # -gp Graphics parameters of the tree edges.
-# -log Whether the height of the tree should be log-transformed?
+# -log Whether the height of the tree should be log-transformed (log10(x + 1))?
 # -reverse Whether the tree should be reversed?
 # -track_index Index of the track. 
 #
@@ -249,8 +249,8 @@ spiral_phylo = function(obj, facing = c("inside", "outside"), gp = gpar(),
     lt = construct_phylo_segments(obj)
 
     if(log) {
-        lt$y0 = log10(lt$y0)
-        lt$y1 = log10(lt$y1)
+        lt$y0 = log10(lt$y0 + 1)
+        lt$y1 = log10(lt$y1 + 1)
         lt$y0[is.infinite(lt$y0)] = 0
         lt$y1[is.infinite(lt$y1)] = 0
         lt$y0[lt$y0 < 0] = 0
@@ -287,14 +287,14 @@ spiral_phylo = function(obj, facing = c("inside", "outside"), gp = gpar(),
 #
 # == param
 # -obj A ``phylo`` object.
-# -log Whether the height of the phylogenetic tree should be log-transformed.
+# -log Whether the height of the phylogenetic tree should be log-transformed (log10(x + 1)).
 #
 # == details
 # The motivation is that phylogenetic tree may contain polytomies, which means at a certain node,
 # there are more than two children branches. Available tools that do the conversion only support binary trees.
 #
 # The returned ``dendrogram`` object is not in its standard format which means it can not be properly
-# drawn by the ``plot.dendrogram`` function. However, you can still apply `dendextend::cutree` to the returned
+# drawn by the ``plot.dendrogram`` function. However, you can still apply dendextend::`dendextend::cutree` to the returned
 # ``dendrogram`` object with no problem and the dendrogram can be properly drawn with the ComplexHeatmap package.
 #
 # == example
@@ -355,7 +355,7 @@ phylo_to_dendrogram = function(obj, log = FALSE) {
     }
 
     if(log) {
-        node_height = log10(node_height)
+        node_height = log10(node_height + 1)
         node_height[is.infinite(node_height)] = 0
         node_height[node_height < 0] = 0
     }

@@ -21,6 +21,7 @@ spiral_bars(pos, value, baseline = get_track_data("ymin", track_index),
 
 }
 \examples{
+\donttest{
 x = seq(1, 1000, by = 1) - 0.5
 y = runif(1000)
 spiral_initialize(xlim = c(0, 1000))
@@ -33,4 +34,5 @@ y = y/rowSums(y)
 spiral_initialize(xlim = c(0, 1000))
 spiral_track(height = 0.8)
 spiral_bars(x, y, gp = gpar(fill = 2:4, col = NA))
+}
 }

@@ -10,7 +10,7 @@ Viewport name of current spiral
 current_spiral_vp()
 }
 \value{
-A character scale of the viewport name.
+A string of the viewport name.
 }
 \examples{
 # There is no example

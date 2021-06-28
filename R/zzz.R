@@ -10,13 +10,5 @@ This message can be suppressed by:
 ========================================
 ")	
 
-  	if("package:pheatmap" %in% search()) {
-  		msg = paste0(msg, 
-"! pheatmap() has been masked by ComplexHeatmap::pheatmap(). Most of the arguments
-   in the original pheatmap() are identically supported in the new function. You 
-   can still use the original function by explicitly calling pheatmap::pheatmap().
-")
-  	}
-
     packageStartupMessage(msg)
 }

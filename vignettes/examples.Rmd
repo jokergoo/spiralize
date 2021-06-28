@@ -8,7 +8,7 @@ output:
     css: main.css
     toc: true
 vignette: >
-  %\VignetteIndexEntry{4. Real World Examples}
+  %\VignetteIndexEntry{Real World Examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -193,7 +193,7 @@ draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 
 This example visualizes the first 5000 digits of &pi;. The digits of &pi; is from https://www.math.utah.edu/~alfeld/math/pi.html.
 
-The following code first format the &pi; digits as a vector of integers.
+The following code first formats the &pi; digits as a vector of integers.
 
 ```{r}
 pi_txt = readLines(system.file("extdata", "pi_10000_digits.txt", package = "spiralize"))
@@ -236,31 +236,49 @@ spiral_segments(x1 - 0.5, 0.5, x2 - 0.5, 0.5,
 
 ## Tree of life
 
-This example visualizes tree of life from 3083 organisms. The data is from
-[Hug et. al., 2016](https://www.nature.com/articles/nmicrobiol201648),
-supplementary data 2.
+This example visualizes tree of life from 3738 mammal organisms. The data is from
+[Hedges et. al., 2015](http://www.biodiversitycenter.org/ttol).
 
 To highlight different branches, I first convert the `phylo` object into a `dendrogram`
-object, then apply `dendextend::cutree()` to split the dendrogram into several subtrees.
-Note the function `spiral_rel()` was defined in the the example ["Classification of central nervous system tumors"](#classification-of-central-nervous-system-tumors).
+object, then I apply `dendextend::color_branches()` to color branches.
 
 ```{r}
-# https://www.nature.com/articles/nmicrobiol201648
 library(ape)
-tree = readRDS(system.file("extdata", "life_tree_Nat_Microbiol_2016.rds", package = "spiralize"))
-tree
-
+tree = read.tree(system.file("extdata", "8.TTOL_mammals_unsmoothed.nwk", package = "spiralize"))
 n = length(tree$tip.label)
+spiral_initialize(xlim =c(0, n), scale_by = "curve_length")
+spiral_track(background = FALSE)
+
+dend = phylo_to_dendrogram(tree, log = TRUE) # the log-transformation is log10(x + 1)
+
+at1 = c(0, 1, 10, 50, 150)
+at2 = log10(at1 + 1)/dend_heights(dend)
+spiral_yaxis(at = at2, labels = paste0(at1, "myr"), side = "both")
+
+spiral_rect(TRACK_META$xlim[1], at2[1], TRACK_META$xlim[2], at2[2], gp = gpar(fill = "#EEEEEE", col = NA))
+spiral_rect(TRACK_META$xlim[1], at2[2], TRACK_META$xlim[2], at2[3], gp = gpar(fill = "#DDDDDD", col = NA))
+spiral_rect(TRACK_META$xlim[1], at2[3], TRACK_META$xlim[2], at2[4], gp = gpar(fill = "#CCCCCC", col = NA))
+spiral_rect(TRACK_META$xlim[1], at2[4], TRACK_META$xlim[2], TRACK_META$ylim[2], gp = gpar(fill = "#BBBBBB", col = NA))
+
+library(dendextend)
+set.seed(123)
+# note cutting by h is much faster than k for large dendrogram
+dend = color_branches(dend, h = log10(70 + 1), col = rand_color)
+spiral_dendrogram(dend)
+```
+
+It is also possible to directly use `spiral_phylo()`, however currently it is not possible to
+color the branches for `phylo` objects, thus, I manually cut the tree and highlight subtrees by a list
+of rectangles. The following code is runnable.
+
+```{r, eval = FALSE}
 spiral_initialize(xlim =c(0, n), scale_by = "curve_length")
 spiral_track()
 spiral_phylo(tree)
 
-dend = phylo_to_dendrogram(tree)
-library(dendextend)
-# note for large dendrograms, cutting by height is much more facter than cutting by k
-cl = dendextend::cutree(dend, h = 2)
+cl = dendextend::cutree(dend, h = 70)
 n_cl = length(unique(cl))
-col = structure(names = unique(cl), rand_color(n_cl, luminosity = "bright", transparency = 0.75))
+col = structure(names = unique(cl), rand_color(n_cl, luminosity = "bright", transparency = 0.8))
 spiral_rle(cl, col = col)
 ```
 
@@ -342,19 +360,28 @@ The plot is mainly drawn with `spiral_text()` and `spiral_segments()`.
 n = length(query)
 col = c("A" = 2, "T" = 4, "C" = 3, "G" = 7, "-" = "black")
 spiral_initialize(xlim = c(0, n), start = 180, end = 360*6, scale_by = "curve")
-spiral_track()
+spiral_track(height = 0.6)
 spiral_text(1:n - 0.5, 0.3, query, facing = "inside", 
     gp = gpar(fontsize = 6, col = col[query]), just = "top",)
 spiral_text(1:n - 0.5, 0.7, subject, facing = "inside", 
     gp = gpar(fontsize = 6, col = col[subject]), just = "bottom")
 x = which(query == subject)
-spiral_segments(x - 0.5, 0.35, x - 0.5, 0.65)
+spiral_segments(x - 0.5, 0.35, x - 0.5, 0.65, gp = gpar(col = "#444444"))
+
+spiral_track(height = 0.1, background = FALSE)
+spiral_lines(TRACK_META$xlim, 0.5, gp = gpar(col = "#888888"))
+at = seq(10, n, by = 10)
+spiral_points(at, 0.5, pch = 16, size = unit(3, "pt"))
+l = at %% 100 == 0
+spiral_text(at[l] - 0.5, 1, at[l], just = "bottom",
+    facing = "inside", nice_facing=T, gp = gpar(fontsize = 6, col = "#444444"))
 ```
 
 ## Integrative visualization of methylation and histone modifications for BCAT2
 
 This example visualizes DNA methylation and four histone modification signals along _BCAT2_ gene.
-The data is from [Roadmap project](http://www.roadmapepigenomics.org/).
+The data is from [UCSD Human Reference Epigenome Mapping Project](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE16256)
+and data for lung tissue is used.
 
 ```{r, fig.height = 8, fig.width = 10}
 df_list = readRDS(system.file("extdata", "BCAT2_tracks.rds", package = "spiralize"))

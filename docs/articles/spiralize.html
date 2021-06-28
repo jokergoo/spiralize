@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
       <h1 data-toc-skip>Visualize Data on Spirals</h1>
                         <h4 class="author">Zuguang Gu (<a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a>)</h4>
             
-            <h4 class="date">2021-06-25</h4>
+            <h4 class="date">2021-06-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiralize/blob/master/vignettes/spiralize.Rmd"><code>vignettes/spiralize.Rmd</code></a></small>
       <div class="hidden name"><code>spiralize.Rmd</code></div>
@@ -164,7 +164,7 @@
 <span class="fu"><a href="../reference/spiral_track.html">spiral_track</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 <span class="fu"><a href="../reference/spiral_axis.html">spiral_axis</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="spiralize_files/figure-html/unnamed-chunk-10-1.png" width="960" style="display: block; margin: auto;"></p>
-<p>Argument <code>scale_by</code> controls how to linearly scale the data on the spiral. It allows value of <code>"angle"</code> or <code>"curve_length"</code> (or for short, <code>"curve"</code>). <code>"angle"</code> means equal difference on data corresponds to equal difference of angles in the polar coordinates. <code>"curve_length"</code> means equal difference on data corresponds to euqal difference of the length of the spiral. Observe how the axis ticks distribute in the following two plots. Also the polar lines are removed for <code>scale_by = "curve_length"</code>.</p>
+<p>Argument <code>scale_by</code> controls how to linearly scale the data on the spiral. It allows value of <code>"angle"</code> or <code>"curve_length"</code> (or for short, <code>"curve"</code>). <code>"angle"</code> means equal difference on data corresponds to equal difference of angles in the polar coordinates. <code>"curve_length"</code> means equal difference on data corresponds to equal difference of the length of the spiral. Observe how the axis ticks distribute in the following two plots. Also the polar lines are removed for <code>scale_by = "curve_length"</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># the left plot</span>
 <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span>scale_by <span class="op">=</span> <span class="st">"angle"</span><span class="op">)</span> <span class="co"># default</span>
@@ -458,7 +458,7 @@
 <span class="op">}</span>, width <span class="op">=</span> <span class="fl">5</span>, height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="va">...</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="fu">plot_grid</span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span>
+<span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>one last thing for drawing text is that the argument <code>nice_facing</code> can be set to <code>TRUE</code> so that the rotation of texts are automatically adjusted so that they are easy to read, i.e. all the texts always face the lower part of the polar coordinate system.</p>
 </div>
@@ -707,7 +707,7 @@
 ## 
 ## other attached packages:
 ## [1] ape_5.5           dendextend_1.15.1 circlize_0.4.12   GetoptLong_1.0.5  cowplot_1.1.1    
-## [6] spiralize_0.99.0  knitr_1.33       
+## [6] spiralize_1.0.0   knitr_1.33       
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] viridis_0.6.1        sass_0.4.0           jsonlite_1.7.2       viridisLite_0.4.0   

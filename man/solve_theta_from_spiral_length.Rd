@@ -13,12 +13,12 @@ solve_theta_from_spiral_length(len, interval = NULL, offset = 0)
 
   \item{len}{A vector of spiral lengths.}
   \item{interval}{Interval to search for the solution.}
-  \item{offset}{Offset of the spiral. In the general form: theta = a + r*theta, offset is the value of a.}
+  \item{offset}{Offset of the spiral. In the general form: \code{r = a + r*theta}, offset is the value of \code{a}.}
 
 }
 \details{
 The length of the spiral has a complicated form, see \url{https://downloads.imagej.net/fiji/snapshots/arc_length.pdf} .
-Let's say the form is l = f(theta), \code{\link{solve_theta_from_spiral_length}} tries to find theta by a known l.
+Let's say the form is \code{l = f(theta)}, \code{\link{solve_theta_from_spiral_length}} tries to find theta by a known \code{l}.
 It uses \code{\link[stats]{uniroot}} to search solutions.
 }
 \examples{

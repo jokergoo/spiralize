@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -147,6 +147,18 @@
 <dl>
   <dt><code>$curve()</code>:</dt><dd><p>It returns the radius for given angles (in radians).</p></dd>
   <dt><code>$spiral_length()</code>:</dt><dd><p>It returns the length of the spiral (from the origin) for a given angle (in radians), thus if you want to get the length of a spiral segment,  it will be <code>spiral$spiral_length(theta2) - spiral$spiral_length(theta1)</code> where <code>spiral</code> is the spiral object.</p></dd>
+
+</dl>
+
+<p>Also there are the following meta-data for the current spiral (assume the object is named <code>s</code>):</p>
+<dl>
+  <dt><code>s$xlim</code>:</dt><dd><p>Data range.</p></dd>
+  <dt><code>s$xrange</code>:</dt><dd><p><code>s$xlim[2] - s$xlim[1]</code></p></dd>
+  <dt><code>s$theta_lim</code>:</dt><dd><p>The corresponding range of theta</p></dd>
+  <dt><code>s$theta_range</code>:</dt><dd><p><code>s$theta_lim[2] - s$theta_lim[1]</code></p></dd>
+  <dt><code>s$spiral_length_lim</code>:</dt><dd><p>The corresponding range of spiral length</p></dd>
+  <dt><code>s$spiral_length_range</code>:</dt><dd><p><code>s$spiral_length_lim[2] - s$spiral_length_lim[1]</code></p></dd>
+  <dt><code>s$max_radius</code>:</dt><dd><p>Radius at <code>s$theta_lim[2]</code></p></dd>
 
 </dl>
 

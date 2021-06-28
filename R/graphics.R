@@ -340,6 +340,7 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 # -track_index Index of the track. 
 #
 # == example
+# \donttest{
 # x = seq(1, 1000, by = 1) - 0.5
 # y = runif(1000)
 # spiral_initialize(xlim = c(0, 1000))
@@ -352,7 +353,7 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 # spiral_initialize(xlim = c(0, 1000))
 # spiral_track(height = 0.8)
 # spiral_bars(x, y, gp = gpar(fill = 2:4, col = NA))
-#
+# }
 spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index),
 	bar_width = min(diff(pos)), gp = gpar(), track_index = current_track_index()) {
 
@@ -470,7 +471,7 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 			l = df$y < 0
 			if(any(l)) {
 				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
-					hjust = 1 - hjust, vjust = vjust, rot = degree[l] + 180, ...)
+					hjust = 1 - hjust, vjust = 1 - vjust, rot = degree[l] + 180, ...)
 			}
 			if(any(!l)) {
 				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
@@ -494,7 +495,7 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 			l = df$y > 0
 			if(any(l)) {
 				grid.text(text[l], x = df$x[l], y = df$y[l], default.units = "native", gp = subset_gp(gp, which(l)), 
-					hjust = 1 - hjust, vjust = vjust, rot = degree[l] + 180, ...)
+					hjust = 1 - hjust, vjust = 1 - vjust, rot = degree[l] + 180, ...)
 			}
 			if(any(!l)) {
 				grid.text(text[!l], x = df$x[!l], y = df$y[!l], default.units = "native", gp = subset_gp(gp, which(!l)), 
@@ -542,6 +543,16 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		for(i in seq_len(n)) {
 			curved_text(x[i], y[i], text[i], gp = subset_gp(gp, i), track_index = track_index, 
 				facing = gsub("curved_", "", facing), nice_facing = nice_facing, vjust = vjust, hjust = hjust, letter_spacing = letter_spacing)
+		}
+
+		if(spiral_opt$help) {
+			if(.Device == "pdf") {
+				if(is.null(attr(.Device, "filepath"))) {
+					if( abs(dev.size()[1] - pdf.options()$width) < 1e-8 && abs(dev.size()[2] == pdf.options()$height) < 1e-8 ) {
+						message_wrap("It seems you are using 'grid::grid.grabExpr()' to capture the graphics. Note curved texts depend on the size of graphics device for the properly calculating the character positions of the texts. You should better manually set arguments 'width' and 'height' in 'grid.grabExpr()' to the same values as the size with which it will be on the comnined plot (e.g. if you use package cowplot). Set 'spiral_opt$help = FALSE' to turn off this message.")
+					}
+				}
+			}
 		}
 	}
 
@@ -908,50 +919,54 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 
 	pos_col_fun = colorRamp2(c(0, n_slices), c("white", pos_fill))
 	neg_col_fun = colorRamp2(c(0, n_slices), c("white", neg_fill))
-	for(i in seq_len(n_slices)) {
-		l1 = y >= (i-1)*slice_size & y < i*slice_size
-		l2 = y < (i-1)*slice_size
-		l3 = y >= i*slice_size
-		if(any(l1)) {
-			x2 = x
-			y2 = y
-			bar_width2 = bar_width
-			y2[l1] = y2[l1] - slice_size*(i-1)
-			y2[l3] = slice_size
-			x2[l2] = NA
-			y2[l2] = NA
-			bar_width2[l2] = NA
+	if(y_type %in% c("positive", "both")) {
+		for(i in seq_len(n_slices)) {
+			l1 = y >= (i-1)*slice_size & y < i*slice_size
+			l2 = y < (i-1)*slice_size
+			l3 = y >= i*slice_size
+			if(any(l1)) {
+				x2 = x
+				y2 = y
+				bar_width2 = bar_width
+				y2[l1] = y2[l1] - slice_size*(i-1)
+				y2[l3] = slice_size
+				x2[l2] = NA
+				y2[l2] = NA
+				bar_width2[l2] = NA
 
-			if(use_bars) {
-				add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, 
-					gp = gpar(fill = pos_col_fun(i), col = pos_col_fun(i)), track_index = track_index) 
-			} else {
-				add_horizon_polygons(x2, y2, slice_size = slice_size, 
-					gp = gpar(fill = pos_col_fun(i), col = NA), track_index = track_index)
+				if(use_bars) {
+					add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, 
+						gp = gpar(fill = pos_col_fun(i), col = pos_col_fun(i)), track_index = track_index) 
+				} else {
+					add_horizon_polygons(x2, y2, slice_size = slice_size, 
+						gp = gpar(fill = pos_col_fun(i), col = NA), track_index = track_index)
+				}
 			}
 		}
 	}
-	y = -y
-	for(i in seq_len(n_slices)) {
-		l1 = y >= (i-1)*slice_size & y < i*slice_size
-		l2 = y < (i-1)*slice_size
-		l3 = y >= i*slice_size
-		if(any(l1)) {
-			x2 = x
-			y2 = y
-			bar_width2 = bar_width
-			y2[l1] = y2[l1] - slice_size*(i-1)
-			y2[l3] = slice_size
-			x2[l2] = NA
-			y2[l2] = NA
-			bar_width2[l2] = NA
+	if(y_type %in% c("negative", "both")) {
+		y = -y
+		for(i in seq_len(n_slices)) {
+			l1 = y >= (i-1)*slice_size & y < i*slice_size
+			l2 = y < (i-1)*slice_size
+			l3 = y >= i*slice_size
+			if(any(l1)) {
+				x2 = x
+				y2 = y
+				bar_width2 = bar_width
+				y2[l1] = y2[l1] - slice_size*(i-1)
+				y2[l3] = slice_size
+				x2[l2] = NA
+				y2[l2] = NA
+				bar_width2[l2] = NA
 
-			if(use_bars) {
-				add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, from_top = negative_from_top, 
-					gp = gpar(fill = neg_col_fun(i), col = neg_col_fun(i)), track_index = track_index)
-			} else {
-				add_horizon_polygons(x2, y2, slice_size = slice_size, from_top = negative_from_top, 
-					gp = gpar(fill = neg_col_fun(i), col = NA), track_index = track_index)
+				if(use_bars) {
+					add_horizon_bars(x2, y2, bar_width = bar_width2, slice_size = slice_size, from_top = negative_from_top, 
+						gp = gpar(fill = neg_col_fun(i), col = neg_col_fun(i)), track_index = track_index)
+				} else {
+					add_horizon_polygons(x2, y2, slice_size = slice_size, from_top = negative_from_top, 
+						gp = gpar(fill = neg_col_fun(i), col = NA), track_index = track_index)
+				}
 			}
 		}
 	}
@@ -1190,7 +1205,7 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 # -track_index Index of the track. 
 #
 # == seealso
-# Note `spiral_segments()` also supports drawing line-based arrows.
+# Note `spiral_segments` also supports drawing line-based arrows.
 #
 # == example
 # spiral_initialize()

@@ -7,7 +7,7 @@ output:
     fig_caption: true
     css: main.css
 vignette: >
-  %\VignetteIndexEntry{2. Initialize Spirals by Special Data Types}
+  %\VignetteIndexEntry{Initialize Spirals by Special Data Types}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

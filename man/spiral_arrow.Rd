@@ -1,10 +1,10 @@
 \name{spiral_arrow}
 \alias{spiral_arrow}
 \title{
-Draw arrows
+Draw arrows in the spiral direction
 }
 \description{
-Draw arrows
+Draw arrows in the spiral direction
 }
 \usage{
 spiral_arrow(
@@ -31,6 +31,9 @@ spiral_arrow(
   \item{gp}{Graphics parameters.}
   \item{track_index}{Index of the track. }
 
+}
+\seealso{
+Note \code{\link{spiral_segments}} also supports drawing line-based arrows.
 }
 \examples{
 spiral_initialize()

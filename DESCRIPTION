@@ -1,8 +1,8 @@
 Package: spiralize
 Type: Package
 Title: Visualize Data on Spirals
-Version: 0.99.0
-Date: 2021-06-09
+Version: 1.0.0
+Date: 2021-06-28
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0), grid

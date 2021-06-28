@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
       <h1 data-toc-skip>Annotate the Plot</h1>
                         <h4 class="author">Zuguang Gu (<a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a>)</h4>
             
-            <h4 class="date">2021-06-25</h4>
+            <h4 class="date">2021-06-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/spiralize/blob/master/vignettes/annotate.Rmd"><code>vignettes/annotate.Rmd</code></a></small>
       <div class="hidden name"><code>annotate.Rmd</code></div>
@@ -235,6 +235,19 @@
 <span class="va">lgd</span> <span class="op">=</span> <span class="fu"><a href="../reference/horizon_legend.html">horizon_legend</a></span><span class="op">(</span><span class="va">lt</span>, title <span class="op">=</span> <span class="st">"log2(difference)"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html">draw</a></span><span class="op">(</span><span class="va">lgd</span>, x <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">1</span>, <span class="st">"npc"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">2</span>, <span class="st">"mm"</span><span class="op">)</span>, just <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></code></pre></div>
 <p><img src="annotate_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;"></p>
+<p>The previous method might have a problem if the plot is captured with <code>grid.grabExpr()</code>. Due to a bug of the <code><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html">draw()</a></code> function (which will be fixed in future) that draws the legends, the legends might be in the wrong position if you redraw the captured graphics by e.g. <strong>cowplot</strong> package. This can be solved by first creating a viewport with the same width as the legends:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p</span> <span class="op">=</span> <span class="fu">grid.grabExpr</span><span class="op">(</span><span class="op">{</span>
+    <span class="fu"><a href="../reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
+    <span class="va">...</span>
+    <span class="va">lgd</span> <span class="op">=</span> <span class="va">...</span>
+
+    <span class="fu">pushViewport</span><span class="op">(</span><span class="fu">viewport</span><span class="op">(</span>x <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">1</span>, <span class="st">"npc"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">2</span>, <span class="st">"mm"</span><span class="op">)</span>, width <span class="op">=</span> <span class="fu">grobWidth</span><span class="op">(</span><span class="va">lgd</span><span class="op">@</span><span class="va">grob</span><span class="op">)</span>, just <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html">draw</a></span><span class="op">(</span><span class="va">lgd</span><span class="op">)</span> <span class="co">#</span>
+    <span class="fu">popViewport</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
+<span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

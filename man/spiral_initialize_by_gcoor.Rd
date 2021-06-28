@@ -21,7 +21,7 @@ It is basically the same as \code{\link{spiral_initialize}}. The only difference
 formated for genomic coordinates.
 }
 \examples{
-spiral_initialize_by_gcoor(c(1, 1000000000))
+spiral_initialize_by_gcoor(c(0, 1000000000))
 spiral_track()
 spiral_axis()
 }

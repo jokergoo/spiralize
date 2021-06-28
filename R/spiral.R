@@ -143,6 +143,16 @@ spiral = setRefClass("spiral",
 # -``$spiral_length()``: It returns the length of the spiral (from the origin) for a given angle (in radians), thus if you want to get the length of a spiral segment, 
 #     it will be ``spiral$spiral_length(theta2) - spiral$spiral_length(theta1)`` where ``spiral`` is the spiral object.
 #
+# Also there are the following meta-data for the current spiral (assume the object is named ``s``):
+#
+# -``s$xlim``: Data range.
+# -``s$xrange``: ``s$xlim[2] - s$xlim[1]``
+# -``s$theta_lim``: The corresponding range of theta
+# -``s$theta_range``: ``s$theta_lim[2] - s$theta_lim[1]``
+# -``s$spiral_length_lim``: The corresponding range of spiral length
+# -``s$spiral_length_range``: ``s$spiral_length_lim[2] - s$spiral_length_lim[1]``
+# -``s$max_radius``: Radius at ``s$theta_lim[2]``
+#
 # == example
 # spiral_initialize()
 # s = current_spiral()

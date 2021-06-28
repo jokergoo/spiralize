@@ -15,7 +15,7 @@ spiral_phylo(obj, facing = c("inside", "outside"), gp = gpar(),
   \item{obj}{A \code{phylo} object.}
   \item{facing}{Facing of the tree.}
   \item{gp}{Graphics parameters of the tree edges.}
-  \item{log}{Whether the height of the tree should be log-transformed?}
+  \item{log}{Whether the height of the tree should be log-transformed (log10(x + 1))?}
   \item{reverse}{Whether the tree should be reversed?}
   \item{track_index}{Index of the track. }
 

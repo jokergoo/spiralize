@@ -10,7 +10,7 @@ Number of tracks
 n_tracks()
 }
 \value{
-An integer of the number of avaiable tracks.
+An integer of the number of available tracks.
 }
 \examples{
 # There is no example

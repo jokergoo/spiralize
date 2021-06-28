@@ -7,7 +7,7 @@ output:
     fig_caption: true
     css: main.css
 vignette: >
-  %\VignetteIndexEntry{3. Annotate the Plot}
+  %\VignetteIndexEntry{Annotate the Plot}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -219,5 +219,23 @@ lgd = horizon_legend(lt, title = "log2(difference)")
 draw(lgd, x = unit(1, "npc") + unit(2, "mm"), just = "left")
 ```
 
+The previous method might have a problem if the plot is captured with
+`grid.grabExpr()`. Due to a bug of the `draw()` function (which will be fixed
+in future) that draws the legends, the legends might be in the wrong position
+if you redraw the captured graphics by e.g. **cowplot** package. This can be
+solved by first creating a viewport with the same width as the legends:
 
+```{r, eval = FALSE}
+p = grid.grabExpr({
+    spiral_initialize(...)
+    ...
+    lgd = ...
+
+    pushViewport(viewport(x = unit(1, "npc") + unit(2, "mm"), width = grobWidth(lgd@grob), just = "left"))
+    draw(lgd) #
+    popViewport()
+})
+library(cowplot)
+plot_grid(p, ...)
+```
 
