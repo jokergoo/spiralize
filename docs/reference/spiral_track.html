@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -121,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>spiral_track</span><span class='op'>(</span>ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, height <span class='op'>=</span> <span class='fl'>0.8</span>, background <span class='op'>=</span> <span class='cn'>TRUE</span>,
-    background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='cn'>NA</span>, fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span><span class='op'>)</span>,
+    background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='cn'>NA</span>, fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span><span class='op'>)</span>, reverse_y <span class='op'>=</span> <span class='cn'>FALSE</span>,
     track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -142,6 +142,10 @@
     <tr>
       <th>background_gp</th>
       <td><p>Graphics parameters of the background.</p></td>
+    </tr>
+    <tr>
+      <th>reverse_y</th>
+      <td><p>Whether reverse the direction of y-axis.</p></td>
     </tr>
     <tr>
       <th>track_index</th>

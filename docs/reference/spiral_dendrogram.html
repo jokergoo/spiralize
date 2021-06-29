@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -120,8 +120,7 @@
     <p>Draw dendrogram</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_dendrogram</span><span class='op'>(</span><span class='va'>dend</span>, facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"inside"</span>, <span class='st'>"outside"</span><span class='op'>)</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>,
-    track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>spiral_dendrogram</span><span class='op'>(</span><span class='va'>dend</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -129,10 +128,6 @@
     <tr>
       <th>dend</th>
       <td><p>A <code><a href='https://rdrr.io/r/stats/dendrogram.html'>stats::dendrogram</a></code> object.</p></td>
-    </tr>
-    <tr>
-      <th>facing</th>
-      <td><p>Facing of the dendrogram.</p></td>
     </tr>
     <tr>
       <th>gp</th>
@@ -147,13 +142,15 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note the dendrogram edges can be rendered with the <code><a href='http://talgalili.github.io/dendextend/reference/dendextend-package.html'>dendextend</a></code> package.</p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Height of the dendrogram.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>k</span> <span class='op'>=</span> <span class='fl'>500</span>
 <span class='va'>dend</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/dendrogram.html'>as.dendrogram</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/hclust.html'>hclust</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>k</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>k</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='fl'>3</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0.8</span>, background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span>, col <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'>spiral_dendrogram</span><span class='op'>(</span><span class='va'>dend</span>, facing <span class='op'>=</span> <span class='st'>"inside"</span><span class='op'>)</span>
 </div><div class='img'><img src='spiral_dendrogram-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># \donttest{</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://talgalili.github.io/dendextend/'>dendextend</a></span><span class='op'>)</span>
@@ -177,7 +174,6 @@
 #&gt; <span class='message'>    cutree</span></div><div class='input'><span class='va'>dend</span> <span class='op'>=</span> <span class='fu'><a href='http://talgalili.github.io/dendextend/reference/color_branches.html'>color_branches</a></span><span class='op'>(</span><span class='va'>dend</span>, k <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
 <span class='fu'><a href='spiral_initialize.html'>spiral_initialize</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>k</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='fl'>3</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='spiral_track.html'>spiral_track</a></span><span class='op'>(</span>height <span class='op'>=</span> <span class='fl'>0.8</span>, background_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fill <span class='op'>=</span> <span class='st'>"#EEEEEE"</span>, col <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'>spiral_dendrogram</span><span class='op'>(</span><span class='va'>dend</span>, facing <span class='op'>=</span> <span class='st'>"inside"</span><span class='op'>)</span>
 </div><div class='img'><img src='spiral_dendrogram-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>

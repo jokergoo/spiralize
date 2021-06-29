@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -120,8 +120,8 @@
     <p>Draw phylogenetic tree</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_phylo</span><span class='op'>(</span><span class='va'>obj</span>, facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"inside"</span>, <span class='st'>"outside"</span><span class='op'>)</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>,
-    log <span class='op'>=</span> <span class='cn'>FALSE</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>spiral_phylo</span><span class='op'>(</span><span class='va'>obj</span>, gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    group <span class='op'>=</span> <span class='cn'>NULL</span>, group_col <span class='op'>=</span> <span class='cn'>NULL</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -129,10 +129,6 @@
     <tr>
       <th>obj</th>
       <td><p>A <code>phylo</code> object.</p></td>
-    </tr>
-    <tr>
-      <th>facing</th>
-      <td><p>Facing of the tree.</p></td>
     </tr>
     <tr>
       <th>gp</th>
@@ -147,11 +143,22 @@
       <td><p>Whether the tree should be reversed?</p></td>
     </tr>
     <tr>
+      <th>group</th>
+      <td><p>A categorical variable for splitting the tree.</p></td>
+    </tr>
+    <tr>
+      <th>group_col</th>
+      <td><p>A named vector which contains group colors.</p></td>
+    </tr>
+    <tr>
       <th>track_index</th>
       <td><p>Index of the track.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Height of the phylogenetic tree.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://ape-package.ird.fr/'>ape</a></span><span class='op'>)</span>

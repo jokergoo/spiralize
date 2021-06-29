@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -120,7 +120,7 @@
     <p>Draw y-axis</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_yaxis</span><span class='op'>(</span>side <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"start"</span>, <span class='st'>"end"</span>, <span class='st'>"both"</span><span class='op'>)</span>, at <span class='op'>=</span> <span class='cn'>NULL</span>, labels <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    <pre class="usage"><span class='fu'>spiral_yaxis</span><span class='op'>(</span>side <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"both"</span>, <span class='st'>"start"</span>, <span class='st'>"end"</span><span class='op'>)</span>, at <span class='op'>=</span> <span class='cn'>NULL</span>, labels <span class='op'>=</span> <span class='cn'>TRUE</span>,
     ticks_length <span class='op'>=</span> <span class='fu'>unit</span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"bigpts"</span><span class='op'>)</span>,
     ticks_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span><span class='op'>)</span>, labels_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fontsize <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>,
     track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
@@ -130,7 +130,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>side</th>
-      <td><p>On which side of the spiral the y-axis is drawn? "start" means the inside of the spiral and "end" means the outside of the spiral.</p></td>
+      <td><p>On which side of the spiral the y-axis is drawn? "start" means the inside of the spiral and "end" means the outside of the spiral. Note if <code>reverse</code> was set to <code>TRUE</code>, then "start" corresponds to the most outside of the spiral.</p></td>
     </tr>
     <tr>
       <th>at</th>
