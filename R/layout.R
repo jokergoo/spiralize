@@ -36,6 +36,7 @@ spiral_clear = function(check_vp = TRUE) {
 # -height Height of the track. The value should be the fraction of the distance of the two neighbour loops.
 # -background Whether to draw the background of the track, i.e. border and filled color of background.
 # -background_gp Graphics parameters of the background.
+# -reverse_y Whether reverse the direction of y-axis.
 # -track_index Index of the track. 
 #
 # == details
@@ -50,7 +51,7 @@ spiral_clear = function(check_vp = TRUE) {
 # spiral_track(height = 0.2, background_gp = gpar(fill = "green"))
 # spiral_track(height = 0.1, background_gp = gpar(fill = "blue"))
 spiral_track = function(ylim = c(0, 1), height = 0.8, background = TRUE, 
-	background_gp = gpar(col = NA, fill = "#EEEEEE"), 
+	background_gp = gpar(col = NA, fill = "#EEEEEE"), reverse_y = FALSE,
 	track_index = current_track_index() + 1) {
 
 	spiral = spiral_env$spiral
@@ -65,6 +66,9 @@ spiral_track = function(ylim = c(0, 1), height = 0.8, background = TRUE,
 			stop_wrap(qq("There are only @{n_tracks()} existed. The value of `track_index` should not be larger than @{n_tracks() + 1}."))
 		} else {
 			sum_height = sum(track_env$track_data[, "rel_height"])
+			if(reverse_y) {
+				ylim = rev(ylim)
+			}
 			new_track_data = data.frame(i = track_index, 
 				ymin = ylim[1], ymax = ylim[2], 
 				rmin = sum_height*dist, rmax = (sum_height + height)*dist, 

@@ -138,7 +138,7 @@ spiral_lines_expand = function(x, y, track_index = current_track_index()) {
 
 
 # return in cartesian coordinates
-radical_extend = function(x, y, offset, track_index = current_track_index()) {
+radial_extend = function(x, y, offset, track_index = current_track_index()) {
 	df = xy_to_polar(x, y, track_index = track_index)
 	offset_x = convertWidth(offset*cos(df$theta), "native", valueOnly = TRUE)
 	offset_y = convertHeight(offset*sin(df$theta), "native", valueOnly = TRUE)
@@ -172,7 +172,7 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 		v_offset = convert_y_to_height(y, track_index)
 		df$theta = flip_theta_back(df$theta)
 		t = solve_theta_from_spiral_length(spiral$spiral_length(df$theta, v_offset) + offset, 
-				c(spiral$spiral_length(-spiral$theta_lim[1], max(v_offset)), 
+				c(spiral$spiral_length(-spiral$theta_lim[2], max(v_offset)), 
 				  spiral$spiral_length(2*spiral$theta_lim[2], max(v_offset))),
 				v_offset)
 		t = flip_theta(t)

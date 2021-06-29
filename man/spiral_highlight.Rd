@@ -16,7 +16,7 @@ spiral_highlight(x1, x2, type = c("rect", "line"), padding = unit(1, "mm"),
   \item{x1}{Start location of the highlighted section.}
   \item{x2}{End location of the highlighted section.}
   \item{type}{Type of the highlighting. "rect" means drawing transparent rectangles covering the whole track. "line" means drawing annotation lines on top of the track or at the bottom of it.}
-  \item{padding}{When the highlight type is "rect", it controls the padding of the highlighted region. The value should be a \code{\link[grid]{unit}} object or a numeric value which is the fraction of the length of the highlighted section. The length can be one or two. Note it only extends in the radical direction.}
+  \item{padding}{When the highlight type is "rect", it controls the padding of the highlighted region. The value should be a \code{\link[grid]{unit}} object or a numeric value which is the fraction of the length of the highlighted section. The length can be one or two. Note it only extends in the radial direction.}
   \item{line_side}{If the highlight type is "line", it controls which side of the track to draw the lines.}
   \item{line_width}{Width of the annotation line. Value should be a \code{\link[grid]{unit}} object.}
   \item{gp}{Graphics parameters.}

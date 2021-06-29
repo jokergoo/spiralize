@@ -16,7 +16,7 @@ spiral_highlight_by_sector(x1, x2, x3 = NULL, x4 = NULL, padding = unit(1, "mm")
   \item{x2}{End location which determines the end of the sector. Note x2 should be larger than x1 and the angular difference between x1 and x2 should be smaller than a circle.}
   \item{x3}{Start location which determines the start of the sector on the upper border.}
   \item{x4}{End location which determines the end of the sector on the upper border.}
-  \item{padding}{It controls the radical extension of the sector. The value should be a \code{\link[grid]{unit}} object with length one or two.}
+  \item{padding}{It controls the radial extension of the sector. The value should be a \code{\link[grid]{unit}} object with length one or two.}
   \item{gp}{Graphics parameters.}
 
 }

@@ -8,7 +8,7 @@ Add a new track or go to an existed track
 }
 \usage{
 spiral_track(ylim = c(0, 1), height = 0.8, background = TRUE,
-    background_gp = gpar(col = NA, fill = "#EEEEEE"),
+    background_gp = gpar(col = NA, fill = "#EEEEEE"), reverse_y = FALSE,
     track_index = current_track_index() + 1)
 }
 \arguments{
@@ -17,6 +17,7 @@ spiral_track(ylim = c(0, 1), height = 0.8, background = TRUE,
   \item{height}{Height of the track. The value should be the fraction of the distance of the two neighbour loops.}
   \item{background}{Whether to draw the background of the track, i.e. border and filled color of background.}
   \item{background_gp}{Graphics parameters of the background.}
+  \item{reverse_y}{Whether reverse the direction of y-axis.}
   \item{track_index}{Index of the track. }
 
 }

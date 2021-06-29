@@ -7,18 +7,22 @@ Draw phylogenetic tree
 Draw phylogenetic tree
 }
 \usage{
-spiral_phylo(obj, facing = c("inside", "outside"), gp = gpar(),
-    log = FALSE, reverse = FALSE, track_index = current_track_index())
+spiral_phylo(obj, gp = gpar(), log = FALSE, reverse = FALSE,
+    group = NULL, group_col = NULL, track_index = current_track_index())
 }
 \arguments{
 
   \item{obj}{A \code{phylo} object.}
-  \item{facing}{Facing of the tree.}
   \item{gp}{Graphics parameters of the tree edges.}
   \item{log}{Whether the height of the tree should be log-transformed (log10(x + 1))?}
   \item{reverse}{Whether the tree should be reversed?}
+  \item{group}{A categorical variable for splitting the tree.}
+  \item{group_col}{A named vector which contains group colors.}
   \item{track_index}{Index of the track. }
 
+}
+\value{
+Height of the phylogenetic tree.
 }
 \examples{
 require(ape)

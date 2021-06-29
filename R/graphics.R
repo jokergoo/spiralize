@@ -38,7 +38,7 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 # == param
 # -x X-locations of the data points.
 # -y Y-locations of the data points.
-# -type Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines (or radical lines if you consider the polar coordinates) relative to the baseline will be drawn.
+# -type Type of the line. Value should be one of "l" and "h". When the value is "h", vertical lines (or radial lines if you consider the polar coordinates) relative to the baseline will be drawn.
 # -gp Graphical parameters.
 # -baseline Baseline used when ``type`` is ``"l"`` or ``area`` is ``TRUE``.
 # -area Whether to draw the area under the lines? Note ``gpar(fill = ...)`` controls the filled of the areas.
@@ -264,9 +264,9 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(), arrow = NULL,
 }
 
 
-spiral_radical_segments = function(x, y, offset, gp = gpar(), track_index = current_track_index()) {
+spiral_radial_segments = function(x, y, offset, gp = gpar(), track_index = current_track_index()) {
 	df = xy_to_cartesian(x, y, track_index = track_index)
-	df2 = radical_extend(x, y, offset, track_index = track_index)
+	df2 = radial_extend(x, y, offset, track_index = track_index)
 
 	grid.segments(df$x, df$y, df2$x, df2$y, default.units = "native", gp = gp)
 }
@@ -389,7 +389,7 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 # -x X-locations of the texts.
 # -y Y-locations of the texts.
 # -text A vector of texts.
-# -offset Radical offset of the text. The value should be a `grid::unit` object.
+# -offset Radial offset of the text. The value should be a `grid::unit` object.
 # -gp Graphical parameters.
 # -facing Facing of the text.
 # -letter_spacing Space between two letters. The value is a fraction of the width of current letter. It only works for curved texts.
@@ -448,7 +448,7 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	if(is.null(offset)) {
 		df = xy_to_cartesian(x, y, track_index = track_index)
 	} else {
-		df = radical_extend(x, y, offset, track_index = track_index)
+		df = radial_extend(x, y, offset, track_index = track_index)
 	}
 
 	just = grid::valid.just(just)
@@ -459,13 +459,22 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	if(facing == "downward") {
 		grid.text(text, x = df$x, y = df$y, default.units = "native", gp = gp, hjust = hjust, vjust = vjust, ...)
 	} else if(facing == "inside") {
-		df2 = xy_to_polar(x, y, track_index = track_index)
+		df2 = xy_to_polar(x, y, track_index = track_index, flip = FALSE)
 		# degree = (as.degree(df2$theta) - 90) %% 360
 		slope = spiral$tangent_slope(df2$theta)
-		degree = atan(slope)*180/pi
-		# degree is between -90 and 90
-		l = df$y < 0 & slope < 0 | df$x > 0 & slope > 0
+		degree = atan(slope)
+
+		degree = flip_theta(degree)
+		degree = as.degree(degree)
+
+		l = df$y < 0 & (df$x < 0 & slope < 0 | df$x > 0) | df$y > 0 & df$x > 0 & slope > 0
 		degree[l] = degree[l] + 180
+	# }
+		if(spiral$flip == "both") {
+			degree = degree + 180
+		} else if(spiral$flip == "horizontal") {
+			degree = degree + 180
+		}
 
 		if(nice_facing) {
 			l = df$y < 0
@@ -483,13 +492,22 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		}
 		
 	} else if(facing == "outside") {
-		df2 = xy_to_polar(x, y, track_index = track_index)
+		df2 = xy_to_polar(x, y, track_index = track_index, flip = FALSE)
 		# degree = (as.degree(df2$theta) + 90) %% 360
 		slope = spiral$tangent_slope(df2$theta)
-		degree = atan(slope)*180/pi
-		# degree is between -90 and 90
-		l = df$x < 0 & slope > 0 | df$y > 0 & slope < 0
+		degree = atan(slope)
+		
+		degree = flip_theta(degree)
+		degree = as.degree(degree)
+
+		l = df$y > 0 & (df$x > 0 & slope < 0 | df$x < 0) | df$y < 0 & df$x < 0 & slope > 0
 		degree[l] = degree[l] + 180
+	# }
+		if(spiral$flip == "both") {
+			degree = degree + 180
+		} else if(spiral$flip == "horizontal") {
+			degree = degree + 180
+		}
 
 		if(nice_facing) {
 			l = df$y > 0
@@ -586,7 +604,7 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 		}
 	}
 
-	if(!spiral$clockwise && facing == "inside") {
+	if(spiral$clockwise && facing == "inside") {
 		letters = rev(letters)
 	}
 	n = length(letters)
@@ -714,7 +732,7 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		labels = labels[l]
 		labels_gp = subset_gp(labels_gp, l)
 	}
-	spiral_radical_segments(major_at, h, offset = ifelse(axis_on_top, 1, -1)*major_ticks_length, track_index = track_index, gp = ticks_gp)
+	spiral_radial_segments(major_at, h, offset = ifelse(axis_on_top, 1, -1)*major_ticks_length, track_index = track_index, gp = ticks_gp)
 
 	minor_at = NULL
 	if(identical(minor_ticks, FALSE)) {
@@ -733,7 +751,7 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		}
 		l = minor_at <= spiral$xlim[2] & minor_at >= spiral$xlim[1]
 		minor_at = minor_at[l]
-		spiral_radical_segments(minor_at, h, offset = ifelse(axis_on_top, 1, -1)*minor_ticks_length, track_index = track_index, gp = ticks_gp)
+		spiral_radial_segments(minor_at, h, offset = ifelse(axis_on_top, 1, -1)*minor_ticks_length, track_index = track_index, gp = ticks_gp)
 	}
 	
 	### labels
@@ -786,6 +804,7 @@ spiral_xaxis = function(...) {
 #
 # == param
 # -side On which side of the spiral the y-axis is drawn? "start" means the inside of the spiral and "end" means the outside of the spiral.
+#  Note if ``reverse`` was set to ``TRUE``, then "start" corresponds to the most outside of the spiral.
 # -at Break points.
 # -labels Corresponding labels for the break points.
 # -ticks_length Length of the tick. Value should be a `grid::unit` object.
@@ -797,7 +816,7 @@ spiral_xaxis = function(...) {
 # spiral_initialize(); spiral_track(height = 0.8)
 # spiral_yaxis("start")
 # spiral_yaxis("end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
-spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TRUE, 
+spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TRUE, 
 	ticks_length = unit(2, "bigpts"), 
 	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
@@ -832,13 +851,63 @@ spiral_yaxis = function(side = c("start", "end", "both"), at = NULL, labels = TR
 		}
 	}
 
+	if(spiral$flip == "none" && !spiral$reverse && side == "start") {
+		just = "left"
+		offset_sign = -1
+	} else if(spiral$flip == "none" && !spiral$reverse && side == "end") {
+		just = "right"
+		offset_sign = 1
+	} else if(spiral$flip == "none" && spiral$reverse && side == "start") {
+		just = "right"
+		offset_sign = -1
+	} else if(spiral$flip == "none" && spiral$reverse && side == "end") {
+		just = "left"
+		offset_sign = 1
+	} else if(spiral$flip == "horizontal" && !spiral$reverse && side == "start") {
+		just = "right"
+		offset_sign = -1
+	} else if(spiral$flip == "horizontal" && !spiral$reverse && side == "end") {
+		just = "left"
+		offset_sign = 1
+	} else if(spiral$flip == "horizontal" && spiral$reverse && side == "start") {
+		just = "left"
+		offset_sign = -1
+	} else if(spiral$flip == "horizontal" && spiral$reverse && side == "end") {
+		just = "right"
+		offset_sign = 1
+	} else if(spiral$flip == "vertical" && !spiral$reverse && side == "start") {
+		just = "right"
+		offset_sign = -1
+	} else if(spiral$flip == "vertical" && !spiral$reverse && side == "end") {
+		just = "left"
+		offset_sign = 1
+	} else if(spiral$flip == "vertical" && spiral$reverse && side == "start") {
+		just = "left"
+		offset_sign = -1
+	} else if(spiral$flip == "vertical" && spiral$reverse && side == "end") {
+		just = "right"
+		offset_sign = 1
+	} else if(spiral$flip == "both" && !spiral$reverse && side == "start") {
+		just = "left"
+		offset_sign = -1
+	} else if(spiral$flip == "both" && !spiral$reverse && side == "end") {
+		just = "right"
+		offset_sign = 1
+	} else if(spiral$flip == "both" && spiral$reverse && side == "start") {
+		just = "right"
+		offset_sign = -1
+	} else if(spiral$flip == "both" && spiral$reverse && side == "end") {
+		just = "left"
+		offset_sign = 1
+	}
+
 	x1 = rep(v, length(at))
-	x2 = circular_extend_on_x(x1, at, offset = ifelse(side == "start", -1, 1)*ticks_length, track_index = track_index, coordinate = "xy")
+	x2 = circular_extend_on_x(x1, at, offset = offset_sign*ticks_length, track_index = track_index, coordinate = "xy")
 	spiral_segments(x1, at, x2, at, gp = ticks_gp)
 
 	if(!identical(labels, FALSE)) {
-		x2 = circular_extend_on_x(x1, at, offset = ifelse(side == "start", -1, 1)*(ticks_length + unit(1, "bigpts")), track_index = track_index, coordinate = "xy")
-		spiral_text(x2, at, labels, just = ifelse(side == "start", "left", "right"), gp = labels_gp, facing = "inside", nice_facing = TRUE)
+		x2 = circular_extend_on_x(x1, at, offset = offset_sign*(ticks_length + unit(1, "bigpts")), track_index = track_index, coordinate = "xy")
+		spiral_text(x2, at, labels, just = just, gp = labels_gp, facing = "inside", nice_facing = TRUE)
 	}
 }
 
@@ -1307,7 +1376,7 @@ spiral_arrow = function(
 #      "line" means drawing annotation lines on top of the track or at the bottom of it.
 # -padding When the highlight type is "rect", it controls the padding of the highlighted region. The value should be a `grid::unit` object
 #     or a numeric value which is the fraction of the length of the highlighted section. The length can be one or two.
-#      Note it only extends in the radical direction.
+#      Note it only extends in the radial direction.
 # -line_side If the highlight type is "line", it controls which side of the track to draw the lines.
 # -line_width Width of the annotation line. Value should be a `grid::unit` object.
 # -gp Graphics parameters.
@@ -1411,7 +1480,7 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 # -x2 End location which determines the end of the sector. Note x2 should be larger than x1 and the angular difference between x1 and x2 should be smaller than a circle.
 # -x3 Start location which determines the start of the sector on the upper border.
 # -x4 End location which determines the end of the sector on the upper border.
-# -padding It controls the radical extension of the sector. The value should be a `grid::unit` object with length one or two.
+# -padding It controls the radial extension of the sector. The value should be a `grid::unit` object with length one or two.
 # -gp Graphics parameters.
 #
 # == details

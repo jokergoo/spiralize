@@ -4,7 +4,7 @@ create_spiral = function(start = 360, end = 360*5, xlim = c(0, 1), scale_by = "a
 	flip = "none", reverse = FALSE) {
 
 	a = 0
-	b = 1/2/pi  # the radical distance between two neighbouring circles is 1
+	b = 1/2/pi  # the radial distance between two neighbouring circles is 1
 
 	start = start/180*pi
 	end = end/180*pi

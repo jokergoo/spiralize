@@ -19,7 +19,7 @@ spiral_text(x, y, text, offset = NULL, gp = gpar(),
   \item{x}{X-locations of the texts.}
   \item{y}{Y-locations of the texts.}
   \item{text}{A vector of texts.}
-  \item{offset}{Radical offset of the text. The value should be a \code{\link[grid]{unit}} object.}
+  \item{offset}{Radial offset of the text. The value should be a \code{\link[grid]{unit}} object.}
   \item{gp}{Graphical parameters.}
   \item{facing}{Facing of the text.}
   \item{letter_spacing}{Space between two letters. The value is a fraction of the width of current letter. It only works for curved texts.}

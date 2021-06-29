@@ -79,7 +79,7 @@ get_track_data = function(field, track_index = current_track_index()) {
 	} else if(field == "ylim") {
 		c(track_env$track_data[track_index, "ymin"] + track_env$track_data[track_index, "ymax"])
 	} else if(field == "yrange") {
-		track_env$track_data[track_index, "ymax"] - track_env$track_data[track_index, "ymin"]
+		abs(track_env$track_data[track_index, "ymax"] - track_env$track_data[track_index, "ymin"])
 	} else if(field == "rrange") {
 		track_env$track_data[track_index, "rmax"] - track_env$track_data[track_index, "rmin"]
 	} else if(field == "height") {
