@@ -91,8 +91,7 @@ There are the following vignettes:
 
 3. A phylogenetic life tree with 50645 species. 
 
-<img width="800" src="https://user-images.githubusercontent.com/449218/122206461-afd59a00-cea1-11eb-9d38-59041f1f6076.png">
-
+![download](https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png)
 
 ## License
 
