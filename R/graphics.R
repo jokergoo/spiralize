@@ -467,7 +467,13 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		degree = flip_theta(degree)
 		degree = as.degree(degree)
 
-		l = df$y < 0 & (df$x < 0 & slope < 0 | df$x > 0) | df$y > 0 & df$x > 0 & slope > 0
+		if(spiral$flip == "vertical") {
+			l = df$y < 0 & (df$x > 0 & slope < 0 | df$x < 0) | df$y > 0 & df$x < 0 & slope > 0
+		} else if(spiral$flip == "horizontal") {
+			l = df$y < 0 & (df$x > 0 & slope < 0 | df$x < 0) | df$y > 0 & df$x < 0 & slope > 0
+		} else {
+			l = df$y < 0 & (df$x < 0 & slope < 0 | df$x > 0) | df$y > 0 & df$x > 0 & slope > 0
+		}
 		degree[l] = degree[l] + 180
 	# }
 		if(spiral$flip == "both") {
@@ -500,7 +506,14 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 		degree = flip_theta(degree)
 		degree = as.degree(degree)
 
-		l = df$y > 0 & (df$x > 0 & slope < 0 | df$x < 0) | df$y < 0 & df$x < 0 & slope > 0
+		if(spiral$flip == "vertical") {
+			l = df$y > 0 & (df$x < 0 & slope < 0 | df$x > 0) | df$y < 0 & df$x > 0 & slope > 0
+		} else if(spiral$flip == "horizontal") {
+			l = df$y > 0 & (df$x < 0 & slope < 0 | df$x > 0) | df$y < 0 & df$x > 0 & slope > 0
+		} else {
+			l = df$y > 0 & (df$x > 0 & slope < 0 | df$x < 0) | df$y < 0 & df$x < 0 & slope > 0
+		}
+
 		degree[l] = degree[l] + 180
 	# }
 		if(spiral$flip == "both") {
@@ -604,8 +617,12 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 		}
 	}
 
-	if(spiral$clockwise && facing == "inside") {
-		letters = rev(letters)
+	if(facing == "inside") {
+		if(spiral$reverse) {
+			letters = rev(letters)
+		} else if(!spiral$clockwise) {
+			letters = rev(letters)
+		}
 	}
 	n = length(letters)
 	letters_len = sapply(1:n, function(i) convertWidth(grobWidth(textGrob(letters[i], gp = gp)), "native", valueOnly = TRUE))

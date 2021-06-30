@@ -332,8 +332,6 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	}
 
 	xlim = get_numeric_x(xlim)
-	xlim[1] = xlim[1] - 0.5
-	xlim[2] = xlim[2] + 0.5
 
 	if( (is.null(start) && !is.null(end)) || (!is.null(start) && is.null(end)) ) {
 		stop_wrap("You should both set 'start' and 'end'.")
@@ -390,6 +388,11 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		}
 	}
 
+	p = 1/(xlim[2] - xlim[1])
+	start = start - (end - start)*p/2
+	end = end + (end - start)*p/2
+	xlim[1] = xlim[1] - 0.5
+	xlim[2] = xlim[2] + 0.5
 	spiral_initialize(xlim = xlim, start = start, end = end, polar_lines_by = polar_lines_by, ...)
 
 	spiral = current_spiral()
