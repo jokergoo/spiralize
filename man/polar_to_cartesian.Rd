@@ -15,6 +15,9 @@ polar_to_cartesian(theta, r)
   \item{r}{Radius.}
 
 }
+\value{
+A data frame with two columns: x abd y.
+}
 \examples{
 # There is no example
 NULL

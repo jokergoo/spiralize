@@ -23,6 +23,9 @@ spiral_raster(x, y, image, width = NULL, height = NULL,
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 image = system.file("extdata", "Rlogo.png", package = "circlize")
 x = seq(0.1, 0.9, length = 10)

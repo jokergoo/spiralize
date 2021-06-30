@@ -21,6 +21,9 @@
 # -newpage Whether to apply `grid::grid.newpage` before making the plot?
 # -vp_param A list of parameters sent to `grid::viewport`.
 #
+# == value
+# No value is returned.
+#
 # == example
 # spiral_initialize(); spiral_track()
 # spiral_initialize(start = 180, end = 360+180); spiral_track()
@@ -133,6 +136,9 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 # == details
 # "start" and "end" are automatically calculated for different "unit_on_axis" and "period". For example, if "unit_on_axis" is "days" and "period" is "years", then
 # the first day of each each year is always put on theta = 0 + 2*pi*k where k is the index of loops.
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize_by_time(xlim = c("2014-01-01", "2021-06-17"))
@@ -467,6 +473,9 @@ add_time = function(t, diff, unit) {
 # == details
 # It is basically the same as `spiral_initialize`. The only difference is the axis labels are automatically
 # formated for genomic coordinates.
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize_by_gcoor(c(0, 1000000000))

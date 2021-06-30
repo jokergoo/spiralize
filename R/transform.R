@@ -76,6 +76,8 @@ xy_to_polar = function(x, y, track_index = current_track_index(), flip = TRUE) {
 # -theta Angles, in radians.
 # -r Radius.
 #
+# == value
+# A data frame with two columns: x abd y.
 polar_to_cartesian = function(theta, r) {
 	x = cos(theta)*r
 	y = sin(theta)*r
@@ -238,6 +240,9 @@ get_theta_from_x = function(x, ...) {
 # The length of the spiral has a complicated form, see https://downloads.imagej.net/fiji/snapshots/arc_length.pdf .
 # Let's say the form is ``l = f(theta)``, `solve_theta_from_spiral_length` tries to find theta by a known ``l``.
 # It uses `stats::uniroot` to search solutions.
+#
+# == value
+# The theta value.
 #
 # == example
 # spiral_initialize()

@@ -18,6 +18,9 @@ spiral_polygon(x, y, id = NULL, gp = gpar(), track_index = current_track_index()
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \details{
 Note the polygon must be closed, which means, the last data point should overlap to the first one.
 }

@@ -24,6 +24,9 @@ spiral_highlight_by_sector(x1, x2, x3 = NULL, x4 = NULL, padding = unit(1, "mm")
 x1 and x2 determine the position of the highlighted sector. If x3 and x4 are not set, the sector extends until the most outside loop.
 If x3 and x4 are set, they determine the outer border of the sector. In this case, if x3 and x4 are set, x3 should be larger than x2.
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
 spiral_track()

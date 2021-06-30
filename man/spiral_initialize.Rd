@@ -30,6 +30,9 @@ spiral_initialize(xlim = c(0, 1), start = 360, end = 360*5,
   \item{vp_param}{A list of parameters sent to \code{\link[grid]{viewport}}.}
 
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize(); spiral_track()
 spiral_initialize(start = 180, end = 360+180); spiral_track()

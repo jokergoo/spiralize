@@ -12,6 +12,9 @@ spiral_info()
 \details{
 It prints information of the current spiral.
 }
+\value{
+No value is returned.
+}
 \examples{
 # There is no example
 NULL

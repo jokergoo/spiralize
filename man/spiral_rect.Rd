@@ -20,6 +20,9 @@ spiral_rect(xleft, ybottom, xright, ytop, gp = gpar(),
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 # to simulate heatmap
 n = 1000

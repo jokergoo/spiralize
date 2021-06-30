@@ -29,6 +29,9 @@ spiral_initialize_by_time(xlim, start = NULL, end = NULL,
 "start" and "end" are automatically calculated for different "unit_on_axis" and "period". For example, if "unit_on_axis" is "days" and "period" is "years", then
 the first day of each each year is always put on theta = 0 + 2*pi*k where k is the index of loops.
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize_by_time(xlim = c("2014-01-01", "2021-06-17"))
 spiral_track(height = 0.6)

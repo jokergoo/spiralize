@@ -29,6 +29,9 @@ Also there are the following meta-data for the current spiral (assume the object
   \item{\code{s$max_radius}:}{Radius at \code{s$theta_lim[2]}}
 }
 }
+\value{
+A \code{spiral} object.
+}
 \examples{
 spiral_initialize()
 s = current_spiral()

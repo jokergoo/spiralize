@@ -21,6 +21,9 @@ spiral_lines(x, y, type = "l", gp = gpar(),
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 x = sort(runif(1000))
 y = runif(1000)

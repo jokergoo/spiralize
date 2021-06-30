@@ -35,6 +35,9 @@ spiral_arrow(
 \seealso{
 Note \code{\link{spiral_segments}} also supports drawing line-based arrows.
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize()
 spiral_track()

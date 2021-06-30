@@ -13,6 +13,9 @@
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 #
+# == value
+# No value is returned.
+#
 # == example
 # spiral_initialize()
 # spiral_track()
@@ -43,6 +46,9 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 # -baseline Baseline used when ``type`` is ``"l"`` or ``area`` is ``TRUE``.
 # -area Whether to draw the area under the lines? Note ``gpar(fill = ...)`` controls the filled of the areas.
 # -track_index Index of the track. 
+#
+# == value
+# No value is returned.
 #
 # == example
 # x = sort(runif(1000))
@@ -115,6 +121,9 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 # If there are n1 spiral segments, then there will be n2 straight segments where n2 is normally much larger than n1. To speed up drawing the spiral segments,
 # the locations of the "real" segments are filled to a temporary data frame with ``buffer`` rows, when the number of rows exceeds ``buffer``, `grid::grid.segments`
 # is called to draw all the buffered segments.
+#
+# == value
+# No value is returned.
 #
 # == example
 # n = 1000
@@ -282,6 +291,9 @@ spiral_radial_segments = function(x, y, offset, gp = gpar(), track_index = curre
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 #
+# == value
+# No value is returned.
+#
 # == example
 # # to simulate heatmap
 # n = 1000
@@ -338,6 +350,9 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 # -bar_width Width of bars.
 # -gp Graphical parameters.
 # -track_index Index of the track. 
+#
+# == value
+# No value is returned.
 #
 # == example
 # \donttest{
@@ -402,6 +417,9 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 #
 # == details
 # For the curved text, it only supports one-line text.
+#
+# == value
+# No value is returned.
 #
 # == example
 # x = seq(0.1, 0.9, length = 26)
@@ -651,6 +669,9 @@ curved_text = function(x, y, text, gp = gpar(), track_index = current_track_inde
 # -gp Graphical parameters.
 # -track_index Index of the track. 
 #
+# == value
+# No value is returned.
+#
 # == details
 # Note the polygon must be closed, which means, the last data point should overlap to the first one.
 spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_track_index()) {
@@ -689,6 +710,9 @@ spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_tr
 # -ticks_gp Graphics parameters for the ticks.
 # -labels_gp Graphics parameters for the labels.
 # -track_index Index of the track. 
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize(); spiral_track()
@@ -812,6 +836,9 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 # == param
 # -... All pass to `spiral_axis`.
 #
+# == value
+# No value is returned.
+#
 spiral_xaxis = function(...) {
 	spiral_axis(...)
 }
@@ -828,6 +855,9 @@ spiral_xaxis = function(...) {
 # -ticks_gp Graphics parameters for ticks.
 # -labels_gp Graphics parameters for labels.
 # -track_index Index of the track.
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize(); spiral_track(height = 0.8)
@@ -1122,6 +1152,9 @@ split_vec_by_NA = function(x) {
 # -template Template to construct the labels.
 # -... Pass to `ComplexHeatmap::Legend`.
 #
+# == value
+# A `ComplexHeatmap::Legend` object.
+#
 horizon_legend = function(lt, title = "", format = "%.2f",
 	template = "[{x1}, {x2}]", ...) {
 
@@ -1164,6 +1197,9 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 # -facing Facing of the image.
 # -nice_facing Whether to adjust the facing.
 # -track_index Index of the track. 
+#
+# == value
+# No value is returned.
 #
 # == example
 # image = system.file("extdata", "Rlogo.png", package = "circlize")
@@ -1293,6 +1329,9 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 # == seealso
 # Note `spiral_segments` also supports drawing line-based arrows.
 #
+# == value
+# No value is returned.
+#
 # == example
 # spiral_initialize()
 # spiral_track()
@@ -1399,6 +1438,9 @@ spiral_arrow = function(
 # -gp Graphics parameters.
 # -track_index Index of the track.
 #
+# == value
+# No value is returned.
+#
 # == example
 # spiral_initialize(); spiral_track()
 # spiral_highlight(0.4, 0.6)
@@ -1503,6 +1545,9 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 # == details
 # x1 and x2 determine the position of the highlighted sector. If x3 and x4 are not set, the sector extends until the most outside loop.
 # If x3 and x4 are set, they determine the outer border of the sector. In this case, if x3 and x4 are set, x3 should be larger than x2.
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)

@@ -28,6 +28,9 @@ spiral_axis(h = c("top", "bottom"), at = NULL, major_at = at,
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize(); spiral_track()
 spiral_axis()

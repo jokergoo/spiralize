@@ -43,6 +43,9 @@ There are following meta data for the current track:
   \item{\code{track_index}:}{Current track index.}
 }
 }
+\value{
+The corresponding value.
+}
 \examples{
 # There is no example
 NULL

@@ -14,6 +14,9 @@ Names of all supported meta data
   \item{x}{Always use \code{TRACK_META}.}
 
 }
+\value{
+A vector of characters.
+}
 \examples{
 names(TRACK_META)
 }

@@ -18,6 +18,8 @@
 # To access the value of an option: ``spiral_opt$name`` where ``name`` is the name of the option. To set a new value
 # for an option: ``spiral_opt$name = new_value``.
 #
+# == value
+# A list of options.
 spiral_opt = function(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = FALSE) {}
 spiral_opt = setGlobalOptions(
 	min_segment_len = 1/180*pi,

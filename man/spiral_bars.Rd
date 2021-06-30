@@ -20,6 +20,9 @@ spiral_bars(pos, value, baseline = get_track_data("ymin", track_index),
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 \donttest{
 x = seq(1, 1000, by = 1) - 0.5

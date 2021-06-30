@@ -28,6 +28,9 @@ There are following global parameters:
 To access the value of an option: \code{spiral_opt$name} where \code{name} is the name of the option. To set a new value
 for an option: \code{spiral_opt$name = new_value}.
 }
+\value{
+A list of options.
+}
 \examples{
 # There is no example
 NULL

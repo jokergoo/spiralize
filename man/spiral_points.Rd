@@ -20,6 +20,9 @@ spiral_points(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
   \item{track_index}{Index of the track. }
 
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize()
 spiral_track()

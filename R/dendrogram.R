@@ -344,6 +344,9 @@ spiral_phylo = function(obj, gp = gpar(), log = FALSE, reverse = FALSE,
 # drawn by the ``plot.dendrogram`` function. However, you can still apply dendextend::`dendextend::cutree` to the returned
 # ``dendrogram`` object with no problem and the dendrogram can be properly drawn with the ComplexHeatmap package.
 #
+# == value
+# A ``dendrogram`` object.
+#
 # == example
 # require(ape)
 # data(bird.families)

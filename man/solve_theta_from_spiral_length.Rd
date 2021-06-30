@@ -21,6 +21,9 @@ The length of the spiral has a complicated form, see \url{https://downloads.imag
 Let's say the form is \code{l = f(theta)}, \code{\link{solve_theta_from_spiral_length}} tries to find theta by a known \code{l}.
 It uses \code{\link[stats]{uniroot}} to search solutions.
 }
+\value{
+The theta value.
+}
 \examples{
 spiral_initialize()
 s = current_spiral()

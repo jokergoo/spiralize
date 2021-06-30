@@ -23,6 +23,9 @@ spiral_yaxis(side = c("both", "start", "end"), at = NULL, labels = TRUE,
   \item{track_index}{Index of the track.}
 
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize(); spiral_track(height = 0.8)
 spiral_yaxis("start")

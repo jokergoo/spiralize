@@ -7,6 +7,10 @@
 #
 # == details
 # It basically sets the internally spiral object to NULL, and reset all the global options.
+#
+# == value
+# No value is returned.
+#
 spiral_clear = function(check_vp = TRUE) {
 	spiral_env$spiral = NULL
 	track_env$track_data = empty_track_data
@@ -41,6 +45,9 @@ spiral_clear = function(check_vp = TRUE) {
 #
 # == details
 # If the track is already existed, the function simply mark the track as the current track and does nothing else.
+#
+# == value
+# No value is returned.
 #
 # == example
 # spiral_initialize()
@@ -99,6 +106,10 @@ spiral_track = function(ylim = c(0, 1), height = 0.8, background = TRUE,
 #
 # == details
 # It prints information of the current spiral.
+#
+# == value
+# No value is returned.
+#
 spiral_info = function() {
 	spiral = spiral_env$spiral
 	if(is.null(spiral)) {

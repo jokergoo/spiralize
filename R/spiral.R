@@ -153,6 +153,9 @@ spiral = setRefClass("spiral",
 # -``s$spiral_length_range``: ``s$spiral_length_lim[2] - s$spiral_length_lim[1]``
 # -``s$max_radius``: Radius at ``s$theta_lim[2]``
 #
+# == value
+# A ``spiral`` object.
+#
 # == example
 # spiral_initialize()
 # s = current_spiral()

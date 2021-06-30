@@ -24,6 +24,9 @@ spiral_track(ylim = c(0, 1), height = 0.8, background = TRUE,
 \details{
 If the track is already existed, the function simply mark the track as the current track and does nothing else.
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize()
 spiral_track(height = 0.8)

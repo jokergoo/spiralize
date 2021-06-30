@@ -14,6 +14,9 @@ set_current_track(track_index)
   \item{track_index}{The index of the track.}
 
 }
+\value{
+No value is returned.
+}
 \examples{
 # There is no example
 NULL

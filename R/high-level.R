@@ -1,4 +1,0 @@
-
-spiral_heatmap = function() {
-
-}

@@ -28,6 +28,9 @@ current_track_index = function() {
 # == param
 # -track_index The index of the track.
 #
+# == value
+# No value is returned.
+#
 set_current_track = function(track_index) {
 	if(!track_existed(track_index)) {
 		stop_wrap(qq("Track @{track_index} does not exist."))
@@ -142,6 +145,9 @@ class(TRACK_META) = "TRACK_META"
 # == param
 # -x Always use ``TRACK_META``.
 #
+# == value
+# A vector of characters.
+#
 # == example
 # names(TRACK_META)
 names.TRACK_META = function(x) {
@@ -187,6 +193,8 @@ names.TRACK_META = function(x) {
 # -``abs_height``: The height of the track, which is ``rel_height`` multiplied by the distance between two neighbouring loops.
 # -``track_index``: Current track index.
 #
+# == value
+# The corresponding value.
 "$.TRACK_META" = function(x, name) {
 	spiral = spiral_env$spiral
 
@@ -244,6 +252,9 @@ names.TRACK_META = function(x) {
 # == param
 # -x The ``TRACK_META`` object.
 # -... Additional parameters.
+#
+# == value
+# No value is returned.
 #
 print.TRACK_META = function(x, ...) {
 	cat("Please use in form of `TRACK_META$name`. Type `names(TRACK_META)` for supported names.\n")

@@ -19,6 +19,9 @@ horizon_legend(lt, title = "", format = "\%.2f",
   \item{...}{Pass to \code{\link[ComplexHeatmap]{Legend}}.}
 
 }
+\value{
+A \code{\link[ComplexHeatmap]{Legend}} object.
+}
 \examples{
 # There is no example
 NULL

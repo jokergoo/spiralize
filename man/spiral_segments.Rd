@@ -28,6 +28,9 @@ If there are n1 spiral segments, then there will be n2 straight segments where n
 the locations of the "real" segments are filled to a temporary data frame with \code{buffer} rows, when the number of rows exceeds \code{buffer}, \code{\link[grid]{grid.segments}}
 is called to draw all the buffered segments.
 }
+\value{
+No value is returned.
+}
 \examples{
 n = 1000
 x0 = runif(n)

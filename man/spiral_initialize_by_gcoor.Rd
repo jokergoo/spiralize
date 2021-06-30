@@ -20,6 +20,9 @@ spiral_initialize_by_gcoor(xlim, scale_by = "curve_length", ...)
 It is basically the same as \code{\link{spiral_initialize}}. The only difference is the axis labels are automatically
 formated for genomic coordinates.
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize_by_gcoor(c(0, 1000000000))
 spiral_track()

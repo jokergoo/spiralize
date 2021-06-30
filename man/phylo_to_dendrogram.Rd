@@ -23,6 +23,9 @@ The returned \code{dendrogram} object is not in its standard format which means 
 drawn by the \code{plot.dendrogram} function. However, you can still apply dendextend::\code{\link[dendextend:cutree-methods]{cutree}} to the returned
 \code{dendrogram} object with no problem and the dendrogram can be properly drawn with the ComplexHeatmap package.
 }
+\value{
+A \code{dendrogram} object.
+}
 \examples{
 require(ape)
 data(bird.families)

@@ -34,6 +34,9 @@ spiral_text(x, y, text, offset = NULL, gp = gpar(),
 \details{
 For the curved text, it only supports one-line text.
 }
+\value{
+No value is returned.
+}
 \examples{
 x = seq(0.1, 0.9, length = 26)
 text = strrep(letters, 6)

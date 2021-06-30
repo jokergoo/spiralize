@@ -23,6 +23,9 @@ spiral_highlight(x1, x2, type = c("rect", "line"), padding = unit(1, "mm"),
   \item{track_index}{Index of the track.}
 
 }
+\value{
+No value is returned.
+}
 \examples{
 spiral_initialize(); spiral_track()
 spiral_highlight(0.4, 0.6)
