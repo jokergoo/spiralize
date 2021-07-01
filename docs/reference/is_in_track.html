@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Global options — spiral_opt • spiralize</title>
+<title>Test whether points are in a track — is_in_track • spiralize</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Global options — spiral_opt" />
-<meta property="og:description" content="Global options" />
+<meta property="og:title" content="Test whether points are in a track — is_in_track" />
+<meta property="og:description" content="Test whether points are in a track" />
 
 
 
@@ -111,61 +111,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Global options</h1>
+    <h1>Test whether points are in a track</h1>
     
-    <div class="hidden name"><code>spiral_opt.Rd</code></div>
+    <div class="hidden name"><code>is_in_track.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Global options</p>
+    <p>Test whether points are in a track</p>
     </div>
 
-    <pre class="usage"><span class='fu'>spiral_opt</span><span class='op'>(</span><span class='va'>...</span>, RESET <span class='op'>=</span> <span class='cn'>FALSE</span>, READ.ONLY <span class='op'>=</span> <span class='cn'>NULL</span>, LOCAL <span class='op'>=</span> <span class='cn'>FALSE</span>, ADD <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>is_in_track</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>Arguments for the parameters, see "details" section.</p></td>
+      <th>x</th>
+      <td><p>X-location of data points.</p></td>
     </tr>
     <tr>
-      <th>RESET</th>
-      <td><p>Whether to reset to default values.</p></td>
+      <th>y</th>
+      <td><p>Y-location of data points.</p></td>
     </tr>
     <tr>
-      <th>READ.ONLY</th>
-      <td><p>Please ignore.</p></td>
-    </tr>
-    <tr>
-      <th>LOCAL</th>
-      <td><p>Please ignore.</p></td>
-    </tr>
-    <tr>
-      <th>ADD</th>
-      <td><p>Please ignore.</p></td>
+      <th>track_index</th>
+      <td><p>Index of track.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>There are following global parameters:</p>
-<dl>
-  <dt><code>min_segment_len</code></dt><dd><p>Minimal length of the segment that partitions a curve.</p></dd>
-
-</dl>
-
-<p>To access the value of an option: <code>spiral_opt$name</code> where <code>name</code> is the name of the option. To set a new value
-for an option: <code>spiral_opt$name = new_value</code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of options.</p>
+    <p>A logical vector.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># There is no example</span>
 <span class='cn'>NULL</span>
-</div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+</div><div class='output co'>#&gt; NULL</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

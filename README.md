@@ -16,6 +16,12 @@ It has two major advantages for visualization:
 
 ## Install
 
+The package is available on CRAN and can be installed by:
+
+```r
+install.packages("spiralize")
+```
+
 If you want the latest version, install it directly from GitHub:
 
 ```r
