@@ -38,6 +38,7 @@ A list of the following objects:
 }
 }
 \examples{
+\donttest{
 df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
 df = df[df$Source == "GCAG", ]
 spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period = "year",
@@ -45,4 +46,5 @@ spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period
     vp_param = list(x = unit(0, "npc"), just = "left"))
 spiral_track()
 spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
+}
 }

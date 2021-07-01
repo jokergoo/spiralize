@@ -984,6 +984,7 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 # - a vector of intervals that split the data.
 #
 # == example
+# \donttest{
 # df = readRDS(system.file("extdata", "global_temperature.rds", package = "spiralize"))
 # df = df[df$Source == "GCAG", ]
 # spiral_initialize_by_time(xlim = range(df$Date), unit_on_axis = "months", period = "year",
@@ -991,6 +992,7 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 #     vp_param = list(x = unit(0, "npc"), just = "left"))
 # spiral_track()
 # spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
+# }
 spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
 	use_bars = FALSE, bar_width = min(diff(x)),
 	negative_from_top = FALSE, track_index = current_track_index()) {

@@ -299,3 +299,94 @@ flip_theta_back = function(theta) {
 	}
 	theta
 }
+
+# == title
+# Convert canvas coordinates to the data coordinates
+#
+# == param
+# -x X-locations of the data points in canvas coordinates.
+# -y Y-locations of the data points in canvas coordinates.
+# -track_index Index of the track. 
+#
+# == details
+# The data points are assigned to the nearest inner loops. Denote the a data point has a coordinate (r, theta)
+# in the polar coordinate system, r_k and r_{k+1} are the radius of the two loops at theta + 2*pi*a and theta + 2*pi*(a+1) that below and above the data point,
+# the data point is assigned to the loop k.
+#
+# == value
+# A data frame with two columns: x and y.
+#
+# == example
+# x = runif(100, -5, 5)
+# y = runif(100, -5, 5)
+# spiral_initialize()
+# spiral_track()
+# df = cartesian_to_xy(x, y)
+# # directly draw in the viewport
+# grid.points(x, y, default.units="native")
+# # check whether the converted xy are correct (should overlap to the previous points)
+# spiral_points(df$x, df$y, pch = 16)
+cartesian_to_xy = function(x, y, track_index = current_track_index()) {
+
+	if(length(x) > 1) {
+		n = length(x)
+
+		df = data.frame(x = numeric(n), y = numeric(n))
+
+		for(i in seq_len(n)) {
+			df2 = cartesian_to_xy(x[i], y[i], track_index)
+			df[i, 1] = df2[1, 1]
+			df[i, 2] = df2[1, 2]
+		}
+
+		return(df)
+	}
+
+	s = spiral_env$spiral
+	r0 = sqrt(x^2 + y^2)
+
+	if(r0 == 0) {
+		theta = mean(s$theta_lim)
+	} else {
+
+		# make sure alpha is between [0, 2pi)
+		alpha = atan(y/x)
+		if(y >= 0 & x < 0) {
+			alpha = alpha + pi
+		} else if(y < 0 & x < 0) {
+			alpha = alpha + pi
+		} else if(x >= 0 & y < 0) {
+			alpha = alpha + 2*pi
+		}
+
+
+		while(alpha < s$theta_lim[1]) {
+			alpha = alpha + 2*pi
+		}
+		if(alpha > s$theta_lim[2]) {
+			stop_wrap("The radial line the connects data point and the origin should intersect the spiral.")
+		}
+		t2 = seq(alpha, s$theta_lim[2], by = 2*pi)
+
+		all_r = s$curve(t2)
+		if(all_r[length(all_r)] <= r0) {
+			theta = t2[length(t2)]
+		} else if(all_r[1] >= r0) {
+			theta = t2[1]
+		} else {
+			ind = which(all_r <= r0)
+			theta = t2[ ind[length(ind)] ]
+		}
+	}
+
+	x2 = polar_to_x(theta)
+	d0 = r0 - s$curve(theta)
+
+	ymin = get_track_data("ymin", track_index)
+	ymax = get_track_data("ymax", track_index)
+	rmin = get_track_data("rmin", track_index)
+	rmax = get_track_data("rmax", track_index)
+	y2 = (d0 - rmin)/(rmax - rmin)*(ymax - ymin) + ymin
+
+	data.frame(x = x2, y = y2)
+}
