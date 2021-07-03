@@ -734,13 +734,25 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 	ticks_gp = gpar(), labels_gp = gpar(fontsize = 6), 
 	track_index = current_track_index()) {
 
+	reverse_y = get_track_data("reverse_y", track_index)
+
 	h = match.arg(h)[1]
 	if(h == "top") {
-		axis_on_top = TRUE
+		if(reverse_y) {
+			axis_on_top = FALSE
+			h = get_track_data("ymin", track_index)
+		} else {
+			axis_on_top = TRUE
 		h = get_track_data("ymax", track_index)
+		}
 	} else if(h == "bottom") {
-		axis_on_top = FALSE
-		h = get_track_data("ymin", track_index)
+		if(reverse_y) {
+			axis_on_top = TRUE
+			h = get_track_data("ymax", track_index)
+		} else {
+			axis_on_top = FALSE
+			h = get_track_data("ymin", track_index)
+		}
 	}
 
 	spiral = spiral_env$spiral
@@ -803,9 +815,9 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		}
 
 		if(axis_on_top) {
-			h = h + convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"))
+			h = h + convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"), track_index = track_index)
 		} else {
-			h = h - convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"))
+			h = h - convert_height_to_y(major_ticks_length + minor_ticks_length + unit(1, "bigpts"), track_index = track_index)
 		}
 		df = xy_to_polar(major_at, h, track_index = track_index)
 		degree = as.degree(df$theta)
@@ -947,6 +959,8 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 		just = "left"
 		offset_sign = 1
 	}
+
+	offset_sign = ifelse(spiral$reverse, -1, 1)*offset_sign
 
 	x1 = rep(v, length(at))
 	x2 = circular_extend_on_x(x1, at, offset = offset_sign*ticks_length, track_index = track_index, coordinate = "xy")
@@ -1367,7 +1381,7 @@ spiral_arrow = function(
 	spiral = spiral_env$spiral
 
 	if(is.unit(width)) {
-		width = convert_height_to_y(width)
+		width = convert_height_to_y(width, track_index = track_index)
 	}
 
 	if(is.unit(arrow_head_length)) {
@@ -1489,7 +1503,7 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 			padding = rep(padding, 2)
 		}
 		if(is.unit(padding)) {
-			offset = convert_height_to_y(padding)
+			offset = convert_height_to_y(padding, track_index = track_index)
 		} else {
 			offset = get_track_data("yrange", track_index)*padding
 		}

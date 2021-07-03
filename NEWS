@@ -2,6 +2,8 @@
 
 - Add function `cartesian_to_xy()`.
 - Add function `is_in_track()`.
+- Argument `height` can be set as a unit object in `spiral_track()`.
+- Fixed a bug when `reverse_y = FALSE` in `spiral_track()`.
 
 ## version 1.0.1
 

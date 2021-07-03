@@ -8,7 +8,8 @@ empty_track_data = data.frame(
 	ymax = numeric(0),
 	rmin = numeric(0),
 	rmax = numeric(0),
-	rel_height = numeric(0)
+	rel_height = numeric(0),
+	reverse_y = logical(0)
 )
 
 track_env$track_data = empty_track_data

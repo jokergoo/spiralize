@@ -50,18 +50,22 @@ xy_to_polar = function(x, y, track_index = current_track_index(), flip = TRUE) {
 	} else if(spiral$scale_by == "curve_length") {
 		if(spiral$reverse) {
 			len = (spiral$xlim[2] - x) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
-			theta = solve_theta_from_spiral_length(len)
 		} else {
 			len = (x - spiral$xlim[1]) * spiral$spiral_length_range/spiral$xrange + spiral$spiral_length_lim[1]
-			theta = solve_theta_from_spiral_length(len)
 		}
+		theta = solve_theta_from_spiral_length(len)
 	}
 
 	ymin = get_track_data("ymin", track_index)
 	ymax = get_track_data("ymax", track_index)
 	rmin = get_track_data("rmin", track_index)
 	rmax = get_track_data("rmax", track_index)
-	d = (y - ymin) * (rmax - rmin)/(ymax - ymin) + rmin
+	reverse_y = get_track_data("reverse_y", track_index)
+	if(reverse_y) {
+		d = rmax - (y - ymin) * (rmax - rmin)/(ymax - ymin) 
+	} else {
+		d = (y - ymin) * (rmax - rmin)/(ymax - ymin) + rmin
+	}
 	r = spiral$curve(theta) + d
 
 	if(flip) theta = flip_theta(theta)
@@ -161,17 +165,24 @@ circular_extend_on_x = function(x, y, offset, track_index = track_index, coordin
 		offset = convertWidth(offset, "native", valueOnly = TRUE)
 	}
 
+	df = xy_to_polar(x, y, track_index = track_index)
 	if(spiral$scale_by == "curve_length") {
-		v_offset = convert_y_to_height(y)
+		v_offset = convert_y_to_height(y, track_index = track_index)
 		x_offset = offset/(spiral$spiral_length(spiral$theta_lim[2], v_offset) - spiral$spiral_length(spiral$theta_lim[1], v_offset))*spiral$xrange
+
+		df$theta = flip_theta_back(df$theta)
+		t = solve_theta_from_spiral_length(spiral$spiral_length(df$theta, v_offset) + offset, 
+				c(spiral$spiral_length(-spiral$theta_lim[2], max(v_offset)), 
+				  spiral$spiral_length(2*spiral$theta_lim[2], max(v_offset))),
+				v_offset)
+		t = flip_theta(t)
 		if(coordinate == "polar") {
-			xy_to_polar(x + x_offset, y)$theta
+			t
 		} else {
-			x + x_offset
+			polar_to_x(t)
 		}
 	} else {
-		df = xy_to_polar(x, y, track_index = track_index)
-		v_offset = convert_y_to_height(y, track_index)
+		v_offset = convert_y_to_height(y, track_index = track_index)
 		df$theta = flip_theta_back(df$theta)
 		t = solve_theta_from_spiral_length(spiral$spiral_length(df$theta, v_offset) + offset, 
 				c(spiral$spiral_length(-spiral$theta_lim[2], max(v_offset)), 
@@ -208,13 +219,30 @@ polar_to_x = function(theta) {
 # given a offset in absolute unit, it returns the offset in xy coordinates
 convert_height_to_y = function(offset, track_index = current_track_index()) {
 	offset = convertWidth(offset, "native", valueOnly = TRUE)
-	offset/get_track_data("rrange", track_index)*get_track_data("yrange", track_index) + get_track_data("ymin", track_index)
+
+	ymin = get_track_data("ymin", track_index)
+	ymax = get_track_data("ymax", track_index)
+	rmin = get_track_data("rmin", track_index)
+	rmax = get_track_data("rmax", track_index)
+
+	offset/(rmax - rmin)*(ymax - ymin)
 }
 
+# here `height` is the offset to the base spiral
 convert_y_to_height = function(y, track_index = current_track_index()) {
 	spiral = spiral_env$spiral
 
-	v_offset = (y - get_track_data("ymin", track_index))/get_track_data("yrange", track_index)*(get_track_data("rmax", track_index) - get_track_data("rmin", track_index))
+	ymin = get_track_data("ymin", track_index)
+	ymax = get_track_data("ymax", track_index)
+	rmin = get_track_data("rmin", track_index)
+	rmax = get_track_data("rmax", track_index)
+	reverse_y = get_track_data("reverse_y", track_index)
+	
+	if(reverse_y) {
+		v_offset = (ymax - y)/(ymax - ymin)*(rmax - rmin)
+	} else {
+		v_offset = (y - ymin)/(ymax - ymin)*(rmax - rmin)
+	}
 	if(track_index > 1) {
 		for(i in 1:(track_index - 1)) {
 			v_offset = v_offset + get_track_data("rmax", i) - get_track_data("rmin", i)
@@ -386,7 +414,13 @@ cartesian_to_xy = function(x, y, track_index = current_track_index()) {
 	ymax = get_track_data("ymax", track_index)
 	rmin = get_track_data("rmin", track_index)
 	rmax = get_track_data("rmax", track_index)
-	y2 = (d0 - rmin)/(rmax - rmin)*(ymax - ymin) + ymin
+	reverse_y = get_track_data("reverse_y", track_index)
+
+	if(reverse_y) {
+		y2 = ymax - (d0 - rmin)/(rmax - rmin)*(ymax - ymin)
+	} else {
+		y2 = (d0 - rmin)/(rmax - rmin)*(ymax - ymin) + ymin
+	}
 
 	data.frame(x = x2, y = y2)
 }
