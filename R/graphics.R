@@ -331,13 +331,16 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 	id = NULL
 	id_k = 0
 	for(i in seq_len(n)) {
+
 		x = c(x, c(xleft[i], xleft[i], xright[i], xright[i], xleft[i]))
 		y = c(y, c(ybottom[i], ytop[i], ytop[i], ybottom[i], ybottom[i]))
 		id_k = id_k + 1
 		id = c(id, rep(id_k, 5))
+
 	}
 
 	spiral_polygon(x, y, id = id, gp = gp, track_index = track_index)
+	
 }
 
 # == title
@@ -1207,12 +1210,20 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 # -y Y-locations of the center of the image.
 # -image A vector of file paths of images. The format of the image is inferred from the suffix name of the image file.
 #       NA value or empty string means no image to drawn. Supported formats are png/svg/pdf/eps/jpeg/jpg/tiff.
-# -width Width of the image. The value should be a `grid::unit` object.
-# -height Height of the image. The value should be a `grid::unit` object. It is suggested to only set one of ``width`` and ``height``, the
-#       other dimension will be automatically calculated from the aspect ratio of the image.
+# -width Width of the image. See Details. 
+# -height Height of the image. See Details. 
 # -facing Facing of the image.
 # -nice_facing Whether to adjust the facing.
+# -scaling Scaling factor when ``facing`` is set to ``"curved_inside"`` or ``"curved_outside"``.
 # -track_index Index of the track. 
+#
+# == details
+# When ``facing`` is set to one of ``"downward"``, ``"inside"`` and ``"outside"``, both of ``width`` and ``height`` should be `grid::unit` objects. 
+# It is suggested to only set one of ``width`` and ``height``, the other dimension will be automatically calculated from the aspect ratio of the image.
+#
+# When ``facing`` is set to one of ``"curved_inside"`` and ``"curved_outside"``, the value can also be numeric, which are the values
+# measured in the data coordinates. Note when the segment in the spiral that corresponds to ``width`` is very long, drawing the curved
+# image will be very slow because each pixel is actually treated as a single rectangle.
 #
 # == value
 # No value is returned.
@@ -1230,13 +1241,18 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 # spiral_raster(x, 0.5, image, facing = "inside")
 #
 spiral_raster = function(x, y, image, width = NULL, height = NULL, 
-	facing = c("downward", "inside", "outside"), nice_facing = FALSE,
-	track_index = current_track_index()) {
+	facing = c("downward", "inside", "outside", "curved_inside", "curved_outside"), 
+	nice_facing = FALSE, scaling = 1, track_index = current_track_index()) {
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
 
 	facing = match.arg(facing)[1]
+
+	if(facing %in% c("curved_inside", "curved_outside")) {
+		spiral_raster_curved(x, y, image = image, width = width, height = height, facing = facing,
+			nice_facing = nice_facing, scaling = scaling, track_index = track_index)
+		return(invisible(NULL))
+	}
 	
 	if(is.character(image) && is.atomic(image)) {
 		n1 = length(x)
@@ -1288,7 +1304,11 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 	} else if(is.null(width)) {
 		width = height*asp
 	} else if(is.null(height)) {
-		height = 1/asp*width
+		if(facing %in% c("downward", "inside", "outside")) {
+			height = 1/asp*width
+		} else {
+			height = 0.8*get_track_data("yrange", track_index)
+		}
 	}
 	
 	if(facing == "downward") {
@@ -1324,6 +1344,123 @@ spiral_raster = function(x, y, image, width = NULL, height = NULL,
 		grid.picture(image)
 	}
 	popViewport()
+	
+}
+
+
+spiral_raster_curved = function(x, y, image, width = NULL, height = NULL, 
+	facing = c("curved_inside", "curved_outside"), 
+	nice_facing = FALSE, scaling = 1, track_index = current_track_index()) {
+
+	if(!requireNamespace("magick")) {
+		stop_wrap("Package 'magick' should be installed.")
+	}
+
+	if(inherits(image, "matrix") || inherits(image, "raster")) {
+		image = as.raster(image)
+		temp_file = tempfile(fileext = ".png")
+		png(temp_file, width = ncol(image), height = nrow(image))
+		grid.raster(image)
+		dev.off()
+		image = temp_file
+
+		on.exit(file.remove(temp_file))
+	}
+
+	spiral = spiral_env$spiral
+
+	if(is.null(width)) width = spiral$xrange
+	if(is.null(height)) height = get_track_data("yrange", track_index)
+
+	n1 = length(x)
+	n2 = length(y)
+	n3 = length(image)
+	n = max(n1, n2, n3)
+
+	if(n1 == 1) x = rep(x, n)
+	if(n2 == 1) y = rep(y, n)
+	if(n3 == 1) image = rep(image, n)
+	if(!is.null(width)) {
+		if(length(width) == 1) width = rep(width, n)
+	}
+	if(!is.null(height)) {
+		if(length(height) == 1) height = rep(height, n)
+	}
+
+	if(n > 1) {
+		for(i in seq_len(n)) {
+			if(identical(image[[i]], NA)) next
+			spiral_raster_curved(x[i], y[i], image[[i]], width = width[i], height = height[i], 
+				facing = facing, nice_facing = nice_facing, track_index = track_index)
+		}
+		return(invisible(NULL))
+	}
+	
+	df = xy_to_polar(x, y, track_index = track_index)
+	theta = as.degree(df$theta)
+
+	if(nice_facing) {
+        if(theta > 180 & theta < 360) {
+            if(facing == "curved_inside") {
+              facing = "curved_outside"
+            }
+            else {
+              facing = "curved_inside"
+            }
+        }
+    }
+
+    if(is.unit(width)) {
+    	width = convertWidth(width, "native", valueOnly = TRUE)/spiral$spiral_length_range*spiral$xrange
+    }
+
+	width2 = width/spiral$xrange*spiral$spiral_length_range
+	width2 = unit(width2, "native")
+	width2 = convertWidth(width2, "inch", valueOnly = TRUE)*96
+
+	if(is.unit(height)) {
+		height = convert_height_to_y(height, track_index)
+	}
+    
+	height2 = height/get_track_data("yrange", track_index)*get_track_data("rrange", track_index)
+	height2 = unit(height2, "native")
+	height2 = convertHeight(height2, "inch", valueOnly = TRUE)*72 # or convert to bigpts
+    
+	image = magick::image_read(image)
+    image = magick::image_resize(image, paste0(width2, "x", height2, "!"))
+    image = as.raster(image)
+
+	nr = nrow(image)
+	nc = ncol(image)
+
+	row_index = rep(1:nr, nc)
+	col_index = rep(nc:1, each = nr)
+
+	if(facing == "curved_inside") {
+		yv = 1 - (row_index - 0.5)/nr
+		xv = (col_index - 0.5)/nc
+	} else {
+		yv = (row_index - 0.5)/nr
+		xv = 1 - (col_index - 0.5)/nc
+	}
+	xv = x - width/2 + xv*width
+	yv = y - height/2 + yv*height
+	l = !grepl("^#FFFFFF", image)
+	ind = which(l)
+
+	i = 0
+	n = length(ind)
+	while(i <= n) {
+		if(i + 1 + 5000 > n) {
+			ind2 = seq(i+1, n) 
+		} else {
+			ind2 = 1:5000 + i
+		}
+		spiral_rect(xv[ind2] - width/nc/2, yv[ind2] - height/nr/2, xv[ind2] + width/nc/2, yv[ind2] + height/nr/2,
+			gp = gpar(fill = image[ind2], col = image[ind2]), track_index = track_index)
+
+		i = i + 5000
+	}
 }
 
 # == title

@@ -109,6 +109,7 @@ spiral_lines_expand = function(x, y, track_index = current_track_index()) {
 	y = df$r
 	nx = x[1]
 	ny = y[1]
+	min_segment_len = spiral_opt$min_segment_len
 	for(i in seq_len(n)) {
 		if(i == 1) {
 			next
@@ -122,11 +123,11 @@ spiral_lines_expand = function(x, y, track_index = current_track_index()) {
             next
         }
 
-        d = spiral_opt$min_segment_len/(6*pi)
+        d = min_segment_len/(6*pi)
         if(x[i-1] <= 4*pi) {
-        	d = spiral_opt$min_segment_len
+        	d = min_segment_len
         } else {
-        	d = spiral_opt$min_segment_len*(4*pi/x[i-1])
+        	d = min_segment_len*(4*pi/x[i-1])
         }
 
         if(abs(x[i] - x[i-1]) <= d) {

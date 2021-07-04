@@ -4,6 +4,7 @@
 - Add function `is_in_track()`.
 - Argument `height` can be set as a unit object in `spiral_track()`.
 - Fixed a bug when `reverse_y = FALSE` in `spiral_track()`.
+- Add options `curved_inside` and `curved_outside` in `spiral_raster()`.
 
 ## version 1.0.1
 

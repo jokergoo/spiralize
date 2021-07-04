@@ -26,7 +26,8 @@ Suggests: knitr,
           cranlogs,
           cowplot,
           dendextend,
-          bezier
+          bezier,
+          magick
 Description: It visualizes data along an Archimedean spiral <https://en.wikipedia.org/wiki/Archimedean_spiral>. 
     It has two major advantages for visualization: 1. It is able to visualize data with very long axis with high 
     resolution. 2. It is efficient for time series data to reveal periodic patterns.

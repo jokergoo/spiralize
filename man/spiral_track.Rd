@@ -14,7 +14,7 @@ spiral_track(ylim = c(0, 1), height = 0.8, background = TRUE,
 \arguments{
 
   \item{ylim}{Data range of the y-locations.}
-  \item{height}{Height of the track. The value should be the fraction of the distance of the two neighbour loops.}
+  \item{height}{Height of the track. The value can be the fraction of the distance of the two neighbour loops. The value can also be a \code{\link[grid]{unit}} object.}
   \item{background}{Whether to draw the background of the track, i.e. border and filled color of background.}
   \item{background_gp}{Graphics parameters of the background.}
   \item{reverse_y}{Whether reverse the direction of y-axis.}

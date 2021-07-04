@@ -22,4 +22,5 @@ A logical vector.
 \examples{
 # There is no example
 NULL
+
 }
