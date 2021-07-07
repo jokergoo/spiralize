@@ -760,7 +760,9 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 
 	spiral = spiral_env$spiral
 
+	at_specified = TRUE
 	if(is.null(major_at)) {
+		at_specified = FALSE
 		# if(spiral$xclass == "Genomic positions") {
 			nb = round(spiral$spiral_length_range/(spiral$curve(mean(spiral$theta_lim))^2*pi/360*20))
 			major_at = pretty(spiral$xlim, nb)
@@ -814,7 +816,11 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 	if(is.null(labels)) labels = FALSE
 	if(!identical(labels, FALSE)) {
 		if(identical(labels, TRUE)) {
-			labels = major_at
+			if(at_specified) {
+				labels = spiral$get_character_x(major_at)
+			} else {
+				labels = major_at
+			}
 		}
 
 		if(axis_on_top) {
