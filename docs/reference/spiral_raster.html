@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
       </span>
     </div>
 
@@ -121,8 +121,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>spiral_raster</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>image</span>, width <span class='op'>=</span> <span class='cn'>NULL</span>, height <span class='op'>=</span> <span class='cn'>NULL</span>,
-    facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"downward"</span>, <span class='st'>"inside"</span>, <span class='st'>"outside"</span><span class='op'>)</span>, nice_facing <span class='op'>=</span> <span class='cn'>FALSE</span>,
-    track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    facing <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"downward"</span>, <span class='st'>"inside"</span>, <span class='st'>"outside"</span>, <span class='st'>"curved_inside"</span>, <span class='st'>"curved_outside"</span><span class='op'>)</span>,
+    nice_facing <span class='op'>=</span> <span class='cn'>FALSE</span>, scaling <span class='op'>=</span> <span class='fl'>1</span>, track_index <span class='op'>=</span> <span class='fu'><a href='current_track_index.html'>current_track_index</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,11 +141,11 @@
     </tr>
     <tr>
       <th>width</th>
-      <td><p>Width of the image. The value should be a <code><a href='https://rdrr.io/r/grid/unit.html'>unit</a></code> object.</p></td>
+      <td><p>Width of the image. See Details.</p></td>
     </tr>
     <tr>
       <th>height</th>
-      <td><p>Height of the image. The value should be a <code><a href='https://rdrr.io/r/grid/unit.html'>unit</a></code> object. It is suggested to only set one of <code>width</code> and <code>height</code>, the other dimension will be automatically calculated from the aspect ratio of the image.</p></td>
+      <td><p>Height of the image. See Details.</p></td>
     </tr>
     <tr>
       <th>facing</th>
@@ -156,11 +156,22 @@
       <td><p>Whether to adjust the facing.</p></td>
     </tr>
     <tr>
+      <th>scaling</th>
+      <td><p>Scaling factor when <code>facing</code> is set to <code>"curved_inside"</code> or <code>"curved_outside"</code>.</p></td>
+    </tr>
+    <tr>
       <th>track_index</th>
       <td><p>Index of the track.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>When <code>facing</code> is set to one of <code>"downward"</code>, <code>"inside"</code> and <code>"outside"</code>, both of <code>width</code> and <code>height</code> should be <code><a href='https://rdrr.io/r/grid/unit.html'>unit</a></code> objects. 
+It is suggested to only set one of <code>width</code> and <code>height</code>, the other dimension will be automatically calculated from the aspect ratio of the image.</p>
+<p>When <code>facing</code> is set to one of <code>"curved_inside"</code> and <code>"curved_outside"</code>, the value can also be numeric, which are the values
+measured in the data coordinates. Note when the segment in the spiral that corresponds to <code>width</code> is very long, drawing the curved
+image will be very slow because each pixel is actually treated as a single rectangle.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>

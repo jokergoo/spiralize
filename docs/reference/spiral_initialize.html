@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
       </span>
     </div>
 
@@ -121,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>spiral_initialize</span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>, start <span class='op'>=</span> <span class='fl'>360</span>, end <span class='op'>=</span> <span class='fl'>360</span><span class='op'>*</span><span class='fl'>5</span>,
-    scale_by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"angle"</span>, <span class='st'>"curve_length"</span><span class='op'>)</span>,
+    scale_by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"angle"</span>, <span class='st'>"curve_length"</span><span class='op'>)</span>, period <span class='op'>=</span> <span class='cn'>NULL</span>,
     flip <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>, <span class='st'>"vertical"</span>, <span class='st'>"horizontal"</span>, <span class='st'>"both"</span><span class='op'>)</span>, reverse <span class='op'>=</span> <span class='cn'>FALSE</span>,
     polar_lines <span class='op'>=</span> <span class='va'>scale_by</span> <span class='op'>==</span> <span class='st'>"angle"</span>, polar_lines_by <span class='op'>=</span> <span class='fl'>30</span>,
     polar_lines_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>col <span class='op'>=</span> <span class='st'>"#808080"</span>, lty <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
@@ -145,6 +145,10 @@
     <tr>
       <th>scale_by</th>
       <td><p>How scales on x-axis are equally interpolated? The values can be one of "angle" and "curve_length". If the value is "angle", equal angle difference corresponds to equal difference of data. In this case, in outer loops, the scales are longer than in the inner loops, although the difference on the data are the same. If the value is "curve_length", equal curve length difference corresponds to the equal difference of the data.</p></td>
+    </tr>
+    <tr>
+      <th>period</th>
+      <td><p>Under "angle" mode, the number of loops can also be controlled by argument <code>period</code> which controls the length of data a spiral loop corresponds to. Note in this case, argument <code>end</code> is ignored and the value for <code>end</code> is  internally recalculated.</p></td>
     </tr>
     <tr>
       <th>flip</th>
@@ -206,7 +210,7 @@
 <span class='op'>}</span>
 <span class='fu'>make_plot</span><span class='op'>(</span><span class='st'>"angle"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Loading required package: circlize</span></div><div class='output co'>#&gt; <span class='message'>========================================</span>
-#&gt; <span class='message'>circlize version 0.4.13</span>
+#&gt; <span class='message'>circlize version 0.4.14</span>
 #&gt; <span class='message'>CRAN page: https://cran.r-project.org/package=circlize</span>
 #&gt; <span class='message'>Github page: https://github.com/jokergoo/circlize</span>
 #&gt; <span class='message'>Documentation: https://jokergoo.github.io/circlize_book/book/</span>

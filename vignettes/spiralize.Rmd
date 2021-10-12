@@ -15,6 +15,6 @@ There are the following vignettes:
 - [Visualize Data on Spirals](https://jokergoo.github.io/spiralize_vignettes/spiralize.html). It gives an detailed introduction of the _spiralize_ package.
 - [Initialize Spirals by Special Data Types](https://jokergoo.github.io/spiralize_vignettes/special_data_type.html). It introduces how to specifically create spiral plot with time series data and genomic data.
 - [Annotate the Plot](https://jokergoo.github.io/spiralize_vignettes/annotate.html). It introduces how to add annotations and how to add legends to the plot.
-- [Real World Examples](https://jokergoo.github.io/spiralize_vignettes/examples.html). It contains 9 examples with real world datasets.
+- [Real World Examples](https://jokergoo.github.io/spiralize_vignettes/examples.html). It contains many examples with real world datasets.
 - [Visualize tree of life of 50455 species](https://jokergoo.github.io/spiralize_vignettes/tree_of_life.html).
 
