@@ -1183,6 +1183,10 @@ split_vec_by_NA = function(x) {
 horizon_legend = function(lt, title = "", format = "%.2f",
 	template = "[{x1}, {x2}]", ...) {
 
+	if(!requireNamespace("ComplexHeatmap")) {
+        stop("You need to install the 'ComplexHeatmap' package from Bioconductor.")
+    }
+
 	interval = lt$interval
 	col_fun = lt$col_fun
 	
@@ -1205,7 +1209,7 @@ horizon_legend = function(lt, title = "", format = "%.2f",
 		labels = labels[l]
 	}
 
-	Legend(title = title, at = at, labels = labels, legend_gp = gpar(fill = col_fun(at)), ...)
+	ComplexHeatmap::Legend(title = title, at = at, labels = labels, legend_gp = gpar(fill = col_fun(at)), ...)
 }
 
 # == title

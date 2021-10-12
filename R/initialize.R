@@ -10,6 +10,9 @@
 #      the value is "angle", equal angle difference corresponds to equal difference of data. In this case, in outer loops,
 #      the scales are longer than in the inner loops, although the difference on the data are the same. If
 #      the value is "curve_length", equal curve length difference corresponds to the equal difference of the data.
+# -period Under "angle" mode, the number of loops can also be controlled by argument ``period`` which controls the length
+#       of data a spiral loop corresponds to. Note in this case, argument ``end`` is ignored and the value for ``end`` is 
+#       internally recalculated.
 # -flip How to flip the spiral? By default, the spiral starts from the origin of the coordinate and grows reverseclockwisely.
 #       The argument controls the growing direction of the spiral.
 # -reverse By default, the most inside of the spiral corresponds to the lower boundary of x-location. Setting the value to ``FALSE``
@@ -47,7 +50,7 @@
 # make_plot("angle")
 # make_plot("curve_length")
 spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5, 
-	scale_by = c("angle", "curve_length"), 
+	scale_by = c("angle", "curve_length"), period = NULL,
 	flip = c("none", "vertical", "horizontal", "both"), reverse = FALSE,
 	polar_lines = scale_by == "angle", polar_lines_by = 30, 
 	polar_lines_gp = gpar(col = "#808080", lty = 3), 
@@ -68,6 +71,15 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 
 	scale_by = match.arg(scale_by)[1]
 	flip = match.arg(flip)[1]
+
+	if(!is.null(period)) {
+		if(scale_by != "angle") {
+			stop_wrap("You can only set `period` under 'angle' mode.")
+		}
+		xrange = xlim[2] - xlim[1]
+		end = xrange/period*360 + start
+	}
+
 	spiral = create_spiral(start = start, end = end, xlim = xlim, scale_by = scale_by, flip = flip, reverse = reverse)
 	spiral_env$spiral = spiral
 	spiral_env$i_spiral = spiral_env$i_spiral + 1
@@ -491,8 +503,13 @@ spiral_initialize_by_gcoor = function(xlim, scale_by = "curve_length", ...) {
 		x2[l2] = paste(x[l2]/1000, "KB", sep = "")
 		
 		l3 = !(l1 | l2)
-		x2[l3] = paste(x[l3], "bp", sep = "")
-		x2
+		last_unit = "bp"
+		if(all(l1 | x == 0)) {
+			last_unit = "MB"
+		} else if(all(l1 | l2 | x == 0)) {
+			last_unit = "KB"
+		}
+		x2[l3] = paste(x[l3], last_unit, sep = "")
 	}
 
 	spiral_initialize(xlim = xlim, scale_by = scale_by, ...)

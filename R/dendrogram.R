@@ -1,7 +1,11 @@
 construct_dend_segments = function(dend, gp = gpar()) {
 
+    if(!requireNamespace("ComplexHeatmap")) {
+        stop("You need to install the 'ComplexHeatmap' package from Bioconductor.")
+    }
+
     if(is.null(attr(dend, "x"))) {
-        dend = adjust_dend_by_x(dend)
+        dend = ComplexHeatmap::adjust_dend_by_x(dend)
     }
 
     x_is_unit = inherits(attr(dend, "x"), "unit")

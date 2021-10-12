@@ -53,6 +53,5 @@ importFrom("circlize", colorRamp2, rand_color)
 importFrom("grDevices", "as.raster", "png", "dev.off")
 importFrom("grDevices", "col2rgb", "rgb", "dev.size", "pdf.options")
 importFrom("utils", "getFromNamespace", "packageDescription")
-importFrom(ComplexHeatmap, adjust_dend_by_x, Legend)
 importFrom(stats, is.leaf, uniroot)
 

@@ -1,7 +1,7 @@
 Package: spiralize
 Type: Package
 Title: Visualize Data on Spirals
-Version: 1.0.2
+Version: 1.0.3
 Date: 2021-07-03
 Authors@R: person("Zuguang", "Gu", email = "z.gu@dkfz.de", role = c("aut", "cre"),
                   comment = c('ORCID'="0000-0002-7395-8709"))
@@ -12,10 +12,10 @@ Imports: GlobalOptions (>= 0.1.1),
          stats,
          methods,
          grDevices,
-         ComplexHeatmap,
          lubridate,
          utils
-Suggests: knitr, 
+Suggests: ComplexHeatmap,
+          knitr, 
           rmarkdown,
           grImport,
           grImport2,
