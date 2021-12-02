@@ -1,0 +1,16 @@
+citHeader("The methods within the code package can be cited as:")
+
+citEntry(
+   entry="article",
+   title = "spiralize: an R package for Visualizing Data on Spirals",
+   author = personList(as.person("Zuguang Gu"),
+                       as.person("Daniel Huebschmann")),
+   journal = "Bioinformatics",
+   year = 2021,
+   textVersion = "Gu, Z. (2021) spiralize: an R package for Visualizing Data on Spirals. Bioinformatics."
+)
+
+citFooter("This free open-source software implements academic
+research by the authors and co-workers. If you use it,
+please support the project by citing the appropriate
+journal articles.")
