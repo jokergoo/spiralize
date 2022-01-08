@@ -374,3 +374,11 @@ for(i in seq_along(d)) {
 }
 
 
+spiral_initialize_by_time(xlim = c("2021-01-01", "2021-12-31"))
+spiral_track(height = 0.6)
+spiral_axis()
+
+
+spiral_initialize_by_time(xlim = c("2022-01-01 00:00:00", "2022-01-02 00:00:00"), polar_lines_by = 360/12, start = 270)
+spiral_track(height = 0.6)
+spiral_axis()

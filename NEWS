@@ -1,3 +1,7 @@
+## version 1.0.4
+
+- `spiral_initialize_by_time()`: `start` can only be set and `end` is automatically calculated based on `start` and `period`.
+
 ## version 1.0.3
 
 - Move ComplexHeatmap to Suggests.

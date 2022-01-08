@@ -56,6 +56,10 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 	polar_lines_gp = gpar(col = "#808080", lty = 3), 
 	padding = unit(5, "mm"), newpage = TRUE, vp_param = list()) {
 
+	if(inherits(xlim, c("POSIXt", "Date", "character"))) {
+		stop_wrap("`xlim` is set as a time object, please use `spiral_initialize_by_time()` instead.")
+	}
+
 	spiral_clear(check_vp = FALSE)
 
 	if(length(xlim) != 2) {
@@ -351,61 +355,54 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 
 	xlim = get_numeric_x(xlim)
 
-	if( (is.null(start) && !is.null(end)) || (!is.null(start) && is.null(end)) ) {
-		stop_wrap("You should both set 'start' and 'end'.")
-	}
-
 	start_of_the_year = as.POSIXlt("2021-01-01")
 	year(start_of_the_year) = year(time_start)
 
-	if(is.null(start)) {
-		if(unit_on_axis == "months") {
-			start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/12/period_per_loop)*360
-			end = 360*(time_difference(time_start, time_end, unit_on_axis)/12/period_per_loop) + start
-		} else if(unit_on_axis == "weeks") {
-			start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/52/period_per_loop)*360
-			end = 360*(time_difference(time_start, time_end, unit_on_axis)/52/period_per_loop) + start
-		} else if(unit_on_axis == "days") {
-			if(period == "years") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(52*7)/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/(52*7)/period_per_loop) + start
-			} else if(period == "months") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/30/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/30/period_per_loop) + start
-			} else if(period == "weeks") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/7/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/7/period_per_loop) + start
-			} 
-		} else if(unit_on_axis == "hours") {
-			if(period == "months") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(30*24)/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/(30*24)/period_per_loop) + start
-			} else if(period == "weeks") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(7*24)/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/(7*24)/period_per_loop) + start
-			} else if(period == "days") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/24/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/24/period_per_loop) + start
-			}
-		} else if(unit_on_axis == "mins") {
-			if(period == "days") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(24*60)/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/(24*60)/period_per_loop) + start
-			} else if(period == "hours") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
-			}
-		} else if(unit_on_axis == "secs") {
-			if(period == "hours") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(60*60)/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/(60*60)/period_per_loop) + start
-			} else if(period == "mins") {
-				start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
-				end = 360*(time_difference(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
-			}
+	if(unit_on_axis == "months") {
+		if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/12/period_per_loop)*360
+		end = 360*(time_difference(time_start, time_end, unit_on_axis)/12/period_per_loop) + start
+	} else if(unit_on_axis == "weeks") {
+		if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/52/period_per_loop)*360
+		end = 360*(time_difference(time_start, time_end, unit_on_axis)/52/period_per_loop) + start
+	} else if(unit_on_axis == "days") {
+		if(period == "years") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(52*7)/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/(52*7)/period_per_loop) + start
+		} else if(period == "months") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/30/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/30/period_per_loop) + start
+		} else if(period == "weeks") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/7/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/7/period_per_loop) + start
+		} 
+	} else if(unit_on_axis == "hours") {
+		if(period == "months") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(30*24)/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/(30*24)/period_per_loop) + start
+		} else if(period == "weeks") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(7*24)/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/(7*24)/period_per_loop) + start
+		} else if(period == "days") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/24/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/24/period_per_loop) + start
+		}
+	} else if(unit_on_axis == "mins") {
+		if(period == "days") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(24*60)/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/(24*60)/period_per_loop) + start
+		} else if(period == "hours") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
+		}
+	} else if(unit_on_axis == "secs") {
+		if(period == "hours") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(60*60)/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/(60*60)/period_per_loop) + start
+		} else if(period == "mins") {
+			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
+			end = 360*(time_difference(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
 		}
 	}
-
 	p = 1/(xlim[2] - xlim[1])
 	start = start - (end - start)*p/2
 	end = end + (end - start)*p/2
