@@ -1,6 +1,8 @@
 ## version 1.0.4
 
 - `spiral_initialize_by_time()`: `start` can only be set and `end` is automatically calculated based on `start` and `period`.
+- fixed a bug of `s$draw_spiral()` where `curve()` method should be used insteaf of `spiral_length()`.
+- `xscale` and `yscale` are now correctly calculated for the spiral viewport.
 
 ## version 1.0.3
 

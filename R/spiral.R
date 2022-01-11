@@ -38,7 +38,6 @@ create_spiral = function(start = 360, end = 360*5, xlim = c(0, 1), scale_by = "a
     	)
     }
 
-
     spiral(
     	a = a,
 		b = b,
@@ -97,8 +96,8 @@ spiral = setRefClass("spiral",
 				cat("  spiral is flipped both horizontally and vertically.\n")
 			}
 		},
-		curve = function(theta) {
-			.self$b*theta
+		curve = function(theta, offset = 0) {
+			.self$b*theta + offset
 		},
 		# https://downloads.imagej.net/fiji/snapshots/arc_length.pdf
 		spiral_length = function(theta, offset = 0) {
@@ -118,10 +117,11 @@ spiral = setRefClass("spiral",
 			get_character_x = function(x) x, other = list()) {
 			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_data_x = get_data_x, get_character_x = get_character_x, other = other)
 		},
-		draw_spiral = function(start = 0, end = 360*4, offset = 0) {
+		draw_spiral = function(start = as.degree(.self$theta_lim[1], scale = FALSE), end = as.degree(.self$theta_lim[2], scale = FALSE), 
+			offset = 0) {
 			theta = seq(start, end, by = 1)
 			theta = theta/180*pi
-			r = .self$spiral_length(theta, offset)
+			r = .self$curve(theta, offset)
 
 			df = polar_to_cartesian(theta, r)
 			rg = max(abs(df$x), abs(df$y))

@@ -99,8 +99,7 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 
 	x = c(df1$x, rev(df2$x))
 	y = c(df1$y, rev(df2$y))
-	abs_max_x = max(abs(x))
-	abs_max_y = max(abs(y))
+	abs_max = max(abs(x), abs(y))
 
 	if(length(padding) == 1) {
 		padding = rep(padding, 2)
@@ -112,7 +111,7 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 	vp_param2 = list(name = paste0("spiral_", spiral_env$i_spiral),
 		width = unit(1, "snpc") - padding[1], 
 		height = unit(1, "snpc") - padding[2],
-		xscale = c(-abs_max_x, abs_max_x), yscale = c(-abs_max_y, abs_max_y))
+		xscale = c(-abs_max, abs_max), yscale = c(-abs_max, abs_max))
 	if("width" %in% names(vp_param)) {
 		vp_param2$width = NULL
 	}
@@ -128,7 +127,7 @@ spiral_initialize = function(xlim = c(0, 1), start = 360, end = 360*5,
 		if(d[length(d)] == 360) d = d[-length(d)]
 		dm = matrix(nrow = length(d), ncol = 4)
 		for(i in seq_along(d)) {
-			r0 = max(r + dist) + convertWidth(max(padding), "native", valueOnly = TRUE)
+			r0 = max(r + dist)# + convertWidth(max(padding), "native", valueOnly = TRUE)
 			dm[i, ] = c(0, 0, cos(d[i]/180*pi)*r0, sin(d[i]/180*pi)*r0)
 		}
 		grid.segments(dm[, 1], dm[, 2], dm[, 3], dm[, 4], default.units = "native", gp = polar_lines_gp)

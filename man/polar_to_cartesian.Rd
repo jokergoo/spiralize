@@ -21,5 +21,4 @@ A data frame with two columns: x abd y.
 \examples{
 # There is no example
 NULL
-
 }
