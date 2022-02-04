@@ -382,3 +382,46 @@ spiral_axis()
 spiral_initialize_by_time(xlim = c("2022-01-01 00:00:00", "2022-01-02 00:00:00"), polar_lines_by = 360/12, start = 270)
 spiral_track(height = 0.6)
 spiral_axis()
+
+spiral_initialize_by_time(xlim = c("2010-01-01", "2021-12-31"), normalize_year = TRUE)
+spiral_track(height = 0.6)
+for(year in 2010:2021) {
+	spiral_points(paste0(year, "-01-01"), 0.5)
+}
+
+spiral_initialize_by_time(xlim = c("2010-01-01", "2010-12-31"), normalize_year = TRUE, start = 360*3)
+spiral_track(height = 0.6)
+
+
+spiral_initialize_by_time(xlim = c("2021-01-01", "2022-12-31"))
+spiral_track(height = 1)
+t = as.POSIXlt("2021-01-01")
+
+for(i in 1:(365*2)) {
+	t = t + days(1)
+	if(weekdays(t) == "Monday") {
+		spiral_rect(t, 0, t, 1, gp = gpar(fill = "red"))
+	}
+}
+
+
+
+library(cowplot)
+
+for(degree in seq(360, 360*3, by = 30)) {
+	p1 = grid.grabExpr({
+		spiral_initialize(start = degree)
+		spiral_track()
+		spiral_yaxis()
+	})
+	p2 = grid.grabExpr({
+		spiral_initialize(start = degree, clockwise = TRUE)
+		spiral_track()
+		spiral_yaxis()
+	})
+
+	print(plot_grid(p1, p2, nrow = 1))
+	Sys.sleep(1)
+}
+
+	

@@ -72,9 +72,9 @@ spiral = setRefClass("spiral",
 		flip = "character",
 		reverse = "logical",
 		xclass = "character",
-		get_numeric_x = "function",
-		get_data_x = "function",
-		get_character_x = "function",
+		get_x_from_data = "function",   # given an input data type, returns the internal numeric 
+		get_data_from_x = "function",   # given an internal numeric type, return the data type of the input
+		get_character_from_x = "function", # given an input data type, returns its character representation
 		clockwise = "logical",
 		other = "list"
 	),
@@ -113,9 +113,9 @@ spiral = setRefClass("spiral",
 		tangent_slope = function(theta) {
 			(tan(theta) + theta)/(1 - theta*tan(theta))
 		},
-		initialize = function(..., xclass = "numeric", get_numeric_x = function(x) x, get_data_x = function(x) x,
-			get_character_x = function(x) x, other = list()) {
-			callSuper(..., xclass = xclass, get_numeric_x = get_numeric_x, get_data_x = get_data_x, get_character_x = get_character_x, other = other)
+		initialize = function(..., xclass = "numeric", get_x_from_data = function(x) x, get_data_from_x = function(x) x,
+			get_character_from_x = function(x) x, other = list()) {
+			callSuper(..., xclass = xclass, get_x_from_data = get_x_from_data, get_data_from_x = get_data_from_x, get_character_from_x = get_character_from_x, other = other)
 		},
 		draw_spiral = function(start = as.degree(.self$theta_lim[1], scale = FALSE), end = as.degree(.self$theta_lim[2], scale = FALSE), 
 			offset = 0) {
@@ -129,6 +129,13 @@ spiral = setRefClass("spiral",
 			pushViewport(viewport(xscale = c(-rg, rg), yscale = c(-rg, rg), width = unit(0.9, "snpc"), height = unit(0.9, "snpc")))
 			grid.lines(df$x, df$y, default.units = "native")
 			popViewport()
+		},
+		get_theta = function(x, degree = TRUE) {
+			d = (x - .self$xlim[1])/.self$xrange*.self$theta_range + .self$theta_lim[1]
+			if(degree) {
+				d = d*180/pi
+			}
+			d
 		}
 	)
 )

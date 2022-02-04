@@ -26,7 +26,7 @@ spiral_points = function(x, y, pch = 1, size = unit(0.4, "char"), gp = gpar(),
 	validate_xy(x, y)
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
+	x = spiral$get_x_from_data(x)
 
 	df = xy_to_cartesian(x, y, track_index = track_index)
 	x = unit(df$x, "native")
@@ -70,7 +70,7 @@ spiral_lines = function(x, y, type = "l", gp = gpar(),
 	validate_xy(x, y)
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
+	x = spiral$get_x_from_data(x)
 
 	if(baseline == "bottom") {
 		baseline = get_track_data("ymin", track_index)
@@ -173,8 +173,8 @@ spiral_segments = function(x0, y0, x1, y1, gp = gpar(), arrow = NULL,
     }
 
 	spiral = spiral_env$spiral
-	x0 = spiral$get_numeric_x(x0)
-	x1 = spiral$get_numeric_x(x1)
+	x0 = spiral$get_x_from_data(x0)
+	x1 = spiral$get_x_from_data(x1)
 		
 	if("col" %in% names(gp)) {
 		if(length(gp$col) == 1) gp$col = rep(gp$col, n)
@@ -313,8 +313,13 @@ spiral_rect = function(xleft, ybottom, xright, ytop, gp = gpar(),
 	validate_xy(xleft, ybottom, xright, ytop)
 	
 	spiral = spiral_env$spiral
-	xleft = spiral$get_numeric_x(xleft)
-	xright = spiral$get_numeric_x(xright)
+	if(spiral$xclass %in% "Time") {
+		xleft = spiral$get_x_from_data(xleft, "left")
+		xright = spiral$get_x_from_data(xright, "right")
+	} else {
+		xleft = spiral$get_x_from_data(xleft)
+		xright = spiral$get_x_from_data(xright)
+	}
 
 	n1 = length(xleft)
     n2 = length(ybottom)
@@ -376,7 +381,15 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 	bar_width = min(diff(pos)), gp = gpar(), track_index = current_track_index()) {
 
 	spiral = spiral_env$spiral
-	pos = spiral$get_numeric_x(pos)
+	pos = spiral$get_x_from_data(pos)
+
+	if(spiral$xclass == "Time") {
+		if(identical(spiral$other$normalize_year, TRUE)) {
+			bar_width = 1/calc_days_in_year(year(as.POSIXlt(pos)))*360
+		} else {
+			bar_width = 1
+		}
+	}
 
 	ymin = get_track_data("ymin", track_index)
 	ymax = get_track_data("ymax", track_index)
@@ -454,7 +467,7 @@ spiral_text = function(x, y, text, offset = NULL, gp = gpar(),
 	validate_xy(x, y, text)
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
+	x = spiral$get_x_from_data(x)
 
 	n1 = length(x)
 	n2 = length(y)
@@ -682,7 +695,7 @@ spiral_polygon = function(x, y, id = NULL, gp = gpar(), track_index = current_tr
 	validate_xy(x, y)
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
+	x = spiral$get_x_from_data(x)
 
 	n = length(x)
 	if(is.null(id)) {
@@ -774,9 +787,9 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		# 	major_at = c(major_at, major_at[length(major_at)] + major_by)
 		# }
 
-		labels = spiral$get_character_x(major_at)
+		labels = spiral$get_character_from_x(major_at)
 	} else {
-		major_at = spiral$get_numeric_x(major_at)
+		major_at = spiral$get_x_from_data(major_at)
 		if(!(identical(labels, NULL) | identical(labels, TRUE) | identical(labels, FALSE))) {
 			if(length(labels) != length(major_at)) {
 				stop_wrap("Length of `labels` should be the same as the length of `major_at`.")
@@ -811,13 +824,13 @@ spiral_axis = function(h = c("top", "bottom"), at = NULL, major_at = at,
 		minor_at = minor_at[l]
 		spiral_radial_segments(minor_at, h, offset = ifelse(axis_on_top, 1, -1)*minor_ticks_length, track_index = track_index, gp = ticks_gp)
 	}
-	
+
 	### labels
 	if(is.null(labels)) labels = FALSE
 	if(!identical(labels, FALSE)) {
 		if(identical(labels, TRUE)) {
 			if(at_specified) {
-				labels = spiral$get_character_x(major_at)
+				labels = spiral$get_character_from_x(major_at)
 			} else {
 				labels = major_at
 			}
@@ -918,6 +931,11 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 			labels = FALSE
 		}
 	}
+	l = at >= get_track_data("ymin", track_index) & at <= get_track_data("ymax", track_index)
+	at = at[l]
+	if(!is.logical(labels)) {
+		labels = labels[l]
+	}
 
 	if(spiral$flip == "none" && !spiral$reverse && side == "start") {
 		just = "left"
@@ -971,13 +989,15 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 
 	offset_sign = ifelse(spiral$reverse, -1, 1)*offset_sign
 
-	x1 = rep(v, length(at))
-	x2 = circular_extend_on_x(x1, at, offset = offset_sign*ticks_length, track_index = track_index, coordinate = "xy")
-	spiral_segments(x1, at, x2, at, gp = ticks_gp)
+	if(length(at)) {
+		x1 = rep(v, length(at))
+		x2 = circular_extend_on_x(x1, at, offset = offset_sign*ticks_length, track_index = track_index, coordinate = "xy")
+		spiral_segments(x1, at, x2, at, gp = ticks_gp)
 
-	if(!identical(labels, FALSE)) {
-		x2 = circular_extend_on_x(x1, at, offset = offset_sign*(ticks_length + unit(1, "bigpts")), track_index = track_index, coordinate = "xy")
-		spiral_text(x2, at, labels, just = just, gp = labels_gp, facing = "inside", nice_facing = TRUE)
+		if(!identical(labels, FALSE)) {
+			x2 = circular_extend_on_x(x1, at, offset = offset_sign*(ticks_length + unit(1, "bigpts")), track_index = track_index, coordinate = "xy")
+			spiral_text(x2, at, labels, just = just, gp = labels_gp, facing = "inside", nice_facing = TRUE)
+		}
 	}
 }
 
@@ -1027,7 +1047,7 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 	}
 
 	spiral = spiral_env$spiral
-	x = spiral$get_numeric_x(x)
+	x = spiral$get_x_from_data(x)
 
 	if(missing(slice_size)) {
 		slice_size = max(abs(y))/n_slices
@@ -1512,8 +1532,8 @@ spiral_arrow = function(
 	track_index = current_track_index()) {
 
 	spiral = spiral_env$spiral
-	x1 = spiral$get_numeric_x(x1)
-	x2 = spiral$get_numeric_x(x2)
+	x1 = spiral$get_x_from_data(x1)
+	x2 = spiral$get_x_from_data(x2)
 
 	arrow_position = match.arg(arrow_position)[1]
 	tail = match.arg(tail)[1]
@@ -1617,12 +1637,12 @@ spiral_highlight = function(x1, x2, type = c("rect", "line"), padding = unit(1, 
 	if(identical(x1, "start")) {
 		x1 = spiral$xlim[1]
 	} else {
-		x1 = spiral$get_numeric_x(x1)
+		x1 = spiral$get_x_from_data(x1)
 	}
 	if(identical(x2, "end")) {
 		x2 = spiral$xlim[2]
 	} else {
-		x2 = spiral$get_numeric_x(x2)
+		x2 = spiral$get_x_from_data(x2)
 	}
 
 	if(x1 > x2) {
@@ -1734,8 +1754,8 @@ spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = un
 	}
 
 	spiral = spiral_env$spiral
-	x1 = spiral$get_numeric_x(x1)
-	x2 = spiral$get_numeric_x(x2)
+	x1 = spiral$get_x_from_data(x1)
+	x2 = spiral$get_x_from_data(x2)
 
 	upper_defined = !is.null(x3) && !is.null(x4)
 
@@ -1751,8 +1771,8 @@ spiral_highlight_by_sector = function(x1, x2, x3 = NULL, x4 = NULL, padding = un
 		}
 
 		spiral = spiral_env$spiral
-		x3 = spiral$get_numeric_x(x3)
-		x4 = spiral$get_numeric_x(x4)
+		x3 = spiral$get_x_from_data(x3)
+		x4 = spiral$get_x_from_data(x4)
 	}
 
 	if(abs(diff(get_theta_from_x(c(x1, x2), flip = FALSE))) > 2*pi) {

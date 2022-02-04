@@ -1,3 +1,10 @@
+## version 1.0.5
+
+- `spiral_initialize_by_time()`: add `normalize_year` argument which enforce every loop to represent a complete year.
+- `spiral_initialize_by_time()`: radical lines are calculated in a way that they correspond to the proportion of month days in a year.
+- `spiral_initialize()`: `polar_lines_by` now accepts a vector which defines where to draw polar lines.
+- `spiral_initialize()`: add `clockwise` argument.
+
 ## version 1.0.4
 
 - `spiral_initialize_by_time()`: `start` can only be set and `end` is automatically calculated based on `start` and `period`.

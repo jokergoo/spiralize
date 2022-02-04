@@ -10,7 +10,8 @@ Initialize the spiral from time objects
 spiral_initialize_by_time(xlim, start = NULL, end = NULL,
     unit_on_axis = c("days", "months", "weeks", "hours", "mins", "secs"),
     period = c("years", "months", "weeks", "days", "hours", "mins"),
-    period_per_loop = 1, polar_lines_by = NULL, verbose = TRUE, ...)
+    normalize_year = FALSE, period_per_loop = 1, polar_lines_by = NULL,
+    verbose = TRUE, ...)
 }
 \arguments{
 
@@ -19,8 +20,9 @@ spiral_initialize_by_time(xlim, start = NULL, end = NULL,
   \item{end}{End of the spiral, in degrees. By default it is automatically calculated.}
   \item{unit_on_axis}{Units on the axis.}
   \item{period}{Which period to use?}
+  \item{normalize_year}{Whether to enforce one loop to represent a complete year?}
   \item{period_per_loop}{How many periods to put in a loop?}
-  \item{polar_lines_by}{By default different value of \code{polar_lines_by} is set for different \code{period}. E.g. 360/7 is set if \code{period} is "weeks" or 360/24 is set if \code{peroid} is set to "hours".}
+  \item{polar_lines_by}{By default different value of \code{polar_lines_by} is set for different \code{period}. E.g. 360/7 is set if \code{period} is "weeks" or 360/24 is set if \code{peroid} is set to "hours". When \code{period} is year and \code{unit_on_axis} is day, the proportion of sectors by polar lines corresponds to the proportion of month days in a year.}
   \item{verbose}{Whether to print messages?}
   \item{...}{All pass to \code{\link{spiral_initialize}}.}
 
