@@ -197,11 +197,8 @@ names.TRACK_META = function(x) {
 # == value
 # The corresponding value.
 "$.TRACK_META" = function(x, name) {
-	spiral = spiral_env$spiral
+	spiral = current_spiral()
 
-	if(is.null(spiral)) {
-		stop_wrap("No spiral has been initialized.")
-	}
 	if(n_tracks() == 0) {
 		stop_wrap("No track has been created.")
 	}
@@ -273,7 +270,7 @@ print.TRACK_META = function(x, ...) {
 # A logical vector.
 #
 is_in_track = function(x, y, track_index = current_track_index()) {
-	s = spiral_env$spiral
+	s = current_spiral()
 	xlim = s$xlim
 	ylim = get_track_data("ylim", track_index)
 	ylim = sort(ylim)

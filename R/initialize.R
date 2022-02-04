@@ -311,6 +311,8 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		time_start = time_start
 		unit_on_axis = unit_on_axis
 		function(x) {
+			x = x - current_spiral()$other$x_offset[1]
+			x = round(x)
 			add_time(time_start, x, unit_on_axis)
 		}
 	})
@@ -419,13 +421,14 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		get_data_from_x = local({
 			time_start = time_start
 			function(x) {
+				x = x - current_spiral()$other$x_offset[1]
 				first_year = year(time_start)
-				which_loop = ceiling(x/360); which_loop[x %% 360 == 0] = which_loop[x %% 360 == 0] + 1
+				which_loop = ceiling(x/360) - 1; #which_loop[x %% 360 == 0] = which_loop[x %% 360 == 0] + 1
 				first_day_in_year = as.POSIXlt(paste0(first_year + which_loop, "-01-01"))
 				last_day_in_year = as.POSIXlt(paste0(first_year + which_loop, "-12-31"))
 				days_in_year = calc_days_in_year(first_year + which_loop)
 
-				add_time(first_day_in_year, (x %% 360)/360*days_in_year, "days")
+				add_time(first_day_in_year, round((x %% 360)/360*days_in_year), "days")
 			}
 		})
 
@@ -437,50 +440,77 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		})
 	}
 
-	start_of_the_year = as.POSIXlt(paste0(year(time_start), "-01-01"))
+
+	get_start_of_the_year = function(t) {
+		month(t) = 1
+		day(t) = 1
+		t
+	}
+	get_start_of_the_month = function(t) {
+		day(t) = 1
+		hour(t) = 0
+		minute(t) = 0
+		second(t) = 0
+		t
+	}
+	get_start_of_the_day = function(t) {
+		hour(t) = 0
+		minute(t) = 0
+		second(t) = 0
+		t
+	}
+	get_start_of_the_hour = function(t) {
+		minute(t) = 0
+		second(t) = 0
+		t
+	}
+	get_start_of_the_minute = function(t) {
+		second(t) = 0
+		t
+	}
 
 	if(unit_on_axis == "months") {
-		if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/12/period_per_loop)*360
+		if(is.null(start)) start = (1 + time_difference(get_start_of_the_year(time_start), time_start, unit_on_axis)/12/period_per_loop)*360
 		end = 360*(time_range(time_start, time_end, unit_on_axis)/12/period_per_loop) + start
 	} else if(unit_on_axis == "weeks") {
-		if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/52/period_per_loop)*360
+		if(is.null(start)) start = (1 + time_difference(get_start_of_the_year(time_start), time_start, unit_on_axis)/52/period_per_loop)*360
 		end = 360*(time_range(time_start, time_end, unit_on_axis)/52/period_per_loop) + start
 	} else if(unit_on_axis == "days") {
 		if(period == "years") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(52*7)/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_year(time_start), time_start, unit_on_axis)/(52*7)/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/(52*7)/period_per_loop) + start
 		} else if(period == "months") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/30/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_month(time_start), time_start, unit_on_axis)/30/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/30/period_per_loop) + start
 		} else if(period == "weeks") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/7/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_month(time_start), time_start, unit_on_axis)/7/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/7/period_per_loop) + start
 		} 
 	} else if(unit_on_axis == "hours") {
 		if(period == "months") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(30*24)/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_month(time_start), time_start, unit_on_axis)/(30*24)/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/(30*24)/period_per_loop) + start
 		} else if(period == "weeks") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(7*24)/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_month(time_start), time_start, unit_on_axis)/(7*24)/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/(7*24)/period_per_loop) + start
 		} else if(period == "days") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/24/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_day(time_start), time_start, unit_on_axis)/24/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/24/period_per_loop) + start
 		}
 	} else if(unit_on_axis == "mins") {
 		if(period == "days") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(24*60)/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_day(time_start), time_start, unit_on_axis)/(24*60)/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/(24*60)/period_per_loop) + start
 		} else if(period == "hours") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_hour(time_start), time_start, unit_on_axis)/60/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
 		}
 	} else if(unit_on_axis == "secs") {
 		if(period == "hours") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/(60*60)/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_hour(time_start), time_start, unit_on_axis)/(60*60)/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/(60*60)/period_per_loop) + start
 		} else if(period == "mins") {
-			if(is.null(start)) start = (1 + time_difference(start_of_the_year, time_start, unit_on_axis)/60/period_per_loop)*360
+			if(is.null(start)) start = (1 + time_difference(get_start_of_the_minute(time_start), time_start, unit_on_axis)/60/period_per_loop)*360
 			end = 360*(time_range(time_start, time_end, unit_on_axis)/60/period_per_loop) + start
 		}
 	}
@@ -488,6 +518,8 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	x_xlim = get_x_from_data(xlim)
 	x_xlim[1] = x_xlim[1] - 0.5
 	x_xlim[2] = x_xlim[2] + 0.5
+
+	x_offset = c(-0.5, 0.5)
 
 	if(normalize_year && period== "years" && unit_on_axis == "days") {
 
@@ -501,15 +533,13 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		if(year_start == year_end) {
 			end = (1 + time_difference(time_start, time_end, "days"))/calc_days_in_year(year_start)*360 + start
 		} else {
-
-			end = (1 + time_difference(time_start, as.POSIXlt(paste0(year_start, "-12-31")), "days"))/calc_days_in_year(year_start)*360 + 
-			      (year(time_end) - year(time_start))*360 +
+			end = start - time_difference(as.POSIXlt(paste0(year_start, "-01-01")), time_start, "days")/calc_days_in_year(year_start)*360 +
+				  (year(time_end) - year(time_start))*360 +
 			      (1 + time_difference(as.POSIXlt(paste0(year_end, "-01-01")), time_end, "days"))/calc_days_in_year(year_end)*360
 		}
-
 		x_xlim = get_x_from_data(xlim)
-		x_xlim[1] = x_xlim[1] - 0.5/calc_days_in_year(year(xlim[1]))*360
-		x_xlim[2] = x_xlim[2] + 0.5/calc_days_in_year(year(xlim[2]))*360
+		x_offset = c(- 0.5/calc_days_in_year(year(xlim[1]))*360, 0.5/calc_days_in_year(year(xlim[2]))*360)
+		x_xlim = x_xlim + x_offset
 	}
 
 	spiral_initialize(xlim = x_xlim, start = start, end = end, polar_lines_by = polar_lines_by, ...)
@@ -522,7 +552,8 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 
 	spiral$other = list(unit_on_axis = unit_on_axis, 
 		                period = period,
-		                normalize_year = normalize_year)
+		                normalize_year = normalize_year,
+		                x_offset = x_offset)
 
 	invisible(NULL)
 }

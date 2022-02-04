@@ -381,8 +381,7 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 	bar_width = min(diff(pos)), gp = gpar(), track_index = current_track_index()) {
 
 	spiral = spiral_env$spiral
-	pos = spiral$get_x_from_data(pos)
-
+	
 	if(spiral$xclass == "Time") {
 		if(identical(spiral$other$normalize_year, TRUE)) {
 			bar_width = 1/calc_days_in_year(year(as.POSIXlt(pos)))*360
@@ -390,6 +389,8 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 			bar_width = 1
 		}
 	}
+
+	pos = spiral$get_x_from_data(pos)
 
 	ymin = get_track_data("ymin", track_index)
 	ymax = get_track_data("ymax", track_index)
