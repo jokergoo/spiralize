@@ -383,10 +383,11 @@ spiral_bars = function(pos, value, baseline = get_track_data("ymin", track_index
 	spiral = spiral_env$spiral
 	
 	if(spiral$xclass == "Time") {
-		if(identical(spiral$other$normalize_year, TRUE)) {
-			bar_width = 1/calc_days_in_year(year(as.POSIXlt(pos)))*360
-		} else {
-			bar_width = 1
+		bar_width = 1
+		if(!is.numeric(pos)) {
+			if(identical(spiral$other$normalize_year, TRUE)) {
+				bar_width = 1/calc_days_in_year(year(as.POSIXlt(pos)))*360
+			} 
 		}
 	}
 
@@ -1048,6 +1049,15 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 	}
 
 	spiral = spiral_env$spiral
+
+	if(use_bars) {
+		if(spiral$xclass == "Time") {
+			if(identical(spiral$other$normalize_year, TRUE)) {
+				bar_width = 1/calc_days_in_year(year(as.POSIXlt(x)))*360
+			}
+		}
+	}
+
 	x = spiral$get_x_from_data(x)
 
 	if(missing(slice_size)) {
@@ -1169,15 +1179,27 @@ add_horizon_bars = function(x, y, bar_width, slice_size = NULL, from_top = FALSE
 	lty = split_vec_by_NA(y)
 	lbw = split_vec_by_NA(bar_width)
 
+	all_x = NULL
+	all_y = NULL
+	all_bw = NULL
+	if(length(bar_width) <= 1) {
+		all_bw = bar_width
+	}
 	for(i in seq_along(ltx)) {
 		x0 = ltx[[i]]
 		y0 = lty[[i]]
 		bw = lbw[[i]]
-		if(from_top) {
-			spiral_bars(x0, y0/slice_size, bar_width = bw, baseline = 1, ...)
-		} else {
-			spiral_bars(x0, y0/slice_size, bar_width = bw, ...)
+
+		all_x = c(all_x, x0)
+		all_y = c(all_y, y0)
+		if(length(bar_width) > 1) {
+			all_bw = c(all_bw, bw)
 		}
+	}
+	if(from_top) {
+		spiral_bars(all_x, all_y/slice_size, bar_width = all_bw, baseline = 1, ...)
+	} else {
+		spiral_bars(all_x, all_y/slice_size, bar_width = all_bw, ...)
 	}
 }
 
