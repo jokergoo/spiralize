@@ -104,6 +104,13 @@ There are the following vignettes:
 
 ![download](https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png)
 
+4. The spiral COVID-19 Shiny app
+
+https://jokergoooo.shinyapps.io/covid19/
+
+![covid19_spiral](https://user-images.githubusercontent.com/449218/154753102-d66b3588-eca1-471b-bdfe-2c147ed257f5.gif)
+
+
 ## License
 
 MIT @ Zuguang Gu
