@@ -189,6 +189,12 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	normalize_year = FALSE, period_per_loop = 1, polar_lines_by = NULL, 
 	verbose = TRUE, ...) {
 
+	if(period == "months" && period_per_loop > 1) {
+		if(verbose) {
+			message_wrap(qq("Internally, 30 days are set for a month, thus when there are more than one period (months) in a loop, each month won't have the same width in the circle. If you want to ensure the width of each month to be equal, you can set the following arguments: `peroid = 'year', period_per_loop = @{period_per_loop}/12, normalize_year = TRUE`. Set `verbose = FALSE` to turn off this message."))
+		}
+	}
+
 	xlim_is_date = inherits(xlim, "Date")
 	xlim = as.POSIXlt(xlim)
 
@@ -269,17 +275,19 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	}
 
 	if(is.null(polar_lines_by)) {
-		if(period == "years") {
+		if(period == "years" && period_per_loop == 1) {
 			if(normalize_year && unit_on_axis == "days") {
 				polar_lines_by = cumsum(days_in_month(1:12))/365*360
 				polar_lines_by = c(0, polar_lines_by[-12])
 			} else {
 				polar_lines_by = (360/12)/period_per_loop
 			}
-		} else if(period == "weeks") {
+		} else if(period == "weeks"&& period_per_loop == 1) {
 			polar_lines_by = (360/7)/period_per_loop
-		} else if(period == "days") {
+		} else if(period == "days"&& period_per_loop == 1) {
 			polar_lines_by = (360/24)/period_per_loop
+		} else if(period_per_loop > 1) {
+			polar_lines_by = 360/period_per_loop
 		} else {
 			polar_lines_by = 30
 		}
@@ -394,6 +402,7 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	if(normalize_year && period== "years" && unit_on_axis == "days") {
 		get_x_from_data = local({
 			time_start = time_start
+			period_per_loop = period_per_loop
 			function(x, where = "center") {
 
 				if(is.numeric(x)) {
@@ -409,9 +418,9 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 
 				v = (y - first_year)*360 + time_difference(first_day_in_year, x)/days_in_year*360
 				if(where == "left") {
-					v - 0.5/calc_days_in_year(y)*360
+					v - 0.5/calc_days_in_year(y)*360/period_per_loop
 				} else if(where == "right") {
-					v + 0.5/calc_days_in_year(y)*360
+					v + 0.5/calc_days_in_year(y)*360/period_per_loop
 				} else {
 					v
 				}
@@ -420,6 +429,7 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 
 		get_data_from_x = local({
 			time_start = time_start
+			period_per_loop = period_per_loop
 			function(x) {
 				x = x - current_spiral()$other$x_offset[1]
 				first_year = year(time_start)
@@ -428,7 +438,7 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 				last_day_in_year = as.POSIXlt(paste0(first_year + which_loop, "-12-31"))
 				days_in_year = calc_days_in_year(first_year + which_loop)
 
-				add_time(first_day_in_year, round((x %% 360)/360*days_in_year), "days")
+				add_time(first_day_in_year, round((x %% 360)/360*period_per_loop*days_in_year), "days")
 			}
 		})
 
@@ -527,18 +537,18 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 		year_end = year(time_end)
 
 		if(is.null(start)) {
-			start = time_difference(as.POSIXlt(paste0(year_start, "-01-01")), time_start, "days")/calc_days_in_year(year_start)*360 + 360
+			start = time_difference(as.POSIXlt(paste0(year_start, "-01-01")), time_start, "days")/calc_days_in_year(year_start)*360/period_per_loop + 360
 		}
 
 		if(year_start == year_end) {
-			end = (1 + time_difference(time_start, time_end, "days"))/calc_days_in_year(year_start)*360 + start
+			end = (1 + time_difference(time_start, time_end, "days"))/calc_days_in_year(year_start)*360/period_per_loop + start
 		} else {
-			end = start - time_difference(as.POSIXlt(paste0(year_start, "-01-01")), time_start, "days")/calc_days_in_year(year_start)*360 +
-				  (year(time_end) - year(time_start))*360 +
-			      (1 + time_difference(as.POSIXlt(paste0(year_end, "-01-01")), time_end, "days"))/calc_days_in_year(year_end)*360
+			end = start - time_difference(as.POSIXlt(paste0(year_start, "-01-01")), time_start, "days")/calc_days_in_year(year_start)*360/period_per_loop +
+				  (year(time_end) - year(time_start))*360/period_per_loop +
+			      (1 + time_difference(as.POSIXlt(paste0(year_end, "-01-01")), time_end, "days"))/calc_days_in_year(year_end)*360/period_per_loop
 		}
 		x_xlim = get_x_from_data(xlim)
-		x_offset = c(- 0.5/calc_days_in_year(year(xlim[1]))*360, 0.5/calc_days_in_year(year(xlim[2]))*360)
+		x_offset = c(- 0.5/calc_days_in_year(year(xlim[1]))*360/period_per_loop, 0.5/calc_days_in_year(year(xlim[2]))*360/period_per_loop)
 		x_xlim = x_xlim + x_offset
 	}
 

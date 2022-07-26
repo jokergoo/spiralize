@@ -1,3 +1,7 @@
+## version 1.0.6
+
+- `spiral_horizon()`: add a new argument `y_max`.
+
 ## version 1.0.5
 
 - `spiral_initialize_by_time()`: add `normalize_year` argument which enforce every loop to represent a complete year.

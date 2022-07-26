@@ -1009,6 +1009,7 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 # == param
 # -x X-locations of the data points.
 # -y Y-locations of the data points.
+# -y_max Maximal absolute value on y-axis.
 # -n_slices Number of slices.
 # -slice_size Size of the slices. The final number of sizes is ``ceiling(max(abs(y))/slice_size)``.
 # -pos_fill Colors for positive values. 
@@ -1038,7 +1039,8 @@ spiral_yaxis = function(side = c("both", "start", "end"), at = NULL, labels = TR
 # spiral_track()
 # spiral_horizon(df$Date, df$Mean, use_bar = TRUE)
 # }
-spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
+spiral_horizon = function(x, y, y_max = max(abs(y)), n_slices = 4, slice_size, 
+	pos_fill = "#D73027", neg_fill = "#313695",
 	use_bars = FALSE, bar_width = min(diff(x)),
 	negative_from_top = FALSE, track_index = current_track_index()) {
 
@@ -1061,9 +1063,9 @@ spiral_horizon = function(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", 
 	x = spiral$get_x_from_data(x)
 
 	if(missing(slice_size)) {
-		slice_size = max(abs(y))/n_slices
+		slice_size = y_max/n_slices
 	}
-	n_slices = ceiling(max(abs(y))/slice_size)
+	n_slices = ceiling(y_max/slice_size)
 
 	if(n_slices == 0) {
 		return(invisible(NULL))

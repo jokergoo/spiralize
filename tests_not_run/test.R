@@ -425,3 +425,7 @@ for(degree in seq(360, 360*3, by = 30)) {
 }
 
 	
+
+spiral_initialize_by_time(xlim = c("2020-01-01", "2022-01-01"), pe = "year", period_per_loop = 3)
+
+

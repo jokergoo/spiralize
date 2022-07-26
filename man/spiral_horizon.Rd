@@ -7,7 +7,8 @@ Draw horizon chart along the spiral
 Draw horizon chart along the spiral
 }
 \usage{
-spiral_horizon(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = "#313695",
+spiral_horizon(x, y, y_max = max(abs(y)), n_slices = 4, slice_size,
+    pos_fill = "#D73027", neg_fill = "#313695",
     use_bars = FALSE, bar_width = min(diff(x)),
     negative_from_top = FALSE, track_index = current_track_index())
 }
@@ -15,6 +16,7 @@ spiral_horizon(x, y, n_slices = 4, slice_size, pos_fill = "#D73027", neg_fill = 
 
   \item{x}{X-locations of the data points.}
   \item{y}{Y-locations of the data points.}
+  \item{y_max}{Maximal absolute value on y-axis.}
   \item{n_slices}{Number of slices.}
   \item{slice_size}{Size of the slices. The final number of sizes is \code{ceiling(max(abs(y))/slice_size)}.}
   \item{pos_fill}{Colors for positive values. }
