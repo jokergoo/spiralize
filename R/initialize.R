@@ -189,11 +189,6 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	normalize_year = FALSE, period_per_loop = 1, polar_lines_by = NULL, 
 	verbose = TRUE, ...) {
 
-	if(period == "months" && period_per_loop > 1) {
-		if(verbose) {
-			message_wrap(qq("Internally, 30 days are set for a month, thus when there are more than one period (months) in a loop, each month won't have the same width in the circle. If you want to ensure the width of each month to be equal, you can set the following arguments: `peroid = 'year', period_per_loop = @{period_per_loop}/12, normalize_year = TRUE`. Set `verbose = FALSE` to turn off this message."))
-		}
-	}
 
 	xlim_is_date = inherits(xlim, "Date")
 	xlim = as.POSIXlt(xlim)
@@ -235,6 +230,13 @@ spiral_initialize_by_time = function(xlim, start = NULL, end = NULL,
 	} else {
 		period = match.arg(period)[1]
 	}
+
+	if(period == "months" && period_per_loop > 1) {
+		if(verbose) {
+			message_wrap(qq("Internally, 30 days are set for a month, thus when there are more than one period (months) in a loop, each month won't have the same width in the circle. If you want to ensure the width of each month to be equal, you can set the following arguments: `peroid = 'year', period_per_loop = @{period_per_loop}/12, normalize_year = TRUE`. Set `verbose = FALSE` to turn off this message."))
+		}
+	}
+
 
 	## check whether the value of unit and period make sense
 	if(unit_on_axis == "days") {
