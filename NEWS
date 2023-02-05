@@ -1,3 +1,7 @@
+## version 1.0.7
+
+- `spiral_track()`: by default draws track border.
+
 ## version 1.0.6
 
 - `spiral_horizon()`: add a new argument `y_max`.

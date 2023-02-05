@@ -1,8 +1,8 @@
 Package: spiralize
 Type: Package
 Title: Visualize Data on Spirals
-Version: 1.0.6
-Date: 2022-07-27
+Version: 1.0.7
+Date: 2023-02-05
 Authors@R: person("Zuguang", "Gu", email = "z.gu@dkfz.de", role = c("aut", "cre"),
                   comment = c('ORCID'="0000-0002-7395-8709"))
 Depends: R (>= 3.6.0), grid
