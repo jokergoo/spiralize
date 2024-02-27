@@ -78,37 +78,24 @@ Spiral plot can also visualize dendrograms with large number of leaves, thus the
 - `spiral_phylo()` 
 
 
-## Vignettes
-
-There are the following vignettes:
-
-- [Visualize Data on Spirals](https://jokergoo.github.io/spiralize_vignettes/spiralize.html). It gives an detailed introduction of the _spiralize_ package.
-- [Initialize Spirals by Special Data Types](https://jokergoo.github.io/spiralize_vignettes/special_data_type.html). It introduces how to specifically create spiral plot with time series data and genomic data.
-- [Annotate the Plot](https://jokergoo.github.io/spiralize_vignettes/annotate.html). It introduces how to add annotations and how to add legends to the plot.
-- [Real World Examples](https://jokergoo.github.io/spiralize_vignettes/examples.html). It contains many examples with real world datasets.
-- [Visualize tree of life of 50455 species](https://jokergoo.github.io/spiralize_vignettes/tree_of_life.html).
-
-
 ## Examples
 
 1. Difference of **ggplot2** daily downloads to the mean of the current year (2015-2021). Each loop contains 52 weeks so that same weeks in different years locate at the same angle in the polar coordinates.
 
-![image](https://user-images.githubusercontent.com/449218/122206336-8c125400-cea1-11eb-8b0d-2314aede4641.png)
+![](https://user-images.githubusercontent.com/449218/122206336-8c125400-cea1-11eb-8b0d-2314aede4641.png)
 
 2. The same data as the first one, but horizon chart is used. Also title and legends are added.
 
-![image](https://user-images.githubusercontent.com/449218/122206221-671de100-cea1-11eb-823e-6c48de851667.png)
+![](https://user-images.githubusercontent.com/449218/122206221-671de100-cea1-11eb-823e-6c48de851667.png)
 
 
 3. A phylogenetic life tree with 50645 species. 
 
-![download](https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png)
+![](https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png)
 
 4. The spiral COVID-19 Shiny app
 
-https://jokergoooo.shinyapps.io/covid19/
-
-![covid19_spiral](https://user-images.githubusercontent.com/449218/154753102-d66b3588-eca1-471b-bdfe-2c147ed257f5.gif)
+![](https://user-images.githubusercontent.com/449218/154753102-d66b3588-eca1-471b-bdfe-2c147ed257f5.gif)
 
 
 ## License

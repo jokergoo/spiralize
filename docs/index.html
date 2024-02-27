@@ -12,7 +12,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Visualize Data on Spirals">
-<meta property="og:description" content="It visualizes data along an Archimedean spiral &lt;https://en.wikipedia.org/wiki/Archimedean_spiral&gt;. 
+<meta property="og:description" content="It visualizes data along an Archimedean spiral &lt;https://en.wikipedia.org/wiki/Archimedean_spiral&gt;, 
+    makes so-called spiral graph or spiral chart. 
     It has two major advantages for visualization: 1. It is able to visualize data with very long axis with high 
     resolution. 2. It is efficient for time series data to reveal periodic patterns.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -21,6 +22,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -33,20 +36,42 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spiralize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
      
+    <span class="caret"></span>
   </a>
-</li>
-<li>
-  <a href="articles/spiralize.html">Get started</a>
+  <ul class="dropdown-menu" role="menu">
+<li class="dropdown-header">Vignettes</li>
+    <li>
+      <a href="articles/spiralize_intro.html">Visualize Data on Spirals</a>
+    </li>
+    <li>
+      <a href="articles/special_data_type.html">Initialize Spirals by Special Data Types</a>
+    </li>
+    <li>
+      <a href="articles/annotate.html">Annotate the Plot</a>
+    </li>
+    <li>
+      <a href="articles/examples.html">Real World Examples</a>
+    </li>
+    <li>
+      <a href="articles/tree_of_life.html">Visualize tree of life</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">More applications</li>
+    <li>
+      <a href="articles/spiralize_git_commit.html">Spiral visualization on git commits of a git repo</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="reference/index.html">Reference</a>
@@ -54,7 +79,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jokergoo/spiralize/">
+  <a href="https://github.com/jokergoo/spiralize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -71,36 +96,40 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="visualize-data-on-spirals-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#visualize-data-on-spirals-" class="anchor"></a>Visualize Data on Spirals <img width="150" src="https://user-images.githubusercontent.com/449218/121876090-723e0900-cd09-11eb-8d0d-82fbeeb83997.png" align="right">
+<div class="section level1">
+<div class="page-header"><h1 id="visualize-data-on-spirals-">Visualize Data on Spirals <img width="150" src="https://user-images.githubusercontent.com/449218/121876090-723e0900-cd09-11eb-8d0d-82fbeeb83997.png" align="right"><a class="anchor" aria-label="anchor" href="#visualize-data-on-spirals-"></a>
 </h1></div>
-
-<div id="features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#features" class="anchor"></a>Features</h2>
-<p>The package <strong>spiralize</strong> visualizes data along an <a href="https://en.wikipedia.org/wiki/Archimedean_spiral">Archimedean spiral</a>. It has two major advantages for visualization:</p>
-<ol>
+<p><a href="https://github.com/jokergoo/spiral/actions" class="external-link"><img src="https://github.com/jokergoo/spiral/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/web/packages/spiralize/index.html" class="external-link"><img src="https://www.r-pkg.org/badges/version/spiralize" alt="CRAN"></a> <a href="https://cran.r-project.org/web/packages/spiralize/index.html" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/spiralize" alt="CRAN"></a></p>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
+<p>The package <strong>spiralize</strong> visualizes data along an <a href="https://en.wikipedia.org/wiki/Archimedean_spiral" class="external-link">Archimedean spiral</a>. It has two major advantages for visualization:</p>
+<ol style="list-style-type: decimal">
 <li>It is able to visualize data with very long axis with high resolution.</li>
 <li>It is efficient for time series data to reveal periodic patterns.</li>
 </ol>
 </div>
-<div id="install" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install" class="anchor"></a>Install</h2>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>Zuguang Gu, et al., spiralize: an R package for Visualizing Data on Spirals, Bioinformatics, 2021. <a href="https://doi.org/10.1093/bioinformatics/btab778" class="external-link uri">https://doi.org/10.1093/bioinformatics/btab778</a></p>
+</div>
+<div class="section level2">
+<h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
+</h2>
 <p>The package is available on CRAN and can be installed by:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"spiralize"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"spiralize"</span><span class="op">)</span></span></code></pre></div>
 <p>If you want the latest version, install it directly from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span>
-<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"jokergoo/spiralize"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jokergoo/spiralize"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>It includes three steps:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>initialize the spiral,</li>
 <li>add a track,</li>
 <li>add graphics in the track.</li>
@@ -108,15 +137,15 @@
 <p>Step 2 and 3 can be applied multiple times to allow multiple-track visualization along the spiral.</p>
 <p>The code for making spiral plot looks like follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/spiralize">spiralize</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-<span class="fu"><a href="reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-<span class="fu"><a href="reference/spiral_points.html">spiral_points</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-<span class="va">...</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/spiralize" class="external-link">spiralize</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/spiral_initialize.html">spiral_initialize</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/spiral_track.html">spiral_track</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/spiral_points.html">spiral_points</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="va">...</span></span></code></pre></div>
 </div>
-<div id="graphics" class="section level2">
-<h2 class="hasAnchor">
-<a href="#graphics" class="anchor"></a>Graphics</h2>
+<div class="section level2">
+<h2 id="graphics">Graphics<a class="anchor" aria-label="anchor" href="#graphics"></a>
+</h2>
 <p>Complex plots are baiscally constructed from simple graphics. Here there are following low-level graphics functions:</p>
 <ul>
 <li><code><a href="reference/spiral_points.html">spiral_points()</a></code></li>
@@ -131,51 +160,28 @@
 <li><code><a href="reference/spiral_raster.html">spiral_raster()</a></code></li>
 </ul>
 <p>Particularlly, horizon chart is very suitable to put on the spiral, thus there is one function for this:</p>
-<ul>
-<li><code><a href="reference/spiral_horizon.html">spiral_horizon()</a></code></li>
-</ul>
+<ul><li><code><a href="reference/spiral_horizon.html">spiral_horizon()</a></code></li></ul>
 <p>Spiral plot can also visualize dendrograms with large number of leaves, thus there are following two functions:</p>
 <ul>
 <li><code><a href="reference/spiral_dendrogram.html">spiral_dendrogram()</a></code></li>
 <li><code><a href="reference/spiral_phylo.html">spiral_phylo()</a></code></li>
 </ul>
 </div>
-<div id="vignettes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#vignettes" class="anchor"></a>Vignettes</h2>
-<p>There are the following vignettes:</p>
-<ul>
-<li>
-<a href="https://jokergoo.github.io/spiralize_vignettes/spiralize.html">Visualize Data on Spirals</a>. It gives an detailed introduction of the <em>spiralize</em> package.</li>
-<li>
-<a href="https://jokergoo.github.io/spiralize_vignettes/special_data_type.html">Initialize Spirals by Special Data Types</a>. It introduces how to specifically create spiral plot with time series data and genomic data.</li>
-<li>
-<a href="https://jokergoo.github.io/spiralize_vignettes/annotate.html">Annotate the Plot</a>. It introduces how to add annotations and how to add legends to the plot.</li>
-<li>
-<a href="https://jokergoo.github.io/spiralize_vignettes/examples.html">Real World Examples</a>. It contains many examples with real world datasets.</li>
-<li>
-<a href="https://jokergoo.github.io/spiralize_vignettes/tree_of_life.html">Visualize tree of life of 50455 species</a>.</li>
-</ul>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
+<ol style="list-style-type: decimal"><li>Difference of <strong>ggplot2</strong> daily downloads to the mean of the current year (2015-2021). Each loop contains 52 weeks so that same weeks in different years locate at the same angle in the polar coordinates.</li></ol>
+<p><img src="https://user-images.githubusercontent.com/449218/122206336-8c125400-cea1-11eb-8b0d-2314aede4641.png"></p>
+<ol start="2" style="list-style-type: decimal"><li>The same data as the first one, but horizon chart is used. Also title and legends are added.</li></ol>
+<p><img src="https://user-images.githubusercontent.com/449218/122206221-671de100-cea1-11eb-823e-6c48de851667.png"></p>
+<ol start="3" style="list-style-type: decimal"><li>A phylogenetic life tree with 50645 species.</li></ol>
+<p><img src="https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png"></p>
+<ol start="4" style="list-style-type: decimal"><li>The spiral COVID-19 Shiny app</li></ol>
+<p><img src="https://user-images.githubusercontent.com/449218/154753102-d66b3588-eca1-471b-bdfe-2c147ed257f5.gif"></p>
 </div>
-<div id="examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h2>
-<ol>
-<li>Difference of <strong>ggplot2</strong> daily downloads to the mean of the current year (2015-2021). Each loop contains 52 weeks so that same weeks in different years locate at the same angle in the polar coordinates.</li>
-</ol>
-<p><img src="https://user-images.githubusercontent.com/449218/122206336-8c125400-cea1-11eb-8b0d-2314aede4641.png" alt="image"></p>
-<ol>
-<li>The same data as the first one, but horizon chart is used. Also title and legends are added.</li>
-</ol>
-<p><img src="https://user-images.githubusercontent.com/449218/122206221-671de100-cea1-11eb-823e-6c48de851667.png" alt="image"></p>
-<ol>
-<li>A phylogenetic life tree with 50645 species.</li>
-</ol>
-<p><img src="https://user-images.githubusercontent.com/449218/123804978-fbe6fc80-d8ed-11eb-93d8-d3f83d552dde.png" alt="download"></p>
-</div>
-<div id="license" class="section level2">
-<h2 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h2>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
 <p>MIT @ Zuguang Gu</p>
 </div>
 </div>
@@ -183,47 +189,51 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=spiralize">https://​cloud.r-project.org/​package=spiralize</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/jokergoo/spiralize/">https://​github.com/​jokergoo/​spiralize/​</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Zuguang Gu <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7395-8709" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="https://cloud.r-project.org/package=spiralize" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/jokergoo/spiralize/" class="external-link">Browse source code</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/jokergoo/spiral/actions"><img src="https://github.com/jokergoo/spiral/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://cran.r-project.org/web/packages/spiralize/index.html"><img src="https://www.r-pkg.org/badges/version/spiralize" alt="CRAN"></a></li>
-<li><a href="https://cran.r-project.org/web/packages/spiralize/index.html"><img src="https://cranlogs.r-pkg.org/badges/grand-total/spiralize" alt="CRAN"></a></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing spiralize</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Zuguang Gu <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7395-8709" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Zuguang Gu.</p>
+  <p></p>
+<p>Developed by Zuguang Gu.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -232,5 +242,6 @@
   
 
 
-  </body>
+  <style>nav[data-toggle='toc'] .nav .nav {display: block;}</style>
+</body>
 </html>

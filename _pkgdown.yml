@@ -1,1 +1,28 @@
 destination: docs
+
+navbar:
+  title: "spiralize"
+  left:
+    - text: "Articles"
+      menu:
+        - text: Vignettes
+        - text: "Visualize Data on Spirals"
+          href: articles/spiralize_intro.html
+        - text: "Initialize Spirals by Special Data Types"
+          href: articles/special_data_type.html
+        - text: "Annotate the Plot"
+          href: articles/annotate.html
+        - text: "Real World Examples"
+          href: articles/examples.html
+        - text: "Visualize tree of life"
+          href: articles/tree_of_life.html
+        - text: -------
+        - text: More applications
+        - text: "Spiral visualization on git commits of a git repo"
+          href: articles/spiralize_git_commit.html
+    - text: "Reference"
+      href: reference/index.html
+
+template:
+  includes:
+    after_body: "<style>nav[data-toggle='toc'] .nav .nav {display: block;}</style>"

@@ -1,0 +1,1430 @@
+---
+title: "Visualize Data on Spirals"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.width = 5,
+    fig.height = 5,
+    fig.align = "center",
+    fig.retina = 2
+)
+knitr::knit_hooks$set(pngquant = knitr::hook_pngquant)
+knitr::opts_chunk$set(
+  message = FALSE,
+  dev = "ragg_png",
+  fig.align = "center",
+  pngquant = "--speed=10 --quality=30"
+)
+options(width = 100)
+```
+
+```{r, echo = FALSE}
+library(spiralize)
+library(cowplot)
+library(GetoptLong)
+```
+
+In this vignette, I describe the package **spiralize** which visualizes data along an Archimedean spiral.
+It has two major advantages for visualization:
+
+1. It is able to visualize data with very long axis with high resolution.
+2. It is efficient for time series data to reveal periodic patterns.
+
+
+## The Archimedean spiral
+
+In polar coordinates ($r$, $\theta$), the [Archimedean
+spiral](https://en.wikipedia.org/wiki/Archimedean_spiral) has the following form:
+
+$$ r = b \cdot \theta $$
+
+where $b$ controls the distance between two loops. The radial distance between two neighbouring loops for a given $\theta$ is:
+
+$$ d(\theta) = r(\theta + 2\pi) - r(\theta) = b \cdot (\theta + 2\pi) - b \cdot \theta = b \cdot 2\pi $$
+
+This shows the radial distance between two neighbouring loops is independent to the value of $\theta$ and is a constant value. The following 
+figure demonstrates an Archimedean spiral with 4 loops ($\theta \in [0, 8\pi]$).
+
+
+```{r, echo = FALSE}
+theta = seq(0, 360*4, by = 1)/180*pi
+b = 1/2/pi
+r = theta*b
+
+df = spiralize:::polar_to_cartesian(theta, r)
+
+abs_max_x = max(abs(df$x))
+abs_max_y = max(abs(df$y))
+
+grid.newpage()
+  
+padding = unit(c(10, 10), "mm")
+pushViewport(viewport(
+    width = unit(1, "snpc") - padding[1], 
+    height = unit(1, "snpc") - padding[2],
+    xscale = c(-abs_max_x, abs_max_x), 
+    yscale = c(-abs_max_y, abs_max_y)))
+
+d = seq(0, 360, by = 30)
+if(d[length(d)] == 360) d = d[-length(d)]
+dm = matrix(nrow = length(d), ncol = 4)
+for(i in seq_along(d)) {
+  r0 = max(r + b*2*pi)*1.1
+  dm[i, ] = c(0, 0, cos(d[i]/180*pi)*r0, sin(d[i]/180*pi)*r0)
+}
+grid.segments(dm[, 1], dm[, 2], dm[, 3], dm[, 4], default.units = "native", 
+    gp = gpar(col = "grey", lty = 3))
+
+grid.lines(df$x, df$y, default.units = "native")
+
+grid.segments(2, 0, 3, 0, arrow = arrow(angle = 20, length = unit(2, "mm"), ends = "both"), default.units = "native")
+grid.text("d", unit(2.5, "native"), unit(0, "native") + unit(1, "mm"), just = "bottom")
+popViewport()
+```
+
+Note $\theta$ can also be negative values where the spiral is mirrored by _y_-axis
+(in Cartesian coordinates). In **spiralize**, we only consider $\theta$ as
+positive values. The mirrored spiral can be set by the `flip` argument which is introduced later
+in this vignette.
+
+Since the distance between any two neighbouring loops for any given $\theta$ is
+constant, it is a ideal place to put tracks along the spiral where the tracks
+have identical radial heights everywhere. Later the tracks can be served as
+virtual coordinate systems to map to data. This is why the package is called
+"_spiralize_" (to transform a normal Cartesian coordinate system to a curved
+spiral shape). The following two figures demonstrate a spiral with one track
+and with two tracks. The red line is the spiral itself. The spiral ranges
+between $\pi/2$ and $6\pi$. It is easy to see the upper border of each track
+is also a spiral but with an offset $a$:
+
+
+$$ r = a + b \cdot \theta $$
+
+where $a$ is the offset to the "Base spiral" (the red spiral in the following plots).
+
+```{r, fig.width = 10, fig.height = 5, echo = FALSE}
+grid.newpage()
+pushViewport(viewport(x = 0.25, width = 0.5))
+spiral_initialize(start = 90, end = 360*3, newpage = FALSE)
+spiral_track(height = 0.45)
+spiral_lines(TRACK_META$xlim, rep(get_track_data("ymin"), 2), gp = gpar(col = "red"))
+spiral_text(2/11, 0.5, "track 1")
+spiral_clear()
+popViewport()
+
+pushViewport(viewport(x = 0.75, width = 0.5))
+spiral_initialize(start = 90, end = 360*3, newpage = FALSE)
+spiral_track(height = 0.45)
+spiral_lines(TRACK_META$xlim, rep(get_track_data("ymin"), 2), gp = gpar(col = "red"))
+spiral_text(2/11, 0.5, "track 1")
+spiral_track(height = 0.45, background_gp = gpar(fill = "#CCCCCC"))
+spiral_text(2/11, 0.5, "track 2")
+spiral_clear()
+popViewport()
+```
+
+Denote the maximal radius of the spiral as $d_{max} = b \cdot \theta_{max}$,
+and denote the length of the spiral as $l$ (which has a complex form, see https://downloads.imagej.net/fiji/snapshots/arc_length.pdf), we can
+treat $2d_{max}$ as the resolution of the visualization applied in the normal
+Cartesian coordinate system and $l$ as the resolution of the visualization
+applied on the spiral. Then the ratio of the two resolutions is:
+
+$$ ratio = \frac{l}{2d_{max}} $$
+
+E.g., for a spiral with 5 loops ($\theta_{max} = 10\pi$), the ratio is 7.89,
+which means the spiral improves the resolution of visualization almost to 8
+folds. Generally, the ratio increases almost linearly to the number of loops.
+
+```{r, echo = FALSE, fig.keep = "none"}
+spiral_initialize()
+s = current_spiral()
+```
+
+```{r, echo = FALSE}
+ratio = function(k) {
+    theta = pi*2*k
+    b = 1/2/pi
+    r = b*theta
+    len = s$spiral_length(theta)
+    len/2/r
+}
+
+k = 1:20
+plot(k, ratio(k), xlab = "number of loops in the spiral", ylab = "ratio", 
+    main = "ratio of the resolution between\nspiral and normal Cartesian system")
+```
+
+The relationship between ratio and $\theta$ has the following form:
+
+$$ ratio = \frac{\mathrm{ln}(\theta + \sqrt{1 + \theta^2})}{4\theta} + \frac{\sqrt{1 + \theta^2}}{4} $$
+
+When $\theta$ gets large,
+
+$$ ratio \approx \frac{\mathrm{ln}(\theta + \theta)}{4\theta} + \frac{\theta}{4} \approx \frac{\theta}{4} $$
+
+Denote $k$ as the number of loops, i.e. $\theta = 2\pi \cdot k$, then,
+
+$$ ratio \approx \frac{\theta}{4} = \frac{\pi}{2} \cdot k $$
+
+
+## The layout of the spiral
+
+The function `spiral_initialize()` is used to intialize the spiral. Arguments `start` and `end` control
+the angular range of the spiral. Here the values should be in degrees and they are converted to radians internally.
+
+In **spiralize**, the parameter $b$ in the spiral equation $r = b \cdot \theta$ is set to $b = 1/2\pi$, so that the distance
+between two neighbouring loops is $d = 1$. Denote $\theta_e$ as the
+end angle (in radians) of the spiral, the ranges of the viewport (under **grid** graphics system) on both _x_-axis and _y_-axis that draw the spiral are $[-x, x]$ where
+
+$$x = b \cdot \theta_e + d = 1/2\pi \cdot \theta_e + 1$$
+
+
+The following two plots demonstrate different values of `start` and `end`. Also as shown in the following example code,
+I suggest to set the values of `start` and `end` in a form of `360*a + b`, e.g. `360*4 + 180`, so that it is straighforward
+to know the positions in the polar coordinates and how many loops there are in the spiral (I think people should feel more natural with degrees than radians).
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(start = 90, end = 360)
+spiral_track()
+
+# the right plot
+spiral_initialize(start = 180, end = 360*4 + 180)
+spiral_track()
+```
+
+```{r, fig.width = 10, fig.height = 5, echo = FALSE}
+grid.newpage()
+pushViewport(viewport(x = 0.25, width = 0.5))
+
+spiral_initialize(start = 90, end = 360, newpage = FALSE)
+spiral_track()
+spiral_clear()
+popViewport()
+
+pushViewport(viewport(x = 0.75, width = 0.5))
+
+spiral_initialize(start = 180, end = 360*4 + 180, newpage = FALSE)
+spiral_track()
+spiral_clear()
+popViewport()
+```
+
+
+Argument `flip` controls how to flip the spiral. It accpets one of the four values: `"none"`/`"horizontal"`/`"vertical"`/`"both"`.
+Examples are as follows. In the examples, I additionally add the axes in the tracks to show in which direction the data extends along
+the spiral. I also manually adjust the height of the track to give enough space for axes.
+
+```{r, eval = FALSE}
+# the top left plot
+spiral_initialize(flip = "none") # default
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the top right plot
+spiral_initialize(flip = "horizontal")
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the bottom left plot
+spiral_initialize(flip = "vertical")
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the bottom right plot
+spiral_initialize(flip = "both")
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+```{r, fig.width = 10, fig.height = 10, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("flip = 'none'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p2 = grid.grabExpr({
+    spiral_initialize(flip = "horizontal")
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("flip = 'horizontal'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p3 = grid.grabExpr({
+    spiral_initialize(flip = "vertical")
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("flip = 'vertical'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p4 = grid.grabExpr({
+    spiral_initialize(flip = "both")
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("flip = 'both'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2, p3, p4, nrow = 2)
+```
+
+More easily, you can directly set `clockwise = TRUE` to change the orientation of the
+spiral. Compare the following plots:
+
+
+```{r, eval = FALSE}
+# the top left plot
+spiral_initialize(start = 45 + 360) # default
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the top right plot
+spiral_initialize(start = 45 + 360, clockwise = TRUE)
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the bottom left plot
+spiral_initialize(start = 135 + 360)
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the bottom right plot
+spiral_initialize(start = 135 + 360, clockwise = TRUE)
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+```{r, fig.width = 10, fig.height = 10, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize(start = 45 + 360)
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("default", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p2 = grid.grabExpr({
+    spiral_initialize(start = 45 + 360, clockwise = TRUE)
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("clockwise = TRUE", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p3 = grid.grabExpr({
+    spiral_initialize(start = 135 + 360)
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("default", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p4 = grid.grabExpr({
+    spiral_initialize(start = 135 + 360, clockwise = TRUE)
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("clockwise = TRUE", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2, p3, p4, nrow = 2)
+```
+
+Argument `scale_by` controls how to linearly scale the data on the
+spiral. It allows value of `"angle"` or `"curve_length"` (or for short,
+`"curve"`). `"angle"` means equal difference on data corresponds to equal
+difference of angles in the polar coordinates. `"curve_length"` means equal
+difference on data corresponds to equal difference of the length of the
+spiral. Observe how the axis ticks distribute in the following two plots. Also
+the polar lines are removed for `scale_by = "curve_length"`.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(scale_by = "angle") # default
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the right plot
+spiral_initialize(scale_by = "curve_length")
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+```{r, fig.width = 10, fig.height = 5, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize(scale_by = "angle")
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("scale_by = 'angle'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p2 = grid.grabExpr({
+    spiral_initialize(scale_by = "curve_length")
+    spiral_track(height = 0.6)
+    spiral_axis()
+    grid.text("scale_by = 'curve_length'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2)
+```
+
+The following heatmaps might be clearer to demonstrate the difference between `"angle"` and `"curve_length"`. In this 
+example, each grid has the equal bin size of the data.
+
+
+```{r, fig.width = 10, fig.height = 5, echo = FALSE}
+make_plot = function(scale_by) {
+    n = 100
+    col = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+    spiral_initialize(xlim = c(0, n), scale_by = scale_by)
+    spiral_track(height = 0.9)
+
+    x = runif(n)
+    spiral_rect(1:n - 1, 0, 1:n, 1, gp = gpar(fill = col(x), col = NA))
+    grid.text(qq("scale_by = '@{scale_by}'"), 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+}
+p1 = grid.grabExpr(make_plot("angle"))
+p2 = grid.grabExpr(make_plot("curve_length"))
+plot_grid(p1, p2)
+```
+
+As you can see, when `scale_by` is set to `"angle"`, in outer loops, even when the actually difference
+on data is the same, the physical widths are larger than these in inner loops. Nevertheless, when the data is 
+time series or periodic, `"angle"` is the proper choice because it is easy to directly compare between loops
+which are the same time points over different periods. As a comparison, `"curve_length"` won't provide any
+periodic information.
+
+The spiral grows from inner loops to outer loops, thus, by default, data increases from
+the inner loops as well. This can be reversed by setting argument `reverse = TRUE`. See
+the following example and also observe the axes. The red arrows indicate the direction of axes.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(reverse = FALSE) # default
+spiral_track()
+spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+spiral_axis()
+
+# the right plot
+spiral_initialize(reverse = TRUE)
+spiral_track()
+spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+spiral_axis()
+```
+
+```{r, fig.width = 10, fig.height = 5, echo = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize(reverse = FALSE)
+    spiral_track()
+    spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+    spiral_axis()
+    grid.text("reverse = FALSE", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p2 = grid.grabExpr({
+    spiral_initialize(reverse = TRUE)
+    spiral_track()
+    spiral_arrow(0.2, 0.8, gp = gpar(fill = "red"))
+    spiral_axis()
+    grid.text("reverse = TRUE", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2)
+```
+
+To map data to spiral, argument `xlim` should be set which corresponds to data range on _x_-axis.
+Observe the axes in the following plots.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.6)
+spiral_axis()
+
+# the right plot
+spiral_initialize(xlim = c(-1000, 1000))
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1000))
+    spiral_track(height = 0.6)
+    spiral_axis()
+})
+p2 = grid.grabExpr({
+    spiral_initialize(xlim = c(-1000, 1000))
+    spiral_track(height = 0.6)
+    spiral_axis()
+})
+plot_grid(p1, p2)
+```
+
+Under "angle" mode, the number of loops can also be controlled by argument `period` which controls the length
+of data a spiral loop corresponds to. Note in this case, argument `end` is ignored and the value for `end` is 
+internally recalculated. See the following example:
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(xlim = c(0, 1), period = 1/3)
+spiral_track(height = 0.6)
+
+# the right plot
+spiral_initialize(xlim = c(0, 1), period = 2)
+spiral_track(height = 0.6)
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1), period = 1/3)
+    spiral_track(height = 0.6)
+})
+p2 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1), period = 2)
+    spiral_track(height = 0.6)
+})
+plot_grid(p1, p2)
+```
+
+## Create tracks
+
+After the spiral is intialized, next we can add tracks along it. Argument `height` controls
+the height of the track. The value of `height` is a value between 0 and 1 which is the fraction of the distance
+between two neighbouring loops in the spiral. In the following left plot, I add black border to the track 
+by setting the argument `background_gp`.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize()
+spiral_track(height = 1, background_gp = gpar(col = "black"))
+
+# the right plot
+spiral_initialize()
+spiral_track(height = 0.5)
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track(height = 1, background_gp = gpar(col = "black"))
+    grid.text("height = 1", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track(height = 0.5)
+    grid.text("height = 0.5", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2)
+```
+
+Multiple tracks can be added sequentially. Just note the sum of heights of all tracks
+should not exceed 1.
+
+```{r}
+spiral_initialize()
+spiral_track(height = 0.4, background_gp = gpar(fill = 2))
+spiral_track(height = 0.2, background_gp = gpar(fill = 3))
+spiral_track(height = 0.1, background_gp = gpar(fill = 4))
+```
+
+The value for `height` can also be `unit` object.
+
+```{r, eval = FALSE}
+spiral_initialize()
+spiral_track(height = unit(1, "cm"))
+```
+
+Data range on _y_-axis is specified by the argument `ylim`. In the following example, I also add a _y_-axis
+by `spiral_yaxis()`.
+
+```{r}
+spiral_initialize()
+spiral_track(ylim = c(0, 100))
+spiral_yaxis()
+```
+
+Direction of _y_-axis is by default pointing to the outside of spirals. This
+direction can be reversed by setting argument `reverse_y = TRUE` in
+`spiral_track()`, but in applications it is rarely used.
+
+```{r, eval = FALSE}
+spiral_track(reverse_y = TRUE)
+```
+
+## Graphics functions
+
+Tracks are created with data ranges on both _x_-axis and _y_-axis. Now the tracks can be thought as
+normal Cartesian coordinates. There are following low-level graphics functions so that complex plots
+can be easily constructed by combining these low-level graphics functions.
+
+### Points
+
+Like other graphics functions e.g. `points()` or `grid.points()`, the "spiral graphics functions" also
+accept locations on _x_-axis and _y_-axis for data points. `spiral_points()` draws points
+in the spiral track.
+
+```{r}
+spiral_initialize() # by default xlim = c(0, 1)
+spiral_track()      # by default ylim = c(0, 1)
+spiral_points(x = runif(1000), y = runif(1000))
+```
+
+### Lines
+
+Adding lines with `spiral_lines()` is also straightforward:
+
+```{r}
+x = sort(runif(1000))
+y = runif(1000)
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y)
+```
+
+Argument `type` can be set to `"h"` so that vertical lines (or radial lines
+if you take polar coordinates as reference) are drawn to the baseline for each
+data point.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y, type = "h")
+
+# the right plot
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y, type = "h", baseline = 0.5, gp = gpar(col = ifelse(y > 0.5, "red", "blue")))
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_lines(x, y, type = "h")
+})
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_lines(x, y, type = "h", baseline = 0.5, gp = gpar(col = ifelse(y > 0.5, "red", "blue")))
+})
+plot_grid(p1, p2)
+```
+
+Argument `area` can be set to `TRUE` so that area under the lines can be filled with a certain color.
+
+```{r}
+spiral_initialize()
+spiral_track()
+spiral_lines(x, y, area = TRUE, gp = gpar(fill = 2, col = NA))
+```
+
+Note you can also set `baseline` with `area = TRUE`, however, you cannot set different colors for the area
+above the baseline and below the baseline. Consider to use `spiral_bars()` or `spiral_horizon()` for this scenario.
+
+### Segments
+
+`spiral_segments()` draws a list of segments.
+
+
+```{r}
+n = 1000
+x0 = runif(n)
+y0 = runif(n)
+x1 = x0 + runif(n, min = -0.01, max = 0.01)
+y1 = 1 - y0
+
+spiral_initialize(xlim = range(c(x0, x1)))
+spiral_track()
+spiral_segments(x0, y0, x1, y1, 
+    gp = gpar(col = circlize::rand_color(n, luminosity = "bright"), lwd = runif(n, 0.5, 3)))
+```
+
+The same as `grid.segments()`, you can also set the argument `arrow` to add arrows on the segments.
+
+```{r}
+n = 100
+x0 = runif(n)
+y0 = runif(n)
+x1 = x0 + runif(n, min = -0.01, max = 0.01)
+y1 = 1 - y0
+
+spiral_initialize(xlim = range(c(x0, x1)))
+spiral_track()
+spiral_segments(x0, y0, x1, y1, arrow = arrow(length = unit(2, "mm")),
+    gp = gpar(col = circlize::rand_color(n, luminosity = "bright"), lwd = runif(n, 0.5, 3)))
+```
+
+
+### Rectangles
+
+`spiral_rect()` draws rectangles, which is the base function for drawing heatmaps and barplots. The first four
+arguments are the coordinates of the bottom left and top right of the rectangles.
+
+```{r}
+n = 1000
+require(circlize)
+spiral_initialize(xlim = c(0, n))
+spiral_track(height = 0.9)
+
+x1 = runif(n)
+col1 = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+spiral_rect(1:n - 1, 0, 1:n, 0.5, gp = gpar(fill = col1(x1), col = NA))
+
+x2 = runif(n)
+col2 = circlize::colorRamp2(c(0, 0.5, 1), c("green", "white", "red"))
+spiral_rect(1:n - 1, 0.5, 1:n, 1, gp = gpar(fill = col2(x2), col = NA))
+```
+
+### Bars
+
+`spiral_bars()` can draw bars simply from a numeric vector. Bars can also be drawn to a baseline.
+
+```{r, eval = FALSE}
+x = seq(1, 1000, by = 1) - 0.5  # middle points of bars
+y = runif(1000)
+
+# the left plot
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.8)
+spiral_bars(x, y)
+
+# the right plot
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.8)
+spiral_bars(x, y, baseline = 0.5, gp = gpar(fill = ifelse(y > 0.5, 2, 3), col = NA))
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+x = seq(1, 1000, by = 1) - 0.5  # middle points of bars
+y = runif(1000)
+
+p1 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1000))
+    spiral_track(height = 0.8)
+    spiral_bars(x, y)
+})
+
+p2 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1000))
+    spiral_track(height = 0.8)
+    spiral_bars(x, y, baseline = 0.5, gp = gpar(fill = ifelse(y > 0.5, 2, 3), col = NA))
+})
+plot_grid(p1, p2)
+```
+
+`spiral_bars()` can also draw bars from a matrix, then each column in the matrix correspond to one stack of the bars.
+
+```{r}
+y = matrix(runif(3*1000), ncol = 3)
+y = y/rowSums(y)
+spiral_initialize(xlim = c(0, 1000))
+spiral_track(height = 0.8)
+spiral_bars(x, y, gp = gpar(fill = 2:4, col = NA))
+```
+
+Width of bars can be different. You can set a vector to the argument of `bar_width`. Note `x` always corresponds
+to the middle of each bar.
+
+```{r}
+w = runif(100)
+w = w/sum(w)  # width of bars, sum of all width is 1
+b = c(0, cumsum(w))
+x = (b[1:100] + b[2:101])/2  # middle of each bar
+y = runif(100)
+
+spiral_initialize()
+spiral_track()
+spiral_bars(x, y, bar_width = w)
+```
+
+### Polygons
+
+`spiral_polygon()` draws polygons. Note the polygon must be closed, which means, the last data point should overlap to the first one.
+
+```{r}
+x0 = sort(runif(200))
+x0 = matrix(x0, ncol = 2, byrow = TRUE)
+x1 = sort(runif(200))
+x1 = matrix(x1, ncol = 2, byrow = TRUE)
+
+spiral_initialize()
+spiral_track()
+
+for(i in 1:100) {
+    pt1 = circlize:::get_bezier_points(x0[i, 1], 0, x1[i, 1], 1, xlim = c(0, 1), ylim = c(0, 1))
+    pt2 = circlize:::get_bezier_points(x0[i, 2], 0, x1[i, 2], 1, xlim = c(0, 1), ylim = c(0, 1))
+
+    spiral_polygon(
+        c(x0[i, 1], x0[i, 2], pt2[, 1], rev(pt1[, 1]), x0[i, 1]),
+        c(0, 0, pt2[, 2], rev(pt1[, 2]), 0), 
+        gp = gpar(fill = rand_color(1, luminosity = "bright"), col = NA)
+    )
+}
+```
+
+### Text
+
+`spiral_text()` draws texts. Argument `facing` controls the rotation of texts.
+
+```{r, eval = FALSE}
+x = seq(0.1, 0.9, length = 26)
+text = strrep(letters, 6)
+
+# the top left plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, text, facing = "downward") # default
+
+# the bottom left plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, text, facing = "inside")
+
+# the bottom right plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, text, facing = "outside")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 10}
+x = seq(0.1, 0.9, length = 26)
+text = strrep(letters, 6)
+
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "downward")
+    grid.text("facing = 'downward'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+
+p2 = grid.grabExpr({
+    grid.newpage()
+})
+
+p3 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "inside")
+    grid.text("facing = 'inside'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+
+p4 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "outside")
+    grid.text("facing = 'outside'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(plot_grid(p1, p2), plot_grid(p3, p4), nrow = 2)
+```
+
+Text can also be set to `"clockwise"` or `"reverse_clockwise"`:
+
+```{r, eval = FALSE}
+x = seq(0.1, 0.9, length = 26)
+
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, "aaaa", facing = "clockwise")
+
+# the right plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, "aaaa", facing = "reverse_clockwise")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+x = seq(0.1, 0.9, length = 26)
+
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, "aaaa", facing = "clockwise")
+    grid.text("facing = 'clockwise'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, "aaaa", facing = "reverse_clockwise")
+    grid.text("facing = 'reverse_clockwise'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+})
+plot_grid(p1, p2)
+```
+
+For long texts, `facing` can be set to `"curved_inside"` or `"curved_outside"` so that curved
+texts are draw along the spiral.
+
+```{r, eval = FALSE}
+x = seq(0.1, 0.9, length = 10)
+text = rep(paste(letters, collapse = ""), 10)
+
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_inside")
+
+# the right plot
+spiral_initialize()
+spiral_track()
+spiral_text(x, 0.5, text, facing = "curved_outside")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+x = seq(0.1, 0.9, length = 10)
+text = rep(paste(letters, collapse = ""), 10)
+
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "curved_inside")
+    grid.text("facing = 'curved_inside'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+}, width = 5, height = 5)
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "curved_outside")
+    grid.text("facing = 'curved_outside'", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+}, width = 5, height = 5)
+plot_grid(p1, p2)
+```
+
+Calculation of positions of letters of the curved text depends on the size of current graphics device. When the device
+changes its size, the positions of letters will not be correct and you need to regenerate the plot. Also
+users need to be careful when using `grid.grabExpr()` to capture the plot. By default `grid.grabExpr()` captures
+graphics output in a device with 7inch x 7inch. Users might need to manually set the device size to make sure
+the curved texts are not affected.
+
+In the next example, I use `grid.grabExpr()` to capture two spiral plots with curved texts. Later the two plots are merged
+with using the **cowplot** package and the final merged plot is saved in a PDF with 10 inches width and 5 inches height. 
+I manually set the device size in the two `grid.grabExpr()` calls so that the size of the place where the graphics are captured
+is the same as the size of the place where they are finally drawn.
+
+```{r, eval = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "curved_inside")
+}, width = 5, height = 5)
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_text(x, 0.5, text, facing = "curved_outside")
+}, width = 5, height = 5)
+
+pdf(..., width = 10, height = 5)
+plot_grid(p1, p2)
+dev.off()
+```
+
+one last thing for drawing text is that the argument `nice_facing` can be set to `TRUE` so that the rotation
+of texts are automatically adjusted so that they are easy to read, i.e. all the texts always face the lower part of the polar coordinate system.
+
+### Axis
+
+`spiral_aixs()` draws axis along the spiral. So it is the _x_-axis of the data.
+
+```{r}
+spiral_initialize()
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+Argument `major_at` or simply `at` controls the break points on the axis and argument `labels`
+controls the corresponding axis labels.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
+spiral_track(height = 0.6)
+spiral_axis(major_at = seq(0, 360*4, by = 30))
+
+# the right plot
+spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5)
+spiral_track(height = 0.6)
+spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
+    spiral_track(height = 0.6)
+    spiral_axis(major_at = seq(0, 360*4, by = 30))
+})
+p2 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 12*4), start = 360, end = 360*5)
+    spiral_track(height = 0.6)
+    spiral_axis(major_at = seq(0, 12*4, by = 1), labels = c("", rep(month.name, 4)))
+})
+plot_grid(p1, p2)
+```
+
+If the axis labels are too long, argument `curved_labels` can be set to `TRUE` so that the labels
+are curved along the spiral.
+
+```{r}
+spiral_initialize()
+spiral_track(height = 0.6)
+spiral_axis(at = c(0.1, 0.3, 0.6, 0.9), labels = strrep(letters[1:4], 20), curved_labels = TRUE)
+```
+
+
+`spiral_yaxis()` draws _y_-axis. Argument `side` controls which side of the track to put
+the _y_-axis. `side` can be set to `"both"` so that _y_-axis is drawn on the two sides of the track.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize()
+spiral_track(height = 0.8)
+spiral_yaxis(side = "start")
+spiral_yaxis(side = "end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
+
+# the right plot
+spiral_initialize()
+spiral_track(height = 0.8)
+spiral_yaxis(side = "both")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track(height = 0.8)
+    spiral_yaxis(side = "start")
+    spiral_yaxis(side = "end", at = c(0, 0.25, 0.5, 0.75, 1), labels = letters[1:5])
+})
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track(height = 0.8)
+    spiral_yaxis(side = "both")
+})
+plot_grid(p1, p2)
+```
+
+### Horizon chart
+
+Tracks along the spiral are long, but the heights of the tracks are normally
+very small. [Horizon
+chart](https://flowingdata.com/2015/07/02/changing-price-of-food-items-and-horizon-graphs/)
+is an effcient way to visualize distributions by vertically folding the
+distribution graphics, which makes it possible to visualize in a plotting
+region with a very small height.
+
+In the next example, I visualize difference of **ggplot2** daily downloads to
+the mean of the current year, between 2015-01-01 to 2020-12-31.
+
+```{r}
+# The data can be downloaded by the next line. The data object is already saved in spiralize package.
+# df = cranlogs::cran_downloads("ggplot2", from = "2015-01-01")
+df = readRDS(system.file("extdata", "ggplot2_downloads.rds", package = "spiralize"))
+# to simplify the data, I only take the complete years between 2015 and 2020
+df = df[df$date < as.Date("2021-01-01"), ]
+day_diff = as.double(df$date[nrow(df)] - df$date[1], "days")
+year_mean = tapply(df$count, lubridate::year(df$date), function(x) mean(x[x > 0]))
+
+df$diff = log2(df$count/year_mean[as.character(lubridate::year(df$date))])
+df$diff[is.infinite(df$diff)] = 0
+q = quantile(abs(df$diff), 0.99)  # adjust outliers
+df$diff[df$diff > q] = q
+df$diff[df$diff < -q] = -q
+head(df)
+```
+
+Function `spiral_horizon()` draws the horizon chart along the spiral. The input variables are _x_-locations
+and _y_-locations of the data. To align weeks at different years, each loop contains 364 (52 weeks). In the following
+plot, red areas correspond to those days when daily downloads are higher than the yearly average and blue areas
+correspond to the days when daily downloads are less than the yearly average.
+
+```{r, fig.width = 6, fig.height = 6}
+spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364) + 360) # a circle of 52 weeks
+spiral_track(height = 0.9)
+spiral_horizon(1:nrow(df) - 0.5, df$diff)
+```
+
+Bars can be used to put on each days by setting argument `use_bar = TRUE`:
+
+```{r, fig.width = 6, fig.height = 6}
+spiral_initialize(xlim = c(0, nrow(df)), start = 360, end = 360*(day_diff/364) + 360)
+spiral_track(height = 0.9)
+spiral_horizon(1:nrow(df) - 0.5, df$diff, use_bars = TRUE)
+```
+
+When using bars, argument `bar_width` can be set as a vector if the bar widths are not all equal.
+
+Note, in this example, "time" objects can be directly used as value on x-axis.
+See vignettes ["Initialize Spirals by Special Data Types"](special_data_type.html)
+and ["Real World Examples"](examples.html) for examples.
+
+Lessly used, users can explicitly set the argument `y_max` to the maximal absolute values for `y`. This 
+would be useful when there are multiple horizon chart tracks and to make them compariable. 
+
+### Images
+
+`spiral_raster()` adds images to the spiral. Currently it supports formats of png/svg/pdf/eps/jpeg/jpg/tiff. The formats
+can be mixed used.
+
+```{r}
+image = system.file("extdata", "Rlogo.png", package = "circlize")
+x = seq(0.1, 0.9, length = 10)
+
+spiral_initialize()
+spiral_track()
+spiral_raster(x, 0.5, image)
+```
+
+Similar as text, argument `facing` can be set to control the rotation of images. If `nice_facing = TRUE`, the image
+with rotation facing the top will be automatically adjusted to bottom.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_raster(x, 0.5, image, facing = "inside")
+
+# the right plot
+spiral_initialize()
+spiral_track()
+spiral_raster(x, 0.5, image, facing = "inside", nice_facing = TRUE)
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_raster(x, 0.5, image, facing = "inside")
+}, width = 5, height = 5)
+p2 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_raster(x, 0.5, image, facing = "inside", nice_facing = TRUE)
+}, width = 5, height = 5)
+plot_grid(p1, p2)
+```
+
+Argument `facing` can be set to one of `"curved_inside"` or `"curved_outside"`
+so that the image is filled on the track. In this case, arguments `width` and
+`height` can be set as values measured in the data coordiantes. Note every
+pixel in the image is actually drawn as a "spiral rectangle", so the plotting
+would be slow for large images.
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize()
+spiral_track()
+spiral_raster(c(0.2, 0.4, 0.6, 0.8), 0.5, image, width = 0.05, 
+    height = 1, facing = "curved_inside")
+
+# the right plot
+spiral_initialize(scale_by = "curve")
+spiral_track()
+spiral_raster(c(0.2, 0.4, 0.6, 0.8), 0.5, image, width = 0.05, 
+    height = 1, facing = "curved_outside")
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+p1 = grid.grabExpr({
+    spiral_initialize()
+    spiral_track()
+    spiral_raster(c(0.2, 0.4, 0.6, 0.8), 0.5, image, width = 0.05, 
+        height = 1, facing = "curved_inside")
+})
+
+p2 = grid.grabExpr({
+    spiral_initialize(scale_by = "curve")
+    spiral_track()
+    spiral_raster(c(0.2, 0.4, 0.6, 0.8), 0.5, image, width = 0.05, 
+        height = 1, facing = "curved_outside")
+})
+plot_grid(p1, p2)
+```
+
+### Arrows
+
+`spiral_arrow()` draws arrows along the spiral.
+
+```{r, fig.width = 6, fig.height = 6}
+spiral_initialize()
+spiral_track()
+spiral_arrow(0.3, 0.6, gp = gpar(fill = "red", col = NA))
+spiral_arrow(0.8, 0.9, gp = gpar(fill = "blue"), tail = "point", arrow_position = "start")
+```
+
+### Highlight 
+
+`spiral_highlight()` highlights a specific section of the spiral. If the argument `type` is set to `"rect"` (the default), it
+highlights the section with a semi-transparent rectangle which covers the complete range on _y_-axis. If `type` is
+set to `"line"`, an annotation line is drawn either at the bottom or on the top of the track.
+
+```{r}
+spiral_initialize()
+spiral_track()
+spiral_highlight(0.4, 0.6)
+spiral_highlight(0.1, 0.2, type = "line", gp = gpar(col = "blue"))
+spiral_highlight(0.7, 0.8, type = "line", line_side = "outside")
+```
+
+If `scale_by` is set to `angle` (the default), users might also want to
+highlight a specific of interval but across several cycles, e.g. from January
+to March in year 2000 to 2010. Here the function
+`spiral_highlight_by_sector()` draws a semi-transparent sector to highlight a
+fixed interval over several cycles.
+
+The first four argument `x1`, `x2`, `x3` and `x4` in
+`spiral_highlight_by_sector()` determine the position of the sector. If only
+`x1` and `x2` are specified, the start circle is calculated from `x1` and `x2`
+and the end circle is the most outside one. If `x3` and `x4` are also
+specified, the outer circle is calcualted from `x3` and `x4`.
+
+```{r}
+spiral_initialize(xlim = c(0, 360*4), start = 360, end = 360*5)
+spiral_track(height = 0.6)
+spiral_axis()
+spiral_highlight_by_sector(36, 72)
+spiral_highlight_by_sector(648, 684)
+spiral_highlight_by_sector(216, 252, 936, 972, gp = gpar(fill = "blue"))
+```
+
+
+### Dendrograms and phylogenetic trees
+
+When the dendrograms or phlogenetic trees have huge number of leaves, it is also suitable to use spiral to visualize them. 
+There are two functions: `spiral_dendrogram()` for `dendrogram` objects and `spiral_phylo()` for
+`phylo` objects.
+
+
+Note since dendrograms or phylogenetic trees do not have "periodic patterns",
+`scale_by` in `spiral_initialize()` is usually set to `"curve_length"`.
+
+The `dendrogram` object can be rendered with **dendextend** package. See the following examples.
+
+
+```{r, eval = FALSE}
+dend = as.dendrogram(hclust(dist(runif(1000))))
+
+# the left plot
+spiral_initialize(xlim = c(0, 1000), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+spiral_track()
+spiral_dendrogram(dend)
+
+# the right plot
+library(dendextend)
+dend = color_branches(dend, k = 4)
+spiral_initialize(xlim = c(0, 1000), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+spiral_track()
+spiral_dendrogram(dend)
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+dend = as.dendrogram(hclust(dist(runif(1000))))
+
+p1 = grid.grabExpr({
+    spiral_initialize(xlim = c(0, 1000), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+    spiral_track()
+    spiral_dendrogram(dend)
+})
+
+p2 = grid.grabExpr({
+    library(dendextend)
+    dend = color_branches(dend, k = 4)
+    spiral_initialize(xlim = c(0, 1000), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+    spiral_track()
+    spiral_dendrogram(dend)
+})
+plot_grid(p1, p2)
+```
+
+`spiral_phylo()` works on the `phylo` object. In the following example, to cut the phylogenetic tree into several parts, 
+the `phylo` object is converted to a `dendrogram` by the function `phylo_to_dendrogram()`, later `dendextend::cutree.dendrogram()`
+is applied to obtain the splits.
+
+```{r}
+library(ape)
+data(hivtree.newick)
+tree.hiv = read.tree(textConnection(hivtree.newick))
+n = length(tree.hiv$tip.label) # number of leaves
+
+spiral_initialize(xlim =c(0, n), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+spiral_track()
+spiral_phylo(tree.hiv)
+
+split = dendextend::cutree(phylo_to_dendrogram(tree.hiv), k = 8)
+tb = table(split)
+for(i in seq_along(tb)) {
+    spiral_highlight(sum(tb[seq_len(i-1)]), sum(tb[seq_len(i)]), gp = gpar(fill = i))
+}
+```
+
+The phylogenetic tree can also be directly colored by a categorical variable. We use the variable `split` generated in the previous example.
+
+```{r}
+spiral_initialize(xlim =c(0, n), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+spiral_track()
+spiral_phylo(tree.hiv, group = split)
+```
+
+Both dendrograms and phylogenetic trees can face the outside of the spiral, just by reversing _y_-axis in `spiral_track()`.
+
+```{r}
+spiral_initialize(xlim =c(0, n), start = 360, end = 360*2 + 180, scale_by = "curve_length")
+spiral_track(reverse_y = TRUE)
+spiral_phylo(tree.hiv)
+```
+
+## Utility functions
+
+There are several utility functions which help to get the information of current spiral plot. `spiral_info()` prints
+the general information of current spiral:
+
+```{r, echo = c(2, 3, 5)}
+pdf(NULL)
+spiral_initialize(xlim = c(0, 100))
+spiral_track(ylim = c(-1, 1))
+invisible(dev.off())
+spiral_info()
+```
+
+The special variable `TRACK_META` retrieves several meta-information of the current track.
+
+```{r}
+TRACK_META
+names(TRACK_META)
+```
+
+The following two functions convert the data coordinates to polar coordinates or the canvas coordinates
+(the coordinates where the graphics are finally drawn).
+
+- `xy_to_cartesian()`
+- `xy_to_polar()`
+
+The following three functions get or set the tracks:
+
+- `current_track_index()`
+- `set_current_track()`
+- `n_track()`
+
+There is also one more function which converts canvas coordinates to data
+coordinates. The data points are assigned to the nearest inner loops. 
+For a data point $P$, denote $r$ as the distance to the origin, $\theta$ is the angle to the line $x > 0, y = 0$ (reverse-clockwise angle).
+Let's assume the value of $\theta$ is between 0 and $2\pi$ (which is actually not important if $\theta$ multiplies with $2\pi$). Denote
+$r_k$ and $r_{k+1}$ are the radius of the two loops of the spiral at $\theta + 2\pi \cdot a$
+and $\theta + 2\pi \cdot (a+1)$ that below and above the data point (here $a$ is an integer which should be properly calculated to make sure
+$p$ is between loop $k$ and $k+1$), then the data point $P$ is
+assigned to the loop $k$.
+
+- `cartesian_to_xy()`
+
+There is an interesting application for `cartesian_to_xy()` which is to overlay an image to the spiral. If we treat each pixel as a data point, 
+then we can only draw those pixels which are inside a track on the spiral. In the following example, I first load an image object:
+
+```{r}
+load(system.file("extdata", "doodle.RData", package = "circlize")) # the loaded object is `img_list`
+img = img_list[[1]] # img_list contains several images as `raster` objects, here we only use the first one.
+img = apply(img, 1:2, function(x) rgb(x[1], x[2], x[3])) # convert to color characters
+```
+
+Now `img` is a matrix of colors. Note the first element in `img` (i.e. `img[1, 1]`) corresponds to the top left pixel of the image.
+In the following code, I basically test whether the pixels are in the track. If they are, the positions and corresponding colors are saved.
+
+```{r}
+nr = nrow(img)
+nc = ncol(img)
+
+spiral_initialize(start = 0, end = 360*5, polar_lines = FALSE)
+spiral_track(background = TRUE)
+
+s = current_spiral()
+
+all_x = NULL
+all_y = NULL
+all_col = NULL
+for(i in 1:nr) {
+    for(j in 1:nc) {
+        x = (j - nc/2)/nc*1.5*s$max_radius
+        y = -(i - nr/2)/nr*1.5*s$max_radius
+
+        df = cartesian_to_xy(x, y)
+
+        if(is_in_track(df$x, df$y)) {
+            all_x = c(all_x, df$x)
+            all_y = c(all_y, df$y)
+            all_col = c(all_col, img[i, j])
+        }
+    }
+}
+
+spiral_points(all_x, all_y, pch = 16, gp = gpar(col = all_col), size = unit(2, "pt"))
+```
+
+Next two plots are drawn with spirals of 20 loops and 50 loops. Also the background of tracks are not drawn.
+
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 8}
+make_plot = function(k) {
+    spiral_initialize(start = 0, end = 360*k, polar_lines = FALSE)
+    spiral_track(background = FALSE)
+
+    s = current_spiral()
+
+    all_x = NULL
+    all_y = NULL
+    all_col = NULL
+    for(i in 1:nr) {
+        for(j in 1:nc) {
+            x = (j - nc/2)/nc*1.5*s$max_radius
+            y = -(i - nr/2)/nr*1.5*s$max_radius
+
+            df = cartesian_to_xy(x, y)
+
+            if(is_in_track(df$x, df$y)) {
+                all_x = c(all_x, df$x)
+                all_y = c(all_y, df$y)
+                all_col = c(all_col, img[i, j])
+            }
+        }
+    }
+
+    spiral_points(all_x, all_y, pch = 16, gp = gpar(col = all_col), size = unit(2, "pt"))
+}
+
+p1 = grid.grabExpr(make_plot(20))
+p2 = grid.grabExpr(make_plot(50))
+plot_grid(p1, p2)
+```
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+
+
+<script src="jquery.min.js"></script>
+<script src="jquery.sticky.js"></script>
+<script>
+$(document).ready(function(){
+    $("#TOC").sticky({
+        topSpacing: 0,
+        zIndex:1000    
+    })
+    $("#TOC").on("sticky-start", function() {
+
+        $("<p style='font-size:1.2em; padding-left:4px;'><a id='TOC-click'>Table of Content</a></p>").insertBefore($("#TOC ul:first-child"));
+        $("#TOC-click").hover(function() {
+            $(this).css("color", "#0033dd").css("cursor", "pointer");
+            $("#TOC").children().first().next().show();
+            $("#TOC").hover(function() {
+                $(this).children().first().next().show();
+            }, function() {
+                $(this).children().first().next().hide();
+                $("body").off("hover", "#TOC");
+            })
+        }, function() {
+            $(this).css("color", "#0033dd");
+        })
+        $("#TOC").children().first().next().hide();
+
+    })
+    $("#TOC").on("sticky-end", function() {
+        $("#TOC").children().first().remove();
+        $("#TOC").children().first().show();
+    })
+});
+</script>

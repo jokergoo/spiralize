@@ -1,0 +1,195 @@
+---
+title: "Initialize Spirals by Special Data Types"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    warning = FALSE,
+    fig.width = 7,
+    fig.height = 7,
+    fig.align = "center",
+    fig.retina = 2
+)
+knitr::knit_hooks$set(pngquant = knitr::hook_pngquant)
+knitr::opts_chunk$set(
+  message = FALSE,
+  dev = "ragg_png",
+  fig.align = "center",
+  pngquant = "--speed=10 --quality=30"
+)
+options(width = 100)
+```
+
+```{r, echo = FALSE}
+library(spiralize)
+library(cowplot)
+library(GetoptLong)
+```
+
+
+## Work with date/time object
+
+For time series data, values on _x_-axis are time points in a certain unit, e.g.
+days, or hours, and are linearly distributed along the axis. To map time
+series data to the spiral, internally a simple conversion is applied. Assume
+the first time point is `t1` and the last time point is `t2`, the number of time points is `n = t2
+- t1` which is the time difference between the two. If we take `[0, 1]` for the
+first time point, `[1, 2]` for the second time point, and `[n-1, n]` for the last time point, then
+internally the spiral is initialized with `xlim = c(0, n)` and a time point `d` is
+converted to the internal numeric value by `d - d1 + 0.5`.
+
+The unit of time point can be set via the argument `unit_on_axis` and the unit
+of the period can be set via the argument `period`, e.g. `unit_on_axis =
+"days"` and `period = "years"`. `unit_on_aixs` can be set as one of `"days"`,
+`"months"`, `"weeks"`, `"hours"`, `"mins"` and `"secs"`. And there are also
+corresponding values for `period`. If these two arguments are not set,
+they are guessed from `xlim` automatically.
+
+In the following examples, also note the default value of `polar_lines_by` is also different for different `period`. 
+E.g. there are 12 polar lines for years (12 months), 7 polar lines for weeks (7 weekdays), 24 polar lines for days (24 hours).
+
+```{r}
+spiral_initialize_by_time(xlim = c("2014-01-01", "2021-06-17"))
+spiral_track(height = 0.6)
+spiral_axis()
+
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-05 00:00:00"))
+spiral_track(height = 0.6)
+spiral_axis()
+
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-01 00:10:00"),
+    unit_on_axis = "secs", period = "mins")
+spiral_track(height = 0.6)
+spiral_axis()
+```
+
+
+As shown in previous examples, the values for `xlim` should be a time/date
+object or their character forms that can be converted to the time/date object.
+Later when adding graphics, the time/date objects or their character forms can
+also be used as the _x_-locations for the low-level graphics functions. For example:
+
+```{r, eval = FALSE}
+spiral_points("2021-01-01", 0.5)
+```
+
+Argument `at` can be set to a vector of times to control the breaks on the axis.
+In the next example, I set the time interval to every two hours.
+
+```{r, message = FALSE}
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-05 00:00:00"))
+spiral_track(height = 0.6)
+
+library(lubridate)
+# `by` is measured in seconds
+at = seq(as.POSIXlt("2021-01-01 00:00:00"), as.POSIXlt("2021-01-05 00:00:00"), by = 2*60*60)
+spiral_axis(at = at)
+```
+
+In the last example of this section, I let the spiral go clockwisely and put 0/12 o'clock on the 
+top of each loop (simply done by setting `clockwise = TRUE`) and each loop corresponds to 12 hours:
+
+
+```{r}
+spiral_initialize_by_time(xlim = c("2021-01-01 00:00:00", "2021-01-03 00:00:00"),
+    start = 360 + 90, period_per_loop = 0.5, clockwise = TRUE)
+spiral_track(height = 0.6)
+at = seq(as.POSIXlt("2021-01-01 00:00:00"), as.POSIXlt("2021-01-05 00:00:00"), by = 2*60*60)
+spiral_axis(at = at)
+```
+
+When each loop corresponds to a year and units on axis are days, maybe you
+have already seen the messages in the previous examples, by default, each loop
+actually corresponds to only 52 weeks (364 days) and the remaining 1 or 2
+days will be added and accumulated to the next year. This might be a problem
+when there are many loops (many years). In the following left plot where we
+visualize 10 years, the total accumuated years result in about 15 degrees exceeding
+the full circle. The function `spiral_initialize_by_time()` allows to set an
+argument `normalize_year = TRUE` so that each loop is perfectly a year. But
+users need to be cautious that now it is not easy to correspond weekdays
+between years because they are not perfectly aligned.
+
+
+```{r, eval = FALSE}
+# the left plot
+spiral_initialize_by_time(xlim = c("2010-01-01", "2019-12-31"))
+spiral_track()
+for(i in 0:9) {
+    # years() is from lubridate package
+    spiral_text(as.POSIXlt("2010-01-01") + years(i), 0.5, 2010 + i, facing = "inside")
+}
+
+# the right plot
+spiral_initialize_by_time(xlim = c("2010-01-01", "2019-12-31"),
+    normalize_year = TRUE)
+spiral_track()
+for(i in 0:9) {
+    spiral_text(as.POSIXlt("2010-01-01") + years(i), 0.5, 2010 + i, facing = "inside")
+}
+
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5, message = FALSE}
+p1 = grid.grabExpr({
+    spiral_initialize_by_time(xlim = c("2010-01-01", "2019-12-31"))
+    spiral_track()
+    for(i in 0:9) {
+        spiral_text(as.POSIXlt("2010-01-01") + years(i), 0.5, 2010 + i, facing = "inside")
+    }
+    grid.text("default", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+}, width = 5, height = 5)
+p2 = grid.grabExpr({
+    spiral_initialize_by_time(xlim = c("2010-01-01", "2019-12-31"),
+        normalize_year = TRUE)
+    spiral_track()
+    for(i in 0:9) {
+        spiral_text(as.POSIXlt("2010-01-01") + years(i), 0.5, 2010 + i, facing = "inside")
+    }
+    grid.text("normalize_year = TRUE", 0, 1, just = c("left", "top"), gp = gpar(fontsize = 14))
+}, width = 5, height = 5)
+plot_grid(p1, p2)
+```
+
+Last, when each loop corresponds to a year and units on axis are days, and
+when `normalize_year` is set to `TRUE`, the background sectors partitioned by
+dashed radical lines actually correspond to the proportion of month days in a year, i.e., the
+width of Feburary is the smallest.
+
+```{r}
+spiral_initialize_by_time(xlim = c("2010-01-01", "2014-12-31"), normalize_year = TRUE)
+spiral_track()
+for(i in 0:11) {
+    d = as.POSIXlt("2014-01-15") + months(i)
+    spiral_text(d, 1.5, month.name[month(d)], gp = gpar(fontsize = 8), 
+        facing = "inside", nice_facing = TRUE)
+}
+```
+
+## Work with genomic coordinates
+
+Genomic data can be represented as a data frame (e.g. in _bed_ format), or as
+a `GRanges` object. To initialize the spiral for genomic data visualization,
+the data on _x_-axis corresponds to the genomic coordinates. The spiral with
+genomic data can be initialized by the function
+`spiral_initialize_by_gcoor()`.  The genomic coordinates are linear numeric
+values, thus, `spiral_initialize_by_gcoor()` is basically the same as
+`spiral_initialize()`. The only difference is the axis labels are
+automatically formatted for genomic coordinates.
+
+Also since normally there are no periodic patterns for genomc data, `scale_by`
+is by default set to `"curve_length"`.
+
+```{r}
+spiral_initialize_by_gcoor(xlim = c(2e6, 8e6))  # 2MB to 8MB
+spiral_track(height = 0.6)
+spiral_axis()
+spiral_points(x = runif(500, min = 2e6, max = 8e6), runif(500), pch = 16, gp = gpar(col = 2))
+```

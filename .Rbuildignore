@@ -12,3 +12,15 @@ revdep/
 ^docs$
 ^pkgdown$
 build_pkg_site.R
+
+vignettes/annotate.Rmd
+vignettes/examples.Rmd
+vignettes/jquery.min.js
+vignettes/jquery.sticky.js
+vignettes/main.css
+vignettes/qing_ming_shang_he_tu.png
+vignettes/qing_ming_shang_he_tu_small.png
+vignettes/special_data_type.Rmd
+vignettes/spiralize_git_commit.Rmd
+vignettes/spiralize_intro.Rmd
+vignettes/tree_of_life.Rmd

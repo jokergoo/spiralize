@@ -339,7 +339,7 @@ flip_theta_back = function(theta) {
 #
 # == details
 # The data points are assigned to the nearest inner loops. Denote the a data point has a coordinate (r, theta)
-# in the polar coordinate system, r_k and r_{k+1} are the radius of the two loops at theta + 2*pi*a and theta + 2*pi*(a+1) that below and above the data point,
+# in the polar coordinate system, r_k and r_(k+1) are the radius of the two loops at theta + 2*pi*a and theta + 2*pi*(a+1) that below and above the data point,
 # the data point is assigned to the loop k.
 #
 # == value

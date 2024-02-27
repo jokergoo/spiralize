@@ -1,0 +1,56 @@
+---
+title: "Spiral visualization on git commits of a git repo"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: true
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.width = 7,
+    fig.height = 7,
+    fig.align = "center",
+    fig.retina = 2
+)
+knitr::knit_hooks$set(pngquant = knitr::hook_pngquant)
+knitr::opts_chunk$set(
+  message = FALSE,
+  dev = "ragg_png",
+  fig.align = "center",
+  pngquant = "--speed=10 --quality=30"
+)
+options(width = 100)
+```
+
+```{r}
+library(spiralize)
+```
+
+`spiral_git_commits()` visualizes numbers of daily git commits in a spiral. The first argument
+should be the path of a local git repository. The following shows commit histories of some of my R packages. 
+
+
+```{r, fig.width = 7, fig.height = 7}
+spiral_git_commits("~/project/development/ComplexHeatmap")
+spiral_git_commits("~/project/development/circlize")
+spiral_git_commits("~/project/development/rGREAT")
+spiral_git_commits("~/project/development/simona")
+spiral_git_commits("~/project/development/spiralize")
+```
+
+
+Let's check the development activity of several programming languages:
+
+```{r, fig.width = 7, fig.height = 7}
+spiral_git_commits("~/test/r-source", commits_range = c(1, 60))
+spiral_git_commits("~/test/cpython", commits_range = c(1, 60))
+spiral_git_commits("~/test/perl5", commits_range = c(1, 60))
+spiral_git_commits("~/test/julia", commits_range = c(1, 60))
+```
